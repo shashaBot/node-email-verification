@@ -8,6 +8,7 @@ const config = require('./config/database');
 const morgan = require('morgan');
 const methodOverride = require('method-override');
 
+require('dotenv').config();
 
 // Connect  to Database
 mongoose.connect(config.database);

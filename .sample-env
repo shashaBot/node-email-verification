@@ -1,2 +1,4 @@
 SENDGRID_USERNAME = <enter-username>
 SENDGRID_PASSWORD = <enter-password>
+MONGODB = mongodb://<userame>:<password>@<mongodb_online.com>
+DB_SECRET = <enter-secret>

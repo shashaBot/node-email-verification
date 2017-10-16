@@ -9,6 +9,8 @@ const verify_token = require('../models/token');
 const config = require('../config/database');
 const User = require('../models/user');
 
+require('dotenv').config();
+
 // Register route
 router.post('/register', (req, res, next) => {
   let newUser = new User({
@@ -30,7 +32,7 @@ router.post('/register', (req, res, next) => {
           if (err) { return res.json({success: false, msg: err.message }); }
 
           // Send the email
-          var transporter = nodemailer.createTransport({ service: 'Sendgrid', auth: { user: 'shashaBot', pass: 'nuNNu123' } });
+          var transporter = nodemailer.createTransport({ service: 'Sendgrid', auth: { user: process.env.SENDGRID_USERNAME, pass: process.env.SENDGRID_PASSWORD } });
           var mailOptions = { from: 'no-reply@email-verify-app.com', to: user.email, subject: 'Please verify your email', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/users\/confirmation?verify=' + email_verify_token.token + '.\n' };
           transporter.sendMail(mailOptions, function (err) {
               if (err) { return res.json({success: false, msg: err.message }); }
