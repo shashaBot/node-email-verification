@@ -1,0 +1,28 @@
+{
+  "name": "ionic-node-auth",
+  "version": "1.0.0",
+  "description": "A basic ionic app with node server for authentication using Google reCaptcha and email verification.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server"
+  },
+  "author": "shashaBot",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "*",
+    "body-parser": "^1.15.2",
+    "cors": "^2.8.0",
+    "del": "2.2.0",
+    "dotenv": "^4.0.0",
+    "express": "*",
+    "http": "*",
+    "jsonwebtoken": "*",
+    "method-override": "^2.3.6",
+    "mongoose": "^4.6.2",
+    "morgan": "^1.7.0",
+    "nodemailer": "^4.2.0",
+    "passport": "*",
+    "passport-jwt": "*",
+    "superlogin": "^0.6.1"
+  }
+}
