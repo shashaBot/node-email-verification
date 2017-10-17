@@ -23,6 +23,7 @@
     "nodemailer": "^4.2.0",
     "passport": "*",
     "passport-jwt": "*",
+    "request-promise": "^4.2.2",
     "superlogin": "^0.6.1"
   }
 }

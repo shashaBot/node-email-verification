@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const config = require('./config/database');
 const morgan = require('morgan');
 // const methodOverride = require('method-override');
+const rp = require('request-promise');
 
 require('dotenv').config();
 
@@ -63,6 +64,22 @@ app.get('/', (req, res) => {
 });
 
 app.use('/users', users);
+
+app.get('/validate_captcha', (req, res) => {
+  const options = {
+    method: 'POST',
+    uri: 'https://www.google.com/recaptcha/api/siteverify',
+    qs: {
+      secret: process.env.CAPTCHA_SITE_SECRET,
+      response: req.query.token
+    },
+    json: true
+  };
+
+  rp(options)
+      .then(response => res.json(response))
+      .catch(() => {});
+});
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/index.html'));
