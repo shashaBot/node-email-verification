@@ -6,7 +6,7 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const config = require('./config/database');
 const morgan = require('morgan');
-const methodOverride = require('method-override');
+// const methodOverride = require('method-override');
 
 require('dotenv').config();
 
@@ -37,7 +37,7 @@ app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse applica
 app.use(morgan('dev'));                                         // log every request to the console
 
 // methodOverride middleware
-app.use(methodOverride());
+// app.use(methodOverride());
 
 // Passport Middleware
 app.use(passport.initialize());
@@ -50,12 +50,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Cors Middleware
 app.use(cors());
-app.use(function(req, res, next) {
-   res.header("Access-Control-Allow-Origin", "*");
-   res.header('Access-Control-Allow-Methods', 'DELETE, PUT');
-   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-   next();
-});
+// app.use(function(req, res, next) {
+//    res.header("Access-Control-Allow-Origin", "*");
+//    res.header('Access-Control-Allow-Methods', 'DELETE, PUT');
+//    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//    next();
+// });
 
 // Home route
 app.get('/', (req, res) => {

@@ -10,8 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "*",
-    "body-parser": "^1.15.2",
-    "cors": "^2.8.0",
+    "body-parser": "*",
+    "cors": "*",
     "del": "2.2.0",
     "dotenv": "^4.0.0",
     "express": "*",
