@@ -108,7 +108,8 @@ router.post('/authenticate', (req, res, next) => {
             email: user.email,
             username: user.username,
             name: user.name,
-            isVerified: user.isVerified
+            isVerified: user.isVerified,
+            _id: user.id
           };
           const token = jwt.sign(signInUser, config.secret, {
             expiresIn: 604800 // 1 week

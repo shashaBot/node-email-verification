@@ -90,7 +90,7 @@ var LoginPage = (function () {
 }());
 LoginPage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
-        selector: 'page-login',template:/*ion-inline-start:"/media/shashwat/Data/coding/codebase/MEAN/Ionic-Node-auth/ionic-src/src/pages/login/login.html"*/'<ion-content class="login-content" padding>\n  <ion-row class="logo-row">\n    <ion-col></ion-col>\n    <ion-col width-67>\n      <img src="http://placehold.it/300x200"/>\n    </ion-col>\n    <ion-col></ion-col>\n  </ion-row>\n  <div class="login-box">\n    <form (ngSubmit)="login()" [formGroup]="logIn" novalidate>\n      <ion-row>\n        <ion-col col-md-6 offset-md-3>\n          <ion-list inset>\n\n            <ion-item>\n              <ion-input type="text" placeholder="Username" formControlName="username" required></ion-input>\n            </ion-item>\n\n            <ion-item>\n              <ion-input type="password" placeholder="Password" formControlName="password" required></ion-input>\n            </ion-item>\n\n          </ion-list>\n        </ion-col>\n      </ion-row>\n\n      <ion-row justify-content-center>\n        <ion-col col-md-6>\n          <div ionCaptcha key="6LevrjQUAAAAAM5WB0Xu_ttsNRqpXeSPV6F0_zek" formControlName="captcha"></div>\n        </ion-col>\n      </ion-row>\n\n      <ion-row>\n        <ion-col class="signup-col" col-md-6 offset-md-3>\n          <button ion-button class="submit-btn" full type="submit" [disabled]="!logIn.valid">Login</button>\n          <button ion-button class="register-btn" block type="button" clear (click)="createAccount()">Create New Account</button>\n        </ion-col>\n      </ion-row>\n\n    </form>\n  </div>\n</ion-content>\n'/*ion-inline-end:"/media/shashwat/Data/coding/codebase/MEAN/Ionic-Node-auth/ionic-src/src/pages/login/login.html"*/,
+        selector: 'page-login',template:/*ion-inline-start:"/media/shashwat/Data/coding/codebase/MEAN/Ionic-Node-auth/ionic-src/src/pages/login/login.html"*/'<ion-content class="login-content" padding>\n  <ion-row class="logo-row">\n    <ion-col></ion-col>\n    <ion-col width-67>\n      <p style="font-size: 16px">\n        Login to our awesome website\n      </p>\n    </ion-col>\n    <ion-col></ion-col>\n  </ion-row>\n  <div class="login-box">\n    <form (ngSubmit)="login()" [formGroup]="logIn" novalidate>\n      <ion-row>\n        <ion-col col-md-6 offset-md-3>\n          <ion-list inset>\n\n            <ion-item>\n              <ion-input type="text" placeholder="Username" formControlName="username" required></ion-input>\n            </ion-item>\n\n            <ion-item>\n              <ion-input type="password" placeholder="Password" formControlName="password" required></ion-input>\n            </ion-item>\n\n          </ion-list>\n        </ion-col>\n      </ion-row>\n\n      <ion-row>\n        <ion-col>\n          <div class="captcha-div" ionCaptcha key="6LevrjQUAAAAAM5WB0Xu_ttsNRqpXeSPV6F0_zek" formControlName="captcha"></div>\n        </ion-col>\n      </ion-row>\n\n      <ion-row>\n        <ion-col class="signup-col" col-md-6 offset-md-3>\n          <button ion-button class="submit-btn" full type="submit" [disabled]="!logIn.valid">Login</button>\n          <button ion-button class="register-btn" block type="button" clear (click)="createAccount()">Create New Account</button>\n        </ion-col>\n      </ion-row>\n\n    </form>\n  </div>\n</ion-content>\n'/*ion-inline-end:"/media/shashwat/Data/coding/codebase/MEAN/Ionic-Node-auth/ionic-src/src/pages/login/login.html"*/,
     }),
     __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */], __WEBPACK_IMPORTED_MODULE_3__providers_auth_service_auth_service__["a" /* AuthService */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* LoadingController */]])
 ], LoginPage);
@@ -141,6 +141,7 @@ webpackEmptyAsyncContext.id = 153;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(35);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__providers_auth_service_auth_service__ = __webpack_require__(43);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_forms__ = __webpack_require__(12);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -153,6 +154,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 var RegisterPage = (function () {
     function RegisterPage(nav, auth, alertCtrl, loadingCtrl) {
         this.nav = nav;
@@ -160,7 +162,13 @@ var RegisterPage = (function () {
         this.alertCtrl = alertCtrl;
         this.loadingCtrl = loadingCtrl;
         this.createSuccess = false;
-        this.registerCredentials = { email: '', password: '' };
+        this.registerForm = new __WEBPACK_IMPORTED_MODULE_3__angular_forms__["b" /* FormGroup */]({
+            username: new __WEBPACK_IMPORTED_MODULE_3__angular_forms__["a" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_3__angular_forms__["g" /* Validators */].required),
+            email: new __WEBPACK_IMPORTED_MODULE_3__angular_forms__["a" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_3__angular_forms__["g" /* Validators */].required),
+            password: new __WEBPACK_IMPORTED_MODULE_3__angular_forms__["a" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_3__angular_forms__["g" /* Validators */].required),
+            name: new __WEBPACK_IMPORTED_MODULE_3__angular_forms__["a" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_3__angular_forms__["g" /* Validators */].required),
+            captcha: new __WEBPACK_IMPORTED_MODULE_3__angular_forms__["a" /* FormControl */]()
+        });
     }
     // ionViewCanEnter(): boolean {
     //   if(this.auth.loggedIn()){
@@ -172,7 +180,15 @@ var RegisterPage = (function () {
     RegisterPage.prototype.register = function () {
         var _this = this;
         this.showLoading();
-        this.auth.register(this.registerCredentials).subscribe(function (data) {
+        if (!this.registerForm.valid)
+            return this.showError('Please provide all details and verify your humanity.');
+        var credentials = {
+            username: this.registerForm.value.username,
+            email: this.registerForm.value.email,
+            password: this.registerForm.value.password,
+            name: this.registerForm.value.name
+        };
+        this.auth.register(credentials).subscribe(function (data) {
             if (data.success) {
                 _this.createSuccess = true;
                 _this.showPopup("Success", data.msg);
@@ -209,11 +225,20 @@ var RegisterPage = (function () {
         });
         this.loading.present();
     };
+    RegisterPage.prototype.showError = function (text) {
+        this.loading.dismiss();
+        var alert = this.alertCtrl.create({
+            title: 'Fail',
+            subTitle: text,
+            buttons: ['OK']
+        });
+        alert.present(prompt);
+    };
     return RegisterPage;
 }());
 RegisterPage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
-        selector: 'page-register',template:/*ion-inline-start:"/media/shashwat/Data/coding/codebase/MEAN/Ionic-Node-auth/ionic-src/src/pages/register/register.html"*/'<ion-header>\n  <ion-navbar color="dark">\n    <ion-title>Register</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content class="login-content" padding>\n  <div class="login-box">\n\n    <form (ngSubmit)="register()" #registerForm="ngForm">\n      <ion-row>\n        <ion-col col-md-8 offset-md-2>\n          <ion-list inset>\n\n            <ion-item>\n              <ion-input type="text" placeholder="Name" name="Name" [(ngModel)]="registerCredentials.name" required></ion-input>\n            </ion-item>\n\n            <ion-item>\n              <ion-input type="text" placeholder="Email" name="email" [(ngModel)]="registerCredentials.email" required></ion-input>\n            </ion-item>\n\n            <ion-item>\n              <ion-input type="text" placeholder="Username" name="username" [(ngModel)]="registerCredentials.username" required></ion-input>\n            </ion-item>\n\n            <ion-item>\n              <ion-input type="password" placeholder="Password" name="password" [(ngModel)]="registerCredentials.password" required></ion-input>\n            </ion-item>\n          </ion-list>\n        </ion-col>\n      </ion-row>\n\n      <ion-row>\n        <ion-col class="captcha-col">\n        </ion-col>\n      </ion-row>\n\n      <ion-row>\n        <ion-col class="signup-col" col-lg-4 offset-lg-4 col-md-auto>\n          <button ion-button class="submit-btn" full type="submit" [disabled]="!registerForm.form.valid">Register</button>\n        </ion-col>\n      </ion-row>\n\n    </form>\n  </div>\n</ion-content>\n'/*ion-inline-end:"/media/shashwat/Data/coding/codebase/MEAN/Ionic-Node-auth/ionic-src/src/pages/register/register.html"*/,
+        selector: 'page-register',template:/*ion-inline-start:"/media/shashwat/Data/coding/codebase/MEAN/Ionic-Node-auth/ionic-src/src/pages/register/register.html"*/'<ion-header>\n  <ion-navbar color="dark">\n    <ion-title>Register</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content class="login-content" padding>\n  <div class="login-box">\n\n    <form (ngSubmit)="register()" [formGroup]="registerForm" novalidate>\n      <ion-row>\n        <ion-col col-md-8 offset-md-2>\n          <ion-list inset>\n\n            <ion-item>\n              <ion-input type="text" placeholder="Name" formControlName="name" required></ion-input>\n            </ion-item>\n\n            <ion-item>\n              <ion-input type="text" placeholder="Email" formControlName="email" required></ion-input>\n            </ion-item>\n\n            <ion-item>\n              <ion-input type="text" placeholder="Username" formControlName="username" required></ion-input>\n            </ion-item>\n\n            <ion-item>\n              <ion-input type="password" placeholder="Password" formControlName="password" required></ion-input>\n            </ion-item>\n          </ion-list>\n        </ion-col>\n      </ion-row>\n\n      <ion-row>\n        <ion-col class="captcha-col">\n          <div class="captcha-div" ionCaptcha key="6LevrjQUAAAAAM5WB0Xu_ttsNRqpXeSPV6F0_zek" formControlName="captcha"></div>\n        </ion-col>\n      </ion-row>\n\n      <ion-row justify-content-center>\n        <ion-col class="signup-col" col-md-6 offset-md-3>\n          <button ion-button class="submit-btn" full type="submit" [disabled]="!registerForm.valid">Register</button>\n        </ion-col>\n      </ion-row>\n\n    </form>\n  </div>\n</ion-content>\n'/*ion-inline-end:"/media/shashwat/Data/coding/codebase/MEAN/Ionic-Node-auth/ionic-src/src/pages/register/register.html"*/,
     }),
     __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */], __WEBPACK_IMPORTED_MODULE_2__providers_auth_service_auth_service__["a" /* AuthService */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* LoadingController */]])
 ], RegisterPage);
@@ -249,11 +274,9 @@ var HomePage = (function () {
         var _this = this;
         this.nav = nav;
         this.auth = auth;
-        this.username = '';
-        this.email = '';
-        this.auth.getUserInfo().subscribe(function (res) {
-            _this.username = res.username;
-            _this.email = res.email;
+        this.user = {};
+        this.auth.getUserInfo().subscribe(function (data) {
+            _this.user = data.user;
         });
     }
     HomePage.prototype.logout = function () {
@@ -264,7 +287,7 @@ var HomePage = (function () {
 }());
 HomePage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
-        selector: 'page-home',template:/*ion-inline-start:"/media/shashwat/Data/coding/codebase/MEAN/Ionic-Node-auth/ionic-src/src/pages/home/home.html"*/'<ion-header>\n  <ion-navbar color="dark">\n    <ion-title>\n      Member Area\n    </ion-title>\n    <ion-buttons end>\n      <button ion-button (click)="logout()">\n        <ion-icon name="log-out"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n</ion-header>\n\n<ion-content class="home" padding>\n  <h3>Welcome inside, {{username}}!</h3>\n  Your Email is: {{email}}\n</ion-content>\n'/*ion-inline-end:"/media/shashwat/Data/coding/codebase/MEAN/Ionic-Node-auth/ionic-src/src/pages/home/home.html"*/
+        selector: 'page-home',template:/*ion-inline-start:"/media/shashwat/Data/coding/codebase/MEAN/Ionic-Node-auth/ionic-src/src/pages/home/home.html"*/'<ion-header>\n  <ion-navbar color="dark">\n    <ion-title>\n      Member Area\n    </ion-title>\n    <ion-buttons end>\n      <button ion-button (click)="logout()">\n        <ion-icon name="log-out"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n</ion-header>\n\n<ion-content class="home" padding>\n  <h3>Welcome inside, {{user.name}}</h3>\n</ion-content>\n'/*ion-inline-end:"/media/shashwat/Data/coding/codebase/MEAN/Ionic-Node-auth/ionic-src/src/pages/home/home.html"*/
     }),
     __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* NavController */], __WEBPACK_IMPORTED_MODULE_2__providers_auth_service_auth_service__["a" /* AuthService */]])
 ], HomePage);
@@ -488,10 +511,6 @@ var IonCaptchaDirective = IonCaptchaDirective_1 = (function () {
         this.control = this.injector.get(__WEBPACK_IMPORTED_MODULE_1__angular_forms__["e" /* NgControl */]).control;
         this.setValidators();
     };
-    /**
-     * Useful for multiple captcha
-     * @returns {number}
-     */
     IonCaptchaDirective.prototype.getId = function () {
         return this.widgetId;
     };
@@ -511,9 +530,6 @@ var IonCaptchaDirective = IonCaptchaDirective_1 = (function () {
     IonCaptchaDirective.prototype.registerOnTouched = function (fn) {
         this.onTouched = fn;
     };
-    /**
-     * onExpired
-     */
     IonCaptchaDirective.prototype.onExpired = function () {
         var _this = this;
         this.ngZone.run(function () {
@@ -522,10 +538,6 @@ var IonCaptchaDirective = IonCaptchaDirective_1 = (function () {
             _this.onTouched(null);
         });
     };
-    /**
-     *
-     * @param response
-     */
     IonCaptchaDirective.prototype.onSuccess = function (token) {
         var _this = this;
         this.ngZone.run(function () {
@@ -535,43 +547,23 @@ var IonCaptchaDirective = IonCaptchaDirective_1 = (function () {
             _this.onTouched(token);
         });
     };
-    /**
-     *
-     * @param token
-     */
     IonCaptchaDirective.prototype.verifyToken = function (token) {
         this.control.setAsyncValidators(this.reCaptchaAsyncValidator.validateToken(token));
         this.control.updateValueAndValidity();
     };
-    /**
-     * Renders the container as a reCAPTCHA widget and returns the ID of the newly created widget.
-     * @param element
-     * @param config
-     * @returns {number}
-     */
     IonCaptchaDirective.prototype.render = function (element, config) {
         return grecaptcha.render(element, config);
     };
-    /**
-     * Resets the reCAPTCHA widget.
-     */
     IonCaptchaDirective.prototype.reset = function () {
         if (!this.widgetId)
             return;
         grecaptcha.reset(this.widgetId);
         this.onChange(null);
     };
-    /**
-     * Gets the response for the reCAPTCHA widget.
-     * @returns {string}
-     */
     IonCaptchaDirective.prototype.getResponse = function () {
         if (!this.widgetId)
             return grecaptcha.getResponse(this.widgetId);
     };
-    /**
-     * Add the script
-     */
     IonCaptchaDirective.prototype.addScript = function () {
         var script = document.createElement('script');
         var lang = this.lang ? '&hl=' + this.lang : '';

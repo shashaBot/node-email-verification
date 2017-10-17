@@ -25554,6 +25554,10 @@ page-login .login-content .signup-col {
   padding-bottom: 20px;
 }
 
+page-login .login-content .captcha-div > div {
+  margin: auto;
+}
+
 page-login .login-content .item-inner {
   border-bottom-color: #ffffff !important;
   -webkit-box-shadow: none !important;
@@ -25609,6 +25613,10 @@ page-register .login-content .item-inner {
   border-bottom-color: #ffffff !important;
   -webkit-box-shadow: none !important;
   box-shadow: none !important;
+}
+
+page-register .login-content .captcha-div > div {
+  margin: auto;
 }
 
 page-register .login-content .submit-btn {
