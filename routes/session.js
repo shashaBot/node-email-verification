@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 // const helper = require('../helpers/helpers');
 const mv = require('mv');
+const mkdirp = require('mkdirp');
 
 const config = require('../config/database');
 const Session = require('../models/session');
@@ -16,7 +17,8 @@ const multer = require('multer');
 let storage = multer.diskStorage({
   destination: (req, file, cb) => {
     console.log('destination');
-    cb(null, path.resolve(__dirname, '../uploads/temp'));
+    let dir = path.resolve(__dirname, '../uploads/temp');
+    mkdirp(dir, (err) => cb(err, dir));
   },
   filename: function (req, file, cb) {
     console.log(file.fieldname);
