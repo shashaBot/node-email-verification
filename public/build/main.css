@@ -25512,6 +25512,28 @@ ion-navbar.toolbar {
   min-height: calc(46px + constant(safe-area-inset-top));
 }
 
+page-create .upload-button input[type="file"] {
+  display: none;
+}
+
+page-create .upload-button input[type="file"] + label {
+  background: url("/assets/icon/file-icon.png") center center no-repeat;
+  background-size: contain;
+  background-color: beige;
+}
+
+page-create .upload-button label {
+  display: block;
+  width: 100%;
+  height: 100px;
+  text-align: center;
+}
+
+page-create .banner {
+  position: absolute;
+  top: 33%;
+}
+
 page-home .home {
   background: #56CA96;
 }

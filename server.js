@@ -8,6 +8,8 @@ const config = require('./config/database');
 const morgan = require('morgan');
 // const methodOverride = require('method-override');
 const rp = require('request-promise');
+// const fileUpload = require('express-fileupload');
+const multer = require('multer');
 
 require('dotenv').config();
 
@@ -26,8 +28,20 @@ mongoose.connection.on('error', (err) => {
 // Init express app
 const app = express();
 
+// default options
+// app.use(fileUpload());
+
+//multer
+// app.use(multer({
+//   dest: __dirname+'/uploads/temp'
+// }).any());
+
+
 // User route
 const users = require('./routes/users');
+
+// Session route
+const session = require('./routes/session');
 
 // Body-parser Middleware
 app.use(bodyParser.json());                                     // parse application/json
@@ -50,7 +64,11 @@ require('./config/passport')(passport);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Cors Middleware
-app.use(cors());
+var corsOptions = {
+  origin: 'http://localhost:8100',
+  credentials : true
+}
+app.use(cors(corsOptions));
 // app.use(function(req, res, next) {
 //    res.header("Access-Control-Allow-Origin", "*");
 //    res.header('Access-Control-Allow-Methods', 'DELETE, PUT');
@@ -64,6 +82,8 @@ app.get('/', (req, res) => {
 });
 
 app.use('/users', users);
+
+app.use('/session', session);
 
 app.get('/validate_captcha', (req, res) => {
   const options = {
