@@ -65,7 +65,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Cors Middleware
 var corsOptions = {
-  origin: 'http://localhost:8100',
+  // origin: 'http://localhost:8100',
+  origin: 'https://ionic-node-auth.herokuapp.com',
   credentials : true
 }
 app.use(cors(corsOptions));
