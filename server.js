@@ -64,12 +64,13 @@ require('./config/passport')(passport);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Cors Middleware
-var corsOptions = {
-  // origin: 'http://localhost:8100',
-  origin: 'https://ionic-node-auth.herokuapp.com',
-  credentials : true
-}
-app.use(cors(corsOptions));
+// var corsOptions = {
+//   // origin: 'http://localhost:8100',
+//   origin: 'https://ionic-node-auth.herokuapp.com',
+//   credentials : true
+// }
+app.use(cors());
+// app.use(cors(corsOptions));
 // app.use(function(req, res, next) {
 //    res.header("Access-Control-Allow-Origin", "*");
 //    res.header('Access-Control-Allow-Methods', 'DELETE, PUT');
