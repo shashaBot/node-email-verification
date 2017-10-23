@@ -99,7 +99,9 @@ router.get('/list', passport.authenticate('jwt', {session: false}), (req, res, n
 });
 
 router.post('/stream_files', passport.authenticate('jwt', {session: false}), (req, res, next) => {
-  if(req.body.file && req.body.file.path) {
+  let file = req.body;
+  console.log(file);
+  if(file && file.path) {
     res.setHeader("Content-type", file.type);
     res.setHeader("Content-length", file.size);
     let stream = fs.createReadStream(file.path);
