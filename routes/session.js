@@ -4,7 +4,6 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
-// const helper = require('../helpers/helpers');
 const mv = require('mv');
 const mkdirp = require('mkdirp');
 
@@ -47,7 +46,7 @@ router.post('/create', passport.authenticate('jwt', {session: false}), (req, res
   Session.createSession(session, req.user, (err, session) => {
     if(err){
       console.log(err);
-      return res.json({success: false, msg: 'Error in creating session!'});
+      return res.json({success: false, msg: 'Error in creating session!', error: err});
     }
     //move files to uploads/:sessionsId
     let counter=0;
@@ -63,8 +62,14 @@ router.post('/create', passport.authenticate('jwt', {session: false}), (req, res
           return;
         }
         sessionFiles[counter]['path'] = newPath;
-        if(++counter=== req.body.files.length)
-          res.json({success: true, msg: 'Session created successfully!', data: session});
+        if(++counter=== req.body.files.length){
+          session.files = sessionFiles;
+          //save session again with the paths saved in files array
+          Session.createSession(session, req.user, (err, session) => {
+            if(err) return res.json({success: false, msg: 'Error in creating session', error: err});
+            res.json({success: true, msg: 'Session created successfully!', data: session});
+          });
+        }
       });
     }
   });
@@ -93,11 +98,34 @@ router.get('/list', passport.authenticate('jwt', {session: false}), (req, res, n
   });
 });
 
+router.post('/stream_files', passport.authenticate('jwt', {session: false}), (req, res, next) => {
+  if(req.body.file && req.body.file.path) {
+    res.setHeader("content-type", file.type);
+    let stream = fs.createReadStream(file.path);
+    stream.pipe(res);
+
+    let had_error = false;
+    stream.on('error', (err) => {
+      //error callback
+      had_error = true;
+    });
+
+    stream.on('close', () => {
+      if(!had_error){
+        //success callback
+      }
+    })
+  } else {
+    res.end();
+  }
+});
+
 router.get('/view', passport.authenticate('jwt', {session: false}), (req, res, next) => {
-  Session.viewSession( req.query.session, (err, sesData) => {
+  Session.getSessionData( req.query.session, (err, sesData) => {
     if(err) return res.json({success: false, msg: err});
-    res.json({success: true, data: sesData});
+    res.json({success: true, session: sesData});
   });
 });
+
 
 module.exports = router;

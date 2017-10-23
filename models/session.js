@@ -29,31 +29,6 @@ const SessionSchema = mongoose.Schema({
 
 const Session = module.exports = mongoose.model('Session', SessionSchema);
 
-// module.exports.createSession = (files, userId, fileCall, sessionCall) => {
-//   let i=0;
-//   let sesFiles = [];
-//   let newFile = {};
-//   console.log(files);
-//   while(i<files.length){
-//     newFile = {
-//       name: files[i].name,
-//       type: files[i].type,
-//       ext: files[i].extension
-//     }
-//     newFile.mv('/uploads/'+userId+'/'+Date.now()+'/'+i+newFile.ext, () => {
-//       fileCall();
-//       sesFiles.push(newFile);
-//     });
-//     if(++i === files.length) {
-//       newSession = {
-//         files: sesFiles,
-//         userId: userId
-//       }
-//       newSession.save(sessionCall);
-//     }
-//   }
-// }
-
 module.exports.createSession = (session, userId, callback) => {
   session.save(callback);
 }
@@ -62,6 +37,6 @@ module.exports.listSessions = (callback) => {
   Session.find({}, callback);
 }
 
-module.exports.viewSession = (sessionId, callback) => {
-
+module.exports.getSessionData = (sessionId, callback) => {
+  Session.findById(sessionId, callback);
 }
