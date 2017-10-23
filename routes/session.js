@@ -43,7 +43,7 @@ router.post('/create', passport.authenticate('jwt', {session: false}), (req, res
     files: req.body.files,
     userId: req.user.id
   });
-  Session.createSession(session, req.user, (err, session) => {
+  Session.createSession(session, (err, session) => {
     if(err){
       console.log(err);
       return res.json({success: false, msg: 'Error in creating session!', error: err});
@@ -63,11 +63,18 @@ router.post('/create', passport.authenticate('jwt', {session: false}), (req, res
         }
         sessionFiles[counter]['path'] = newPath;
         if(++counter=== req.body.files.length){
-          session.files = sessionFiles;
           //save session again with the paths saved in files array
-          Session.createSession(session, req.user, (err, session) => {
-            if(err) return res.json({success: false, msg: 'Error in creating session', error: err});
-            res.json({success: true, msg: 'Session created successfully!', data: session});
+          let newSession = new Session({
+            name: session.name,
+            desc: session.desc,
+            files: sessionFiles,
+            userId: req.user.id
+          });
+          console.log(newSession);
+          Session.createSession(newSession, (err, ses) => {
+            if(err) return res.json({success: false, msg: 'Error in creating session', error: err}); //deal with the session obj in DB
+            console.log('session created files: ', session.files);
+            res.json({success: true, msg: 'Session created successfully!', data: ses});
           });
         }
       });
@@ -100,26 +107,54 @@ router.get('/list', passport.authenticate('jwt', {session: false}), (req, res, n
 
 router.post('/stream_files', passport.authenticate('jwt', {session: false}), (req, res, next) => {
   let file = req.body;
-  console.log(file);
+  let stream;
+  const path = file.path
+  const stat = fs.statSync(path)
+  const fileSize = stat.size
+  const range = req.headers.range
+
   if(file && file.path) {
-    res.setHeader("Content-type", file.type);
-    res.setHeader("Content-length", file.size);
-    let stream = fs.createReadStream(file.path);
-    stream.pipe(res);
-
-    let had_error = false;
-    stream.on('error', (err) => {
-      //error callback
-      had_error = true;
-    });
-
-    stream.on('close', () => {
-      if(!had_error){
-        //success callback
+    if(range){
+      const parts = range.replace(/bytes=/, "").split("-")
+      const start = parseInt(parts[0], 10)
+      const end = parts[1]
+        ? parseInt(parts[1], 10)
+        : fileSize-1
+      const chunksize = (end-start)+1
+      stream = fs.createReadStream(path, {start, end})
+      const head = {
+        'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+        'Accept-Ranges': 'bytes',
+        'Content-Length': chunksize,
+        'Content-Type': 'video/mp4',
       }
-    })
+
+      res.writeHead(206, head);
+      stream.pipe(res);
+
+    } else {
+      res.setHeader("Content-type", file.type);
+      res.setHeader("Content-length", file.size);
+      let stream = fs.createReadStream(file.path);
+      stream.pipe(res);
+
+
+    }
+    if(stream) {
+      let had_error = false;
+      stream.on('error', (err) => {
+        //error callback
+        had_error = true;
+      });
+
+      stream.on('close', () => {
+        if(!had_error){
+          //success callback
+        }
+      });
+    }
   } else {
-    res.end();
+    res.end(); // nothing happens. loading fails. send error status.
   }
 });
 

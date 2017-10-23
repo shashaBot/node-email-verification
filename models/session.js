@@ -29,7 +29,8 @@ const SessionSchema = mongoose.Schema({
 
 const Session = module.exports = mongoose.model('Session', SessionSchema);
 
-module.exports.createSession = (session, userId, callback) => {
+module.exports.createSession = (session, callback) => {
+  console.log(session);
   session.save(callback);
 }
 
