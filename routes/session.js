@@ -64,16 +64,11 @@ router.post('/create', passport.authenticate('jwt', {session: false}), (req, res
         sessionFiles[counter]['path'] = newPath;
         if(++counter=== req.body.files.length){
           //save session again with the paths saved in files array
-          let newSession = new Session({
-            name: session.name,
-            desc: session.desc,
-            files: sessionFiles,
-            userId: req.user.id
-          });
-          console.log(newSession);
-          Session.createSession(newSession, (err, ses) => {
+          session.set({files: sessionFiles});
+          console.log(session);
+          Session.createSession(session, (err, ses) => {
             if(err) return res.json({success: false, msg: 'Error in creating session', error: err}); //deal with the session obj in DB
-            console.log('session created files: ', session.files);
+            console.log('session created files: ', ses.files);
             res.json({success: true, msg: 'Session created successfully!', data: ses});
           });
         }
@@ -106,14 +101,14 @@ router.get('/list', passport.authenticate('jwt', {session: false}), (req, res, n
 });
 
 router.post('/stream_files', passport.authenticate('jwt', {session: false}), (req, res, next) => {
-  let file = req.body;
+  // let file = req.body;
   let stream;
-  const path = file.path
+  const path = req.query.path
   const stat = fs.statSync(path)
   const fileSize = stat.size
   const range = req.headers.range
 
-  if(file && file.path) {
+  if(path) {
     if(range){
       const parts = range.replace(/bytes=/, "").split("-")
       const start = parseInt(parts[0], 10)
@@ -133,12 +128,10 @@ router.post('/stream_files', passport.authenticate('jwt', {session: false}), (re
       stream.pipe(res);
 
     } else {
-      res.setHeader("Content-type", file.type);
-      res.setHeader("Content-length", file.size);
-      let stream = fs.createReadStream(file.path);
+      res.setHeader("Content-type", 'video/mp4');
+      res.setHeader("Content-length", fileSize);
+      let stream = fs.createReadStream(path);
       stream.pipe(res);
-
-
     }
     if(stream) {
       let had_error = false;
