@@ -64,9 +64,7 @@ router.post('/create', passport.authenticate('jwt', {session: false}), (req, res
         sessionFiles[counter]['path'] = newPath;
         if(++counter=== req.body.files.length){
           //save session again with the paths saved in files array
-          session.set({files: sessionFiles});
-          console.log(session);
-          Session.createSession(session, (err, ses) => {
+          Session.updateSession(session, {files: sessionFiles}, (err, ses) => {
             if(err) return res.json({success: false, msg: 'Error in creating session', error: err}); //deal with the session obj in DB
             console.log('session created files: ', ses.files);
             res.json({success: true, msg: 'Session created successfully!', data: ses});
@@ -138,6 +136,7 @@ router.get('/stream_files', passport.authenticate('jwt', {session: false}), (req
       stream.on('error', (err) => {
         //error callback
         had_error = true;
+        console.log(err);
       });
 
       stream.on('close', () => {

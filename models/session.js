@@ -41,3 +41,11 @@ module.exports.listSessions = (callback) => {
 module.exports.getSessionData = (sessionId, callback) => {
   Session.findById(sessionId, callback);
 }
+
+module.exports.updateSession = (session, update, callback) => {
+  Session.findById(session.id, (err, data) => {
+    for(let key in update)
+      data[key] = update[key];
+    data.save(callback);
+  });
+}
