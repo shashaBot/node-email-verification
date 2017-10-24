@@ -100,7 +100,7 @@ router.get('/list', passport.authenticate('jwt', {session: false}), (req, res, n
   });
 });
 
-router.post('/stream_files', passport.authenticate('jwt', {session: false}), (req, res, next) => {
+router.get('/stream_files', passport.authenticate('jwt', {session: false}), (req, res, next) => {
   // let file = req.body;
   let stream;
   const path = req.query.path
