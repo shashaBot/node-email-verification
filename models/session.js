@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const config = require('../config/database');
 
-
 // Session Schema
 const SessionSchema = mongoose.Schema({
   name: {
@@ -36,6 +35,10 @@ module.exports.createSession = (session, callback) => {
 
 module.exports.listSessions = (callback) => {
   Session.find({}, callback);
+}
+
+module.exports.removeSession = (session, callback) => {
+  Session.remove({'_id': session._id}, callback);
 }
 
 module.exports.getSessionData = (sessionId, callback) => {

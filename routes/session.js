@@ -30,10 +30,21 @@ router.use(multer({
   storage: storage
 }).array('upload_file', 12));
 
-
 const upload = multer({ storage: storage});
 // const upload = multer({dest: '../uploads/temp'});
 var fileUpload = upload.single('upload_file');
+
+const authOwner = (req, res, callback) => {
+  if(req.body.session) {
+    let id = req.user.id;
+    console.log(id, req.body.session.userId);
+    if(req.body.session.userId !== id) {
+      return res.status(403).json({success: false, msg: 'You are not authorized!'});
+    }
+    callback();
+  }
+};
+
 
 router.post('/create', passport.authenticate('jwt', {session: false}), (req, res) => {
   console.log('create session', req.body);
@@ -46,7 +57,7 @@ router.post('/create', passport.authenticate('jwt', {session: false}), (req, res
   Session.createSession(session, (err, session) => {
     if(err){
       console.log(err);
-      return res.json({success: false, msg: 'Error in creating session!', error: err});
+      return res.json({success: false, msg: 'Error in creating session!', error: err.toString()});
     }
     //move files to uploads/:sessionsId
     let counter=0;
@@ -59,13 +70,14 @@ router.post('/create', passport.authenticate('jwt', {session: false}), (req, res
         if(err) {
           console.log(err);
           //deal with the session object in DB
-          return;
+          //delete files from temp
+          return res.json({success: false, msg: 'Error in saving files!', error: err.toString()});
         }
         sessionFiles[counter]['path'] = newPath;
         if(++counter=== req.body.files.length){
           //save session again with the paths saved in files array
           Session.updateSession(session, {files: sessionFiles}, (err, ses) => {
-            if(err) return res.json({success: false, msg: 'Error in creating session', error: err}); //deal with the session obj in DB
+            if(err) return res.json({success: false, msg: 'Error in creating session', error: err.toString()}); //deal with the session obj in DB
             console.log('session created files: ', ses.files);
             res.json({success: true, msg: 'Session created successfully!', data: ses});
           });
@@ -86,9 +98,35 @@ router.post('/upload', passport.authenticate('jwt', {session: false}), fileUploa
   });
 });
 
-router.post('/remove_files', passport.authenticate('jwt', {session: false}), (req, res) => {
+router.post('/remove', passport.authenticate('jwt', {session: false}), (req, res) => {
   //delete files from server
   //if it belongs to session - remove file from session files array
+  let session = req.body.session;
+  let file = req.body.file;
+  if(session){
+    authOwner(req, res, (err) => {
+      Session.removeSession(session, (err) => {
+        if(err) return res.json({success: false, msg: 'Session could not be deleted!'});
+        let errors = [], successFiles = [];
+        for(let file of session.files) {
+          fs.unlink(file.path, (err) => {
+            if(err){
+              errors.push({error: err, file: file});
+            }
+            successFiles.push(file);
+          });
+        }
+        res.json({success: true, errors: errors.toString(), msg: 'Session deleted!\n'+successFiles.length + ' files deleted successfully!\n'+errors.push+' files failed!'});
+      });
+    });
+  }
+  if(file) {
+    let filePath = path.resolve(__dirname, '../uploads/temp/'+file.name);
+    fs.unlink(filePath, (err) => {
+      if(err) return res.json({success: false, msg: 'Error in removing file', error: err.toString()});
+      res.json({success: true, msg: 'File '+file.name+' removed from server'});
+    });
+  }
 });
 
 router.get('/list', passport.authenticate('jwt', {session: false}), (req, res, next) => {
