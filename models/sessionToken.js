@@ -34,8 +34,13 @@ module.exports.removeViewedToken = (id, callback) => {
 
 module.exports.setUserId = (tokenId, userId, callback) => {
   SessionToken.findById(tokenId, (err, token) => {
-    token.userId = userId;
-    token.save(callback);
+    if(err) return callback(err);
+    if(token){
+      token.userId = userId;
+      token.save(callback);
+    } else {
+      callback(null, null);
+    }
   })
 }
 
