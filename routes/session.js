@@ -200,17 +200,18 @@ router.get('/generate-qr', (req, res, next) => {
   Session.listSessions((err, data) => {
     if(err) return res.json({success: false, error: error});
     let tokens = [];
-    data.forEach(value => {
+    data.forEach((value, index) => {
       let token = new SessionToken({
         sessionId: value._id,
         remoteIp: req.ip
       });
       SessionToken.createToken(token, (err, newToken) => {
         if(err) return res.json({success: false, error: err});
-        tokens.push(newToken.id);
+        console.log(newToken);
+        if(data.length === tokens.push(newToken._id))
+          return res.json({success: true, data: tokens});
       });
     })
-    res.json({success: true, data: tokens});
   })
 })
 
