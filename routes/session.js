@@ -9,6 +9,7 @@ const mkdirp = require('mkdirp');
 
 const config = require('../config/database');
 const Session = require('../models/session');
+const SessionToken = require('../models/sessionToken');
 require('dotenv').config();
 
 const multer = require('multer');
@@ -194,6 +195,60 @@ router.get('/view', passport.authenticate('jwt', {session: false}), (req, res, n
     res.json({success: true, session: sesData});
   });
 });
+
+router.get('/generate-qr', (req, res, next) => {
+  Session.listSessions((err, data) => {
+    if(err) return res.json({success: false, error: error});
+    let tokens = [];
+    data.forEach(value => {
+      let token = new SessionToken({
+        sessionId: value._id,
+        remoteIp: req.ip
+      });
+      SessionToken.createToken(token, (err, newToken) => {
+        if(err) return res.json({success: false, error: err});
+        tokens.push(newToken.id);
+      });
+    })
+    res.json({success: true, data: tokens});
+  })
+})
+
+router.get('/check-qr', (req, res) => {
+  SessionToken.checkToken(req.ip, (err, session, token) => {
+    if(err) return res.json({success: false, error: err});
+    if(session && token) {
+      res.json({success: true, session: session, token: token.id});
+    } else {
+      res.json({success: false});
+    }
+  })
+});
+
+router.get('/remove-codes', (req, res) => {
+  SessionToken.removeTokenByIp(req.ip, (err) => {
+    if(err) return res.json({success: false, error: err});
+    res.json({success: true});
+  })
+})
+
+router.post('/remove-viewed', (req, res) => {
+  SessionToken.removeViewedToken(req.body.tokenId, (err) => {
+    if(err) return res.json({success: false, error: err});
+    res.json({success: true});
+  })
+})
+
+router.post('/scan-qr', passport.authenticate('jwt', {session:false}), (req, res) => {
+  SessionToken.setUserId(req.body.token, req.user._id, (err, token) => {
+    if(err) return res.json({success: false, error: err});
+    if(!token) return res.json({success: false, msg: 'Invalid Token!'});
+    Session.getSessionData(token.sessionId, (err, data) => {
+      if(err) return res.json({success: true, session: {}, error: err});
+      res.json({success: true, session: data});
+    })
+  });
+})
 
 
 module.exports = router;
