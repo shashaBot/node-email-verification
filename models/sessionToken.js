@@ -5,15 +5,15 @@ const Session = require('./session.js');
 // Session token Schema
 const SessionTokenSchema = mongoose.Schema({
   sessionId: {
-    type: String;
-    required: true,
+    type: String,
+    required: true
   },
   remoteIp: {
     type: String,
     required: true
   },
   userId: {
-    type: String,
+    type: String
   }
 });
 
