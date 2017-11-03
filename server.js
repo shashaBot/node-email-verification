@@ -64,19 +64,11 @@ require('./config/passport')(passport);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Cors Middleware
-var whitelist = ['http://localhost:8100', 'http://ionic-node-auth.herokuapp.com', 'https://ionic-node-auth.herokuapp.com', 'file://*', 'file://']
 var corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  },
-  credentials: true
+  origin: 'http://localhost:8100',
+  credentials : true
 }
 app.use(cors(corsOptions));
-
 
 // Home route
 app.get('/', (req, res) => {
