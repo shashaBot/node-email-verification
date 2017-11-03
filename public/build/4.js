@@ -5,10 +5,11 @@ webpackJsonp([4],{
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "HomePageModule", function() { return HomePageModule; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RegisterPageModule", function() { return RegisterPageModule; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(100);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__home__ = __webpack_require__(291);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(99);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__register__ = __webpack_require__(297);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_forms__ = __webpack_require__(15);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -18,38 +19,42 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 
 
-var HomePageModule = (function () {
-    function HomePageModule() {
+
+// import { DirectivesModule } from '../../directives/directives.module';
+var RegisterPageModule = (function () {
+    function RegisterPageModule() {
     }
-    return HomePageModule;
+    return RegisterPageModule;
 }());
-HomePageModule = __decorate([
+RegisterPageModule = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["NgModule"])({
         declarations: [
-            __WEBPACK_IMPORTED_MODULE_2__home__["a" /* HomePage */],
+            __WEBPACK_IMPORTED_MODULE_2__register__["a" /* RegisterPage */],
         ],
         imports: [
-            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* IonicPageModule */].forChild(__WEBPACK_IMPORTED_MODULE_2__home__["a" /* HomePage */]),
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* IonicPageModule */].forChild(__WEBPACK_IMPORTED_MODULE_2__register__["a" /* RegisterPage */]),
+            __WEBPACK_IMPORTED_MODULE_3__angular_forms__["c" /* FormsModule */],
+            __WEBPACK_IMPORTED_MODULE_3__angular_forms__["f" /* ReactiveFormsModule */],
         ],
         exports: [
-            __WEBPACK_IMPORTED_MODULE_2__home__["a" /* HomePage */]
+            __WEBPACK_IMPORTED_MODULE_2__register__["a" /* RegisterPage */]
         ]
     })
-], HomePageModule);
+], RegisterPageModule);
 
-//# sourceMappingURL=home.module.js.map
+//# sourceMappingURL=register.module.js.map
 
 /***/ }),
 
-/***/ 291:
+/***/ 297:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return HomePage; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return RegisterPage; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(100);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__providers_auth_service_auth_service__ = __webpack_require__(198);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__providers_session_session__ = __webpack_require__(199);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(99);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__providers_auth_service_auth_service__ = __webpack_require__(100);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_forms__ = __webpack_require__(15);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -63,40 +68,81 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var HomePage = (function () {
-    function HomePage(nav, auth, session, alertCtrl, loadingCtrl) {
+var RegisterPage = (function () {
+    function RegisterPage(nav, auth, alertCtrl, loadingCtrl, plt) {
         this.nav = nav;
         this.auth = auth;
-        this.session = session;
         this.alertCtrl = alertCtrl;
         this.loadingCtrl = loadingCtrl;
-        this.user = {};
-        this.sessionList = [];
-        this.user = this.auth.getSignedInUser();
+        this.plt = plt;
+        this.createSuccess = false;
+        this.captchaKey = '6LevrjQUAAAAAM5WB0Xu_ttsNRqpXeSPV6F0_zek';
+        this.registerForm = new __WEBPACK_IMPORTED_MODULE_3__angular_forms__["b" /* FormGroup */]({
+            username: new __WEBPACK_IMPORTED_MODULE_3__angular_forms__["a" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_3__angular_forms__["g" /* Validators */].required),
+            email: new __WEBPACK_IMPORTED_MODULE_3__angular_forms__["a" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_3__angular_forms__["g" /* Validators */].required),
+            password: new __WEBPACK_IMPORTED_MODULE_3__angular_forms__["a" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_3__angular_forms__["g" /* Validators */].required),
+            name: new __WEBPACK_IMPORTED_MODULE_3__angular_forms__["a" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_3__angular_forms__["g" /* Validators */].required),
+        });
+        if (this.plt.is('android')) {
+            this.captchaKey = '6Le1ajUUAAAAAFBJmWVU2NAZaMM0sHWDB4WBMqtU';
+        }
     }
-    HomePage.prototype.ionViewWillEnter = function () {
+    // ionViewCanEnter(): boolean {
+    //   if(this.auth.loggedIn()){
+    //     this.nav.setRoot('home-page');
+    //     return false;
+    //   }
+    //   else return true;
+    // }
+    RegisterPage.prototype.register = function () {
         var _this = this;
         this.showLoading();
-        this.session.listSession().subscribe(function (data) {
+        if (!this.registerForm.valid)
+            return this.showError('Please provide all details and verify your humanity.');
+        var credentials = {
+            username: this.registerForm.value.username,
+            email: this.registerForm.value.email,
+            password: this.registerForm.value.password,
+            name: this.registerForm.value.name
+        };
+        this.auth.register(credentials).subscribe(function (data) {
             if (data.success) {
-                _this.loading.dismiss();
-                _this.sessionList = data.data;
-                console.log(_this.sessionList);
+                _this.createSuccess = true;
+                _this.showPopup("Success", data.msg);
             }
             else {
-                _this.showError('Problem in loading sessions.');
+                _this.showPopup("Error", data.msg);
             }
-        }, function (err) {
-            console.log(err);
+        }, function (error) {
+            _this.showPopup("Error", error);
         });
     };
-    HomePage.prototype.editSession = function (sessionId) {
-        console.log('edit session', sessionId);
+    RegisterPage.prototype.showPopup = function (title, text) {
+        var _this = this;
+        var alert = this.alertCtrl.create({
+            title: title,
+            subTitle: text,
+            buttons: [
+                {
+                    text: 'OK',
+                    handler: function (data) {
+                        if (_this.createSuccess) {
+                            _this.nav.popToRoot();
+                        }
+                    }
+                }
+            ]
+        });
+        alert.present();
     };
-    HomePage.prototype.viewSession = function (sessionId) {
-        console.log('view session', sessionId);
+    RegisterPage.prototype.showLoading = function () {
+        this.loading = this.loadingCtrl.create({
+            content: 'Please wait...',
+            dismissOnPageChange: true
+        });
+        this.loading.present();
     };
-    HomePage.prototype.showError = function (text) {
+    RegisterPage.prototype.showError = function (text) {
         this.loading.dismiss();
         var alert = this.alertCtrl.create({
             title: 'Fail',
@@ -105,31 +151,16 @@ var HomePage = (function () {
         });
         alert.present(prompt);
     };
-    HomePage.prototype.showLoading = function () {
-        this.loading = this.loadingCtrl.create({
-            content: 'Please wait...',
-            dismissOnPageChange: true
-        });
-        this.loading.present();
-    };
-    HomePage.prototype.logout = function () {
-        this.nav.setRoot('login-page');
-        this.auth.logout();
-    };
-    return HomePage;
+    return RegisterPage;
 }());
-HomePage = __decorate([
+RegisterPage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
-        selector: 'page-home',template:/*ion-inline-start:"/media/shashwat/Data/coding/codebase/MEAN/Ionic-Node-auth/ionic-src/src/pages/home/home.html"*/'<ion-header>\n  <ion-navbar color="dark">\n    <ion-title>\n      View Sessions\n    </ion-title>\n    <ion-buttons end>\n      <button ion-button (click)="logout()">\n        <ion-icon name="log-out"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n</ion-header>\n\n<ion-content class="home" padding>\n  <h3>Welcome inside, {{user.name}}</h3>\n  <ion-list>\n    <ion-item *ngFor="let session of sessionList">\n      <h2>{{session.name}}</h2>\n      <p>{{session.createdAt | date: \'shortDate\'}}</p>\n      <button ion-button clear item-right (click)="viewSession(session.id)">View</button>\n      <button ion-button clear item-right *ngIf="session.userId === user.id" (click)="editSession(session._id)" color="danger">Edit</button>\n    </ion-item>\n  </ion-list>\n</ion-content>\n'/*ion-inline-end:"/media/shashwat/Data/coding/codebase/MEAN/Ionic-Node-auth/ionic-src/src/pages/home/home.html"*/
+        selector: 'page-register',template:/*ion-inline-start:"/media/shashwat/Data/coding/codebase/MEAN/Ionic-Node-auth/ionic-src/src/pages/register/register.html"*/'<ion-header>\n  <ion-navbar color="dark">\n    <ion-title>Register</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content class="login-content" padding>\n  <div class="login-box">\n\n    <form (ngSubmit)="register()" [formGroup]="registerForm" novalidate>\n      <ion-row>\n        <ion-col col-md-8 offset-md-2>\n          <ion-list inset>\n\n            <ion-item>\n              <ion-input type="text" placeholder="Name" formControlName="name" required></ion-input>\n            </ion-item>\n\n            <ion-item>\n              <ion-input type="text" placeholder="Email" formControlName="email" required></ion-input>\n            </ion-item>\n\n            <ion-item>\n              <ion-input type="text" placeholder="Username" formControlName="username" required></ion-input>\n            </ion-item>\n\n            <ion-item>\n              <ion-input type="password" placeholder="Password" formControlName="password" required></ion-input>\n            </ion-item>\n          </ion-list>\n        </ion-col>\n      </ion-row>\n\n      <!-- <ion-row>\n        <ion-col class="captcha-col">\n          <div class="captcha-div" ionCaptcha [key]="captchaKey" formControlName="captcha"></div>\n        </ion-col>\n      </ion-row> -->\n\n      <ion-row justify-content-center>\n        <ion-col class="signup-col" col-md-8 offset-md-2>\n          <button ion-button class="submit-btn" full type="submit" [disabled]="!registerForm.valid">Register</button>\n        </ion-col>\n      </ion-row>\n\n    </form>\n  </div>\n</ion-content>\n'/*ion-inline-end:"/media/shashwat/Data/coding/codebase/MEAN/Ionic-Node-auth/ionic-src/src/pages/register/register.html"*/,
     }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_2__providers_auth_service_auth_service__["a" /* AuthService */],
-        __WEBPACK_IMPORTED_MODULE_3__providers_session_session__["a" /* SessionProvider */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["b" /* AlertController */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* LoadingController */]])
-], HomePage);
+    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavController */], __WEBPACK_IMPORTED_MODULE_2__providers_auth_service_auth_service__["a" /* AuthService */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* LoadingController */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* Platform */]])
+], RegisterPage);
 
-//# sourceMappingURL=home.js.map
+//# sourceMappingURL=register.js.map
 
 /***/ })
 

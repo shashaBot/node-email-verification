@@ -1,16 +1,16 @@
 webpackJsonp([0],{
 
-/***/ 275:
+/***/ 272:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CreatePageModule", function() { return CreatePageModule; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(100);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__create__ = __webpack_require__(288);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_forms__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_ng2_file_upload__ = __webpack_require__(284);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(99);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__create__ = __webpack_require__(286);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_forms__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_ng2_file_upload__ = __webpack_require__(281);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_ng2_file_upload___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_ng2_file_upload__);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -34,7 +34,7 @@ CreatePageModule = __decorate([
             __WEBPACK_IMPORTED_MODULE_2__create__["a" /* CreatePage */],
         ],
         imports: [
-            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* IonicPageModule */].forChild(__WEBPACK_IMPORTED_MODULE_2__create__["a" /* CreatePage */]),
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* IonicPageModule */].forChild(__WEBPACK_IMPORTED_MODULE_2__create__["a" /* CreatePage */]),
             __WEBPACK_IMPORTED_MODULE_3__angular_forms__["c" /* FormsModule */],
             __WEBPACK_IMPORTED_MODULE_3__angular_forms__["f" /* ReactiveFormsModule */],
             __WEBPACK_IMPORTED_MODULE_4_ng2_file_upload__["FileUploadModule"]
@@ -49,14 +49,14 @@ CreatePageModule = __decorate([
 
 /***/ }),
 
-/***/ 280:
+/***/ 279:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var file_like_object_class_1 = __webpack_require__(281);
-var file_item_class_1 = __webpack_require__(286);
-var file_type_class_1 = __webpack_require__(289);
+var file_like_object_class_1 = __webpack_require__(280);
+var file_item_class_1 = __webpack_require__(283);
+var file_type_class_1 = __webpack_require__(287);
 function isFile(value) {
     return (File && value instanceof File);
 }
@@ -462,7 +462,7 @@ exports.FileUploader = FileUploader;
 
 /***/ }),
 
-/***/ 281:
+/***/ 280:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -497,7 +497,7 @@ exports.FileLikeObject = FileLikeObject;
 
 /***/ }),
 
-/***/ 284:
+/***/ 281:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -505,18 +505,18 @@ exports.FileLikeObject = FileLikeObject;
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
-__export(__webpack_require__(285));
-__export(__webpack_require__(287));
+__export(__webpack_require__(282));
+__export(__webpack_require__(284));
+__export(__webpack_require__(279));
+__export(__webpack_require__(283));
 __export(__webpack_require__(280));
-__export(__webpack_require__(286));
-__export(__webpack_require__(281));
-var file_upload_module_1 = __webpack_require__(290);
+var file_upload_module_1 = __webpack_require__(288);
 exports.FileUploadModule = file_upload_module_1.FileUploadModule;
 
 
 /***/ }),
 
-/***/ 285:
+/***/ 282:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -531,7 +531,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = __webpack_require__(0);
-var file_uploader_class_1 = __webpack_require__(280);
+var file_uploader_class_1 = __webpack_require__(279);
 // todo: filters
 var FileSelectDirective = (function () {
     function FileSelectDirective(element) {
@@ -579,12 +579,12 @@ exports.FileSelectDirective = FileSelectDirective;
 
 /***/ }),
 
-/***/ 286:
+/***/ 283:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var file_like_object_class_1 = __webpack_require__(281);
+var file_like_object_class_1 = __webpack_require__(280);
 var FileItem = (function () {
     function FileItem(uploader, some, options) {
         this.url = '/';
@@ -713,7 +713,7 @@ exports.FileItem = FileItem;
 
 /***/ }),
 
-/***/ 287:
+/***/ 284:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -728,7 +728,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = __webpack_require__(0);
-var file_uploader_class_1 = __webpack_require__(280);
+var file_uploader_class_1 = __webpack_require__(279);
 var FileDropDirective = (function () {
     function FileDropDirective(element) {
         this.fileOver = new core_1.EventEmitter();
@@ -833,16 +833,16 @@ exports.FileDropDirective = FileDropDirective;
 
 /***/ }),
 
-/***/ 288:
+/***/ 286:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return CreatePage; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(100);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__providers_session_session__ = __webpack_require__(199);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__providers_auth_service_auth_service__ = __webpack_require__(198);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_ng2_file_upload__ = __webpack_require__(284);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(99);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__providers_session_session__ = __webpack_require__(197);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__providers_auth_service_auth_service__ = __webpack_require__(100);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_ng2_file_upload__ = __webpack_require__(281);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_ng2_file_upload___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_ng2_file_upload__);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -859,20 +859,30 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 var CreatePage = (function () {
-    function CreatePage(navCtrl, navParams, session, actionSheetCtrl, auth, alertCtrl, loadingCtrl, fileUploadService) {
+    function CreatePage(navCtrl, navParams, session, 
+        // private actionSheetCtrl: ActionSheetController,
+        auth, alertCtrl, loadingCtrl, toastCtrl) {
         this.navCtrl = navCtrl;
         this.navParams = navParams;
         this.session = session;
-        this.actionSheetCtrl = actionSheetCtrl;
         this.auth = auth;
         this.alertCtrl = alertCtrl;
         this.loadingCtrl = loadingCtrl;
-        this.fileUploadService = fileUploadService;
+        this.toastCtrl = toastCtrl;
         this.uploadFiles = [];
-        this.url = 'session/create';
+        // public baseUrl: string = 'http://localhost:8080/';
+        // public baseUrl: string = '';
+        this.baseUrl = 'https://ionic-node-auth.herokuapp.com/';
+        this.newSession = {
+            name: '',
+            desc: '',
+            files: [],
+            token: Date.now()
+        };
+        this.url = this.baseUrl + 'session/upload';
         this.autoUpload = false;
-        this.allowedMimeType = ['image/*', 'audio/*', 'video/*'];
-        this.headers = [{ Authorization: localStorage.getItem('id_token') }];
+        this.headers = [{ name: 'Authorization', value: this.auth.getToken() }];
+        this.itemAlias = 'upload_file';
         this.inputs = ['allowedMimeType',
             'allowedFileType',
             'autoUpload',
@@ -881,11 +891,21 @@ var CreatePage = (function () {
             'maxFileSize',
             'queueLimit',
             'removeAfterUpload',
-            'url'
+            'url',
+            'itemAlias'
         ];
         this.uploaderOptions = {};
         this.multiple = true;
+        this.fileUploadService = new __WEBPACK_IMPORTED_MODULE_4_ng2_file_upload__["FileUploader"]({ url: this.url });
     }
+    CreatePage.prototype.ionViewCanEnter = function () {
+        if (!this.auth.loggedIn()) {
+            this.navCtrl.setRoot('login-page');
+            return false;
+        }
+        else
+            return true;
+    };
     CreatePage.prototype.ngOnInit = function () {
         var _this = this;
         for (var _i = 0, _a = this.inputs; _i < _a.length; _i++) {
@@ -897,54 +917,86 @@ var CreatePage = (function () {
         this.multiple = (!this.queueLimit || this.queueLimit > 1);
         this.fileUploadService.setOptions(this.uploaderOptions);
         this.fileUploadService.onBeforeUploadItem = function (fileItem) {
-            fileItem.formData.push({ name: _this.newSession.name });
-            fileItem.formData.push({ desc: _this.newSession.desc });
+            console.log('starting upload item: ' + fileItem.file.name);
         };
         this.fileUploadService.onCompleteAll = function () {
-            _this.loading.dismiss();
+        };
+        this.fileUploadService.onAfterAddingAll = function (items) {
+            console.log(items);
+        };
+        this.fileUploadService.onSuccessItem = function (item, response, status, headers) {
+            var file = item.file;
+            _this.newSession.files.push(file);
+            console.log(_this.newSession);
+        };
+        this.fileUploadService.onErrorItem = function (item, response, status, headers) {
+            _this.showError('Problem in uploading file: ' + item.file.name);
+        };
+        this.fileUploadService.onCancelItem = function (item, response, status, headers) {
+            var index = _this.newSession.files.indexOf(item);
+            if (index !== -1)
+                _this.newSession.files.splice(index, 1);
+        };
+        this.fileUploadService.onWhenAddingFileFailed = function (item, filter, options) {
+            _this.showError('Please uploading a suitable file media type!');
+            console.log(item, filter, options);
         };
     };
     CreatePage.prototype.ionViewDidLoad = function () {
         console.log('ionViewDidLoad CreatePage');
     };
-    CreatePage.prototype.onFileChoose = function (e) {
-        var files = e.srcElement.files;
-        // let fr: FileReader = new FileReader();
-        // for(let file of files) {
-        //   fr.readAsDataURL(file);
-        //   fr.onload = (event) => {
-        //     file['dataUrl'] = fr.result;
-        //     this.uploadFiles.push(file);
-        //   }
-        //   fr.onerror = (event) => {
-        //     this.showError('Error in reading the file!');
-        //   }
-        // }
-        console.log(files);
-    };
     CreatePage.prototype.mediaCapture = function () {
     };
-    // createSession(form) {
-    //   console.log(form.value);
-    //   console.log(this.uploadFiles);
-    //   if(form.valid){
-    //     let newSession: Session = {
-    //       name: form.value.name,
-    //       desc: form.value.desc,
-    //       files: this.uploadFiles
-    //     }
-    //     this.session.createSession(newSession).subscribe( data => {
-    //       console.log(data);
-    //     });
-    //   }
-    // }
     CreatePage.prototype.createSession = function (form) {
+        var _this = this;
+        if (!form.valid)
+            return this.showError('All fields are required!');
+        if (this.fileUploadService.isUploading)
+            return this.showError('Please wait for files to complete uploading!');
+        if (!this.newSession.files.length)
+            return this.showError('Atleast one file must be uploaded in each session!');
         this.showLoading();
-        console.log(form);
-        this.newSession.name = form.value.name;
-        this.newSession.desc = form.value.desc;
-        this.fileUploadService.authTokenHeader = localStorage.getItem('id_token');
+        console.log('create session!');
+        console.log(this.newSession);
+        this.session.createSession(this.newSession).subscribe(function (data) {
+            _this.loading.dismiss();
+            form.reset();
+            _this.fileUploadService.clearQueue();
+            _this.newSession.files = [];
+            _this.newSession.token = Date.now();
+            if (data.success) {
+                _this.presentToast('Session Created!');
+                _this.navCtrl.setRoot('home-page');
+            }
+            else {
+                _this.showError(data.msg);
+            }
+        });
+    };
+    CreatePage.prototype.uploadAll = function () {
         this.fileUploadService.uploadAll();
+    };
+    CreatePage.prototype.uploadFileItem = function (file) {
+        this.fileUploadService.uploadItem(file);
+    };
+    CreatePage.prototype.cancelFileItem = function (file) {
+        this.fileUploadService.cancelItem(file);
+    };
+    CreatePage.prototype.removeFile = function (file) {
+        var _this = this;
+        var index = this.newSession.files.indexOf(file.file);
+        this.fileUploadService.removeFromQueue(file);
+        if (index !== -1)
+            this.newSession.files.splice(index, 1);
+        //remove file from server
+        this.session.removeFile(file.file).subscribe(function (data) {
+            if (data.success) {
+                _this.presentToast(data.msg);
+            }
+            else {
+                _this.showError(data.msg);
+            }
+        });
     };
     CreatePage.prototype.showLoading = function () {
         this.loading = this.loadingCtrl.create({
@@ -953,36 +1005,43 @@ var CreatePage = (function () {
         });
         this.loading.present();
     };
-    CreatePage.prototype.uploadSheet = function () {
-        var actionSheet = this.actionSheetCtrl.create({
-            title: 'Select Image Source',
-            buttons: [
-                {
-                    text: 'Upload from Gallery',
-                    handler: function () {
-                        //  this.takePicture(this.camera.PictureSourceType.PHOTOLIBRARY);
-                    }
-                },
-                {
-                    text: 'Use Camera',
-                    handler: function () {
-                        //  this.takePicture(this.camera.PictureSourceType.PHOTOLIBRARY);
-                    }
-                },
-                {
-                    text: 'Upload Audio',
-                    handler: function () {
-                        //  this.takePicture(this.camera.PictureSourceType.CAMERA);
-                    }
-                },
-                {
-                    text: 'Cancel',
-                    role: 'cancel'
-                }
-            ]
+    CreatePage.prototype.presentToast = function (text) {
+        var toast = this.toastCtrl.create({
+            message: text,
+            duration: 2000,
         });
-        actionSheet.present();
+        toast.present();
     };
+    // uploadSheet() {
+    //    let actionSheet = this.actionSheetCtrl.create({
+    //      title: 'Select Image Source',
+    //      buttons: [
+    //        {
+    //          text: 'Upload from Gallery',
+    //          handler: () => {
+    //           //  this.takePicture(this.camera.PictureSourceType.PHOTOLIBRARY);
+    //          }
+    //        },
+    //        {
+    //          text: 'Use Camera',
+    //          handler: () => {
+    //           //  this.takePicture(this.camera.PictureSourceType.PHOTOLIBRARY);
+    //          }
+    //        },
+    //        {
+    //          text: 'Upload Audio',
+    //          handler: () => {
+    //           //  this.takePicture(this.camera.PictureSourceType.CAMERA);
+    //          }
+    //        },
+    //        {
+    //          text: 'Cancel',
+    //          role: 'cancel'
+    //        }
+    //      ]
+    //    });
+    //    actionSheet.present();
+    //  }
     CreatePage.prototype.showError = function (text) {
         var alert = this.alertCtrl.create({
             title: 'Fail',
@@ -999,23 +1058,22 @@ var CreatePage = (function () {
 }());
 CreatePage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
-        selector: 'page-create',template:/*ion-inline-start:"/media/shashwat/Data/coding/codebase/MEAN/Ionic-Node-auth/ionic-src/src/pages/create/create.html"*/'<ion-header>\n  <ion-navbar color="dark">\n    <ion-title>\n      Create Session\n    </ion-title>\n    <ion-buttons end>\n      <button ion-button (click)="logout()">\n        <ion-icon name="log-out"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n</ion-header>\n<ion-content>\n  <form (ngSubmit)="createSession(newSessionForm.form)" #newSessionForm="ngForm">\n    <ion-row>\n      <ion-col col-md-6 offset-md-3 col-sm-auto>\n        <ion-list inset>\n          <ion-item>\n            <ion-input type="text" placeholder="Name" name="name" #name="ngModel"></ion-input>\n          </ion-item>\n          <ion-item>\n            <ion-input type="text" placeholder="Description" name="desc" #desc="ngModel"></ion-input>\n          </ion-item>\n        </ion-list>\n          <ion-row>\n            <!-- <ion-input type="text" *ngFor="file of files" value="file.name" disabled></ion-input> -->\n            <!-- <button type="button" ion-button class="upload-button" (click)="uploadSheet()">Add Media</button> -->\n            <!-- <div ion-col col-sm-6 class="upload-button">\n              <input type="file" name="files" id="upload_file" #files="ngModel" name="upload_file" (change)="onFileChoose($event)" accept="image/*,video/*,audio/*" required/>\n              <label for="upload_file"><span class="banner">Upload</span></label>\n            </div> -->\n            <label ion-col col-sm-6 ion-button role="button" class="file-button">Select File\n              <input type="file" ng2FileSelect [uploader]="uploader" (change)="onFileChoose($event)" [multiple]="multiple"/>\n            </label>\n            <ion-col col-sm-6>\n              <button class="capture-button" ion-button icon-left type="button" (click)="mediaCapture()">\n                <ion-icon name="color-wand"></ion-icon>\n              </button>\n            </ion-col>\n          </ion-row>\n      </ion-col>\n    </ion-row>\n    <ion-row>\n      <ion-col>\n        <button ion-button full type="submit">Create Session</button>\n      </ion-col>\n    </ion-row>\n  </form>\n</ion-content>\n'/*ion-inline-end:"/media/shashwat/Data/coding/codebase/MEAN/Ionic-Node-auth/ionic-src/src/pages/create/create.html"*/,
+        selector: 'page-create',template:/*ion-inline-start:"/media/shashwat/Data/coding/codebase/MEAN/Ionic-Node-auth/ionic-src/src/pages/create/create.html"*/'<ion-header>\n  <ion-navbar color="dark">\n    <ion-title>\n      Create Session\n    </ion-title>\n    <ion-buttons end>\n      <button ion-button (click)="logout()">\n        <ion-icon name="log-out"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n</ion-header>\n<ion-content>\n  <form (ngSubmit)="createSession(newSessionForm.form)" #newSessionForm="ngForm">\n    <ion-row>\n      <ion-col col-md-8 offset-md-2 col-sm-12>\n        <ion-list inset>\n          <ion-item>\n            <ion-input type="text" placeholder="Name" name="name" [(ngModel)]="newSession.name"></ion-input>\n          </ion-item>\n          <ion-item>\n            <ion-input type="text" placeholder="Description" name="desc" [(ngModel)]="newSession.desc"></ion-input>\n          </ion-item>\n        </ion-list>\n          <ion-row>\n            <!-- <ion-input type="text" *ngFor="file of files" value="file.name" disabled></ion-input> -->\n            <!-- <button type="button" ion-button class="upload-button" (click)="uploadSheet()">Add Media</button> -->\n            <!-- <div ion-col col-sm-6 class="upload-button">\n              <input type="file" name="files" id="upload_file" #files="ngModel" name="upload_file" (change)="onFileChoose($event)" accept="image/*,video/*,audio/*" required/>\n              <label for="upload_file"><span class="banner">Upload</span></label>\n            </div> -->\n            <ion-col col-sm-6>\n              <label ion-button full class="file-button">Select File\n                <input type="file" name="upload_file" ng2FileSelect [uploader]="fileUploadService" [multiple]="multiple" style="display: none"/>\n              </label>\n            </ion-col>\n            <ion-col col-sm-6>\n              <button ion-button full type="button" (click)="uploadAll()">Upload All</button>\n            </ion-col>\n            <!-- <ion-col col-sm-6>\n              <button class="capture-button" ion-button icon-left type="button" (click)="mediaCapture()">\n                <ion-icon name="color-wand"></ion-icon>\n              </button>\n            </ion-col> -->\n          </ion-row>\n      </ion-col>\n    </ion-row>\n    <ion-row>\n      <ion-col col-md-8 offset-md-2 col-sm-12>\n        <ion-list>\n          <ion-item *ngFor="let file of fileUploadService.queue">\n            <h2>{{file.file.name}}</h2>\n            <p>{{file.file.type}}</p>\n            <p *ngIf="file.isUploading">Uploading...{{file.progress}}%</p>\n            <p *ngIf="file.isError">Error!</p>\n            <button ion-button icon-only clear item-right type="button" *ngIf="!(file.isUploaded || file.isUploading)" (click)="uploadFileItem(file)">\n              <ion-icon name="cloud-upload"></ion-icon>\n            </button>\n            <button ion-button clear item-right type="button" *ngIf="file.isUploading" (click)="cancelFileItem(file)">\n              Cancel\n            </button>\n            <button ion-button clear icon-only item-right type="button" *ngIf="file.isUploaded" (click)="removeFile(file)">\n              <ion-icon name="trash"></ion-icon>\n            </button>\n          </ion-item>\n        </ion-list>\n      </ion-col>\n    </ion-row>\n    <ion-row>\n      <ion-col col-md-8 offset-md-2 col-sm-12>\n        <button ion-button full type="submit">Create Session</button>\n      </ion-col>\n    </ion-row>\n  </form>\n</ion-content>\n'/*ion-inline-end:"/media/shashwat/Data/coding/codebase/MEAN/Ionic-Node-auth/ionic-src/src/pages/create/create.html"*/,
     }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* NavController */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavParams */],
+    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavController */],
+        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* NavParams */],
         __WEBPACK_IMPORTED_MODULE_2__providers_session_session__["a" /* SessionProvider */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* ActionSheetController */],
         __WEBPACK_IMPORTED_MODULE_3__providers_auth_service_auth_service__["a" /* AuthService */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["b" /* AlertController */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* LoadingController */],
-        __WEBPACK_IMPORTED_MODULE_4_ng2_file_upload__["FileUploader"]])
+        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */],
+        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* LoadingController */],
+        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["j" /* ToastController */]])
 ], CreatePage);
 
 //# sourceMappingURL=create.js.map
 
 /***/ }),
 
-/***/ 289:
+/***/ 287:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1185,7 +1243,7 @@ exports.FileType = FileType;
 
 /***/ }),
 
-/***/ 290:
+/***/ 288:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1196,10 +1254,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var common_1 = __webpack_require__(43);
+var common_1 = __webpack_require__(41);
 var core_1 = __webpack_require__(0);
-var file_drop_directive_1 = __webpack_require__(287);
-var file_select_directive_1 = __webpack_require__(285);
+var file_drop_directive_1 = __webpack_require__(284);
+var file_select_directive_1 = __webpack_require__(282);
 var FileUploadModule = (function () {
     function FileUploadModule() {
     }
