@@ -3,19 +3,27 @@ const config = require('../config/database');
 
 // Session Schema
 const SessionSchema = mongoose.Schema({
-  name: {
+  sessionname: {
     type: String,
     required: true
   },
   desc: {
     type: String,
     required: true
-  },
-  files: {
-    type: Array,
-    required: false
-  },
+  }
   userId: {
+    type: String,
+    required: true
+  },
+  username: {
+    type: String,
+    required: true
+  },
+  categoryname: {
+    type: String,
+    required: true
+  },
+  categoryId: {
     type: String,
     required: true
   },
@@ -37,6 +45,14 @@ module.exports.listSessions = (callback) => {
   Session.find({}, callback);
 }
 
+module.exports.getSessionByCategory = (category, callback) => {
+  Session.find({'categoryname': category}, callback);
+}
+
+module.exports.getUserSessionByCategory = (userId, categoryId, callback) => {
+  Session.find({'userId': userId, 'categoryId': categoryId}, callback);
+}
+
 module.exports.removeSession = (session, callback) => {
   Session.remove({'_id': session._id}, callback);
 }
@@ -46,9 +62,5 @@ module.exports.getSessionData = (sessionId, callback) => {
 }
 
 module.exports.updateSession = (session, update, callback) => {
-  Session.findById(session.id, (err, data) => {
-    for(let key in update)
-      data[key] = update[key];
-    data.save(callback);
-  });
+  Session.findOneAndUpdate({_id: session.id}, update, callback);
 }

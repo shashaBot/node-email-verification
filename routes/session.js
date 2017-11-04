@@ -1,4 +1,4 @@
-const express = require('express');
+ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
@@ -10,6 +10,7 @@ const mkdirp = require('mkdirp');
 const config = require('../config/database');
 const Session = require('../models/session');
 const SessionToken = require('../models/sessionToken');
+const Img = require('../models/image');
 require('dotenv').config();
 
 const multer = require('multer');
@@ -21,8 +22,9 @@ let storage = multer.diskStorage({
     mkdirp(dir, (err) => cb(err, dir));
   },
   filename: function (req, file, cb) {
-    console.log(file.fieldname);
-    cb(null, file.originalname);
+      var datetimestamp = Date.now();
+      let randomNo = Math.floor((Math.random() * 1000000) + 1);
+      cb(null, 'Image' + '-' + req.headers.name + '-' + randomNo + '.' + file.originalname.split('.')[file.originalname.split('.').length -1]);
   }
 });
 
@@ -50,10 +52,12 @@ const authOwner = (req, res, callback) => {
 router.post('/create', passport.authenticate('jwt', {session: false}), (req, res) => {
   console.log('create session', req.body);
   let session = new Session({
-    name: req.body.name,
+    sessionname: req.body.name,
     desc: req.body.desc,
-    files: req.body.files,
-    userId: req.user.id
+    userId: req.user.id,
+    username: req.user.username,
+    categoryname: req.body.categoryname,
+    categoryId: req.body.categoryId
   });
   Session.createSession(session, (err, session) => {
     if(err){
@@ -94,8 +98,21 @@ router.post('/upload', passport.authenticate('jwt', {session: false}), fileUploa
       console.log(err);
       return res.json({success: false, msg: 'Error in uploading file!'});
     }
-    console.log(req.files);
-    res.json({success: true, msg: 'File' + req.files[0].originalname + 'uploaded!'})
+    let filetype = req.file.mimetype.split('/');
+    let newImage = new Img({
+      imagename: req.file.filename,
+      imagetitle: req.file.originalname,
+      imagetype: filetype[0],
+      sessionname: req.body.sessionname,
+      sessionId: req.body.sessionId,
+      username: req.user.username,
+      userId: req.user.id
+    })
+
+    Img.addImage(newImage, (err) => {
+      if(err) return res.json({success: false, msg: 'Error in adding media file', error: err})
+      res.json({success: true, msg: 'Media uploaded successfullly'})
+    });
   });
 });
 
@@ -107,31 +124,40 @@ router.post('/remove', passport.authenticate('jwt', {session: false}), (req, res
   if(session){
     authOwner(req, res, (err) => {
       Session.removeSession(session, (err) => {
-        if(err) return res.json({success: false, msg: 'Session could not be deleted!'});
-        let errors = [], successFiles = [];
-        for(let file of session.files) {
-          fs.unlink(file.path, (err) => {
-            if(err){
-              errors.push({error: err, file: file});
-            }
-            successFiles.push(file);
-          });
-        }
-        res.json({success: true, errors: errors.toString(), msg: 'Session deleted!\n'+successFiles.length + ' files deleted successfully!\n'+errors.push+' files failed!'});
+        if(err) return res.json({success: false, msg: 'Session could not be deleted!', error: err});
+        // let errors = [], successFiles = [];
+        // for(let file of session.files) {
+        //   fs.unlink(file.path, (err) => {
+        //     if(err){
+        //       errors.push({error: err, file: file});
+        //     }
+        //     successFiles.push(file);
+        //   });
+        // }
+        // res.json({success: true, errors: errors.toString(), msg: 'Session deleted!\n'+successFiles.length + ' files deleted successfully!\n'+errors.push+' files failed!'});
+
+        Img.removeImageBySession(session._id, (err) => {
+          if(err) return res.json({success: true, msg: 'Error in removing files!', error: err});
+          res.json({success: true, msg: 'Session deleted successfully!'})
+        })
       });
     });
   }
   if(file) {
-    let filePath = path.resolve(__dirname, '../uploads/temp/'+file.name);
-    fs.unlink(filePath, (err) => {
-      if(err) return res.json({success: false, msg: 'Error in removing file', error: err.toString()});
-      res.json({success: true, msg: 'File '+file.name+' removed from server'});
-    });
+    Img.removeImageById(file._id, err => {
+      if(err) res.json({success: false, msg: 'Error in removing file!', error: err});
+      res.json({success: true});
+    })
+    // let filePath = path.resolve(__dirname, '../uploads/temp/'+file.name);
+    // fs.unlink(filePath, (err) => {
+    //   if(err) return res.json({success: false, msg: 'Error in removing file', error: err.toString()});
+    //   res.json({success: true, msg: 'File '+file.name+' removed from server'});
+    // });
   }
 });
 
-router.get('/list', passport.authenticate('jwt', {session: false}), (req, res, next) => {
-  Session.listSessions( (err, sessions) => {
+router.get('/listbycategory', passport.authenticate('jwt', {session: false}), (req, res, next) => {
+  Session.getUserSessionByCategory(req.user.id, req.body.categoryId, (err, sessions) => {
     if(err) return res.json({success: false, msg: err});
     res.json({success: true, data: sessions});
   });
@@ -190,10 +216,14 @@ router.get('/stream_files', (req, res, next) => {
 });
 
 router.get('/view', passport.authenticate('jwt', {session: false}), (req, res, next) => {
-  Session.getSessionData( req.query.session, (err, sesData) => {
-    if(err) return res.json({success: false, msg: err});
-    res.json({success: true, session: sesData});
-  });
+  Img.getImagesBySessionId(req.query.session, (err, files) => {
+    if(err) return res.json({success: false, msg: 'Error in fetching files!', error: err})
+    res.json({success: true, files: files});
+  })
+  // Session.getSessionData( req.query.session, (err, sesData) => {
+  //   if(err) return res.json({success: false, msg: err});
+  //   res.json({success: true, session: sesData});
+  // });
 });
 
 router.get('/generate-qr', (req, res, next) => {
