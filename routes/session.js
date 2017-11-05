@@ -17,21 +17,20 @@ const multer = require('multer');
 
 let storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    console.log('destination');
-    let dir = path.resolve(__dirname, '../uploads/temp');
+    let dir = path.resolve(__dirname, '../uploads');
     mkdirp(dir, (err) => cb(err, dir));
   },
   filename: function (req, file, cb) {
       var datetimestamp = Date.now();
       let randomNo = Math.floor((Math.random() * 1000000) + 1);
-      cb(null, 'Image' + '-' + req.headers.name + '-' + randomNo + '.' + file.originalname.split('.')[file.originalname.split('.').length -1]);
+      cb(null, 'Image' + '-' + req.user.username + '-' + randomNo + '.' + file.originalname.split('.')[file.originalname.split('.').length -1]);
   }
 });
 
 // multer middleware
-router.use(multer({
-  storage: storage
-}).array('upload_file', 12));
+// router.use(multer({
+//   storage: storage
+// }).array('upload_file', 12));
 
 const upload = multer({ storage: storage});
 // const upload = multer({dest: '../uploads/temp'});
@@ -50,7 +49,6 @@ const authOwner = (req, res, callback) => {
 
 
 router.post('/create', passport.authenticate('jwt', {session: false}), (req, res) => {
-  console.log('create session', req.body);
   let session = new Session({
     sessionname: req.body.name,
     desc: req.body.desc,
@@ -62,43 +60,46 @@ router.post('/create', passport.authenticate('jwt', {session: false}), (req, res
   Session.createSession(session, (err, session) => {
     if(err){
       console.log(err);
-      return res.json({success: false, msg: 'Error in creating session!', error: err.toString()});
+      return res.json({success: false, msg: 'Error in creating session!', error: err});
     }
+    res.json({success: true, msg: 'Session created successfully!', session: session});
     //move files to uploads/:sessionsId
-    let counter=0;
-    let sessionFiles = req.body.files;
-    for(let file of req.body.files){
-      let newDir = path.resolve(__dirname, '../uploads/'+session.id);
-      let oldPath = path.resolve(__dirname, '../uploads/temp/'+file.name);
-      let newPath = newDir+'/'+req.body.token+'-'+file.name;
-      mv(oldPath, newPath, {mkdirp: true}, (err) => {
-        if(err) {
-          console.log(err);
-          //deal with the session object in DB
-          //delete files from temp
-          return res.json({success: false, msg: 'Error in saving files!', error: err.toString()});
-        }
-        sessionFiles[counter]['path'] = newPath;
-        if(++counter=== req.body.files.length){
-          //save session again with the paths saved in files array
-          Session.updateSession(session, {files: sessionFiles}, (err, ses) => {
-            if(err) return res.json({success: false, msg: 'Error in creating session', error: err.toString()}); //deal with the session obj in DB
-            console.log('session created files: ', ses.files);
-            res.json({success: true, msg: 'Session created successfully!', data: ses});
-          });
-        }
-      });
-    }
+    // let counter=0;
+    // let sessionFiles = req.body.files;
+    // for(let file of req.body.files){
+    //   let newDir = path.resolve(__dirname, '../uploads/'+session.id);
+    //   let oldPath = path.resolve(__dirname, '../uploads/temp/'+file.name);
+    //   let newPath = newDir+'/'+req.body.token+'-'+file.name;
+    //   mv(oldPath, newPath, {mkdirp: true}, (err) => {
+    //     if(err) {
+    //       console.log(err);
+    //       //deal with the session object in DB
+    //       //delete files from temp
+    //       return res.json({success: false, msg: 'Error in saving files!', error: err.toString()});
+    //     }
+    //     sessionFiles[counter]['path'] = newPath;
+    //     if(++counter=== req.body.files.length){
+    //       //save session again with the paths saved in files array
+    //       Session.updateSession(session, {files: sessionFiles}, (err, ses) => {
+    //         if(err) return res.json({success: false, msg: 'Error in creating session', error: err.toString()}); //deal with the session obj in DB
+    //         console.log('session created files: ', ses.files);
+    //         res.json({success: true, msg: 'Session created successfully!', data: ses});
+    //       });
+    //     }
+    //   });
+    // }
   });
 });
 
-router.post('/upload', passport.authenticate('jwt', {session: false}), fileUpload, (req, res) => {
+router.post('/upload', passport.authenticate('jwt', {session: false}), (req, res) => {
   fileUpload(req, res, function (err) {
     if(err){
       console.log(err);
       return res.json({success: false, msg: 'Error in uploading file!'});
     }
     let filetype = req.file.mimetype.split('/');
+    console.log('request body', req.body);
+
     let newImage = new Img({
       imagename: req.file.filename,
       imagetitle: req.file.originalname,
@@ -156,8 +157,22 @@ router.post('/remove', passport.authenticate('jwt', {session: false}), (req, res
   }
 });
 
-router.get('/listbycategory', passport.authenticate('jwt', {session: false}), (req, res, next) => {
+router.post('/updateIndex', passport.authenticate('jwt', {session: false}), (req, res) => {
+  Img.updateIndex(req.body.id, req.body.index, (err, images) => {
+    if(err) return res.status(500).json({success: false, error: err});
+    res.json({success: true, images: images});
+  })
+})
+
+router.post('/listbycategory', passport.authenticate('jwt', {session: false}), (req, res, next) => {
   Session.getUserSessionByCategory(req.user.id, req.body.categoryId, (err, sessions) => {
+    if(err) return res.json({success: false, msg: err});
+    res.json({success: true, data: sessions});
+  });
+});
+
+router.get('/list', passport.authenticate('jwt', {session: false}), (req, res, next) => {
+  Session.listSessions( (err, sessions) => {
     if(err) return res.json({success: false, msg: err});
     res.json({success: true, data: sessions});
   });
@@ -211,12 +226,12 @@ router.get('/stream_files', (req, res, next) => {
       });
     }
   } else {
-    res.end(); // nothing happens. loading fails. send error status.
+    res.status(404).end(); // nothing happens. loading fails. send error status.
   }
 });
 
-router.get('/view', passport.authenticate('jwt', {session: false}), (req, res, next) => {
-  Img.getImagesBySessionId(req.query.session, (err, files) => {
+router.post('/view', passport.authenticate('jwt', {session: false}), (req, res, next) => {
+  Img.getImagesBySessionId(req.body.sessionId, (err, files) => {
     if(err) return res.json({success: false, msg: 'Error in fetching files!', error: err})
     res.json({success: true, files: files});
   })
@@ -230,6 +245,7 @@ router.get('/generate-qr', (req, res, next) => {
   Session.listSessions((err, data) => {
     if(err) return res.json({success: false, error: error});
     let tokens = [];
+    if(!data.length) return res.json({success: true, data: []});
     data.forEach((value, index) => {
       let token = new SessionToken({
         sessionId: value._id,

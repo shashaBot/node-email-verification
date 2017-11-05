@@ -162,3 +162,5 @@ function deleteBelowCategories(categories, next) {
     }
   });
 }
+
+module.exports = router;

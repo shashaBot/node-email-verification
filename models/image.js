@@ -63,6 +63,7 @@ module.exports.removeImageById = (id, callback) => {
 module.exports.removeImageBySession = (sessionId, callback) => {
   Img.find({'sessionId': sessionId}, (err, files) => {
     if(err) return callback(err);
+    if(!files.length) return callback(null);
     files.forEach((file, index) => {
       let filepath = path.resolve(__dirname, './uploads/'+file.imagename);
       fs.unlink(filepath, err => {
@@ -73,4 +74,8 @@ module.exports.removeImageBySession = (sessionId, callback) => {
       });
     });
   });
+}
+
+module.exports.updateIndex = (imageId, index, callback) => {
+  Img.findOneAndUpdate({_id: imageId}, {imageindex: index}, callback);
 }

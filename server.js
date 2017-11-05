@@ -28,15 +28,6 @@ mongoose.connection.on('error', (err) => {
 // Init express app
 const app = express();
 
-// default options
-// app.use(fileUpload());
-
-//multer
-// app.use(multer({
-//   dest: __dirname+'/uploads/temp'
-// }).any());
-
-
 // User route
 const users = require('./routes/users');
 
