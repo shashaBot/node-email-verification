@@ -98,12 +98,12 @@ router.post('/upload', passport.authenticate('jwt', {session: false}), (req, res
       return res.json({success: false, msg: 'Error in uploading file!'});
     }
     let filetype = req.file.mimetype.split('/');
-    console.log('request body', req.body);
 
     let newImage = new Img({
       imagename: req.file.filename,
       imagetitle: req.file.originalname,
       imagetype: filetype[0],
+      imagedelay: req.body.imagedelay,
       sessionname: req.body.sessionname,
       sessionId: req.body.sessionId,
       username: req.user.username,
