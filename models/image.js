@@ -27,7 +27,7 @@ const ImageSchema = mongoose.Schema({
   },
   imagedelay: {
     type: Number
-  }
+  },
   sessionname: {
     type: String,
     required: true
