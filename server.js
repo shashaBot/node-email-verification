@@ -13,17 +13,35 @@ const multer = require('multer');
 
 require('dotenv').config();
 
+let isConnectedBefore;
 // Connect  to Database
-mongoose.connect(config.database);
+mongoose.connect(config.database, {server: {auto_reconnect: true}});
 
 // Show connection with DB
 mongoose.connection.on('connected', () => {
+  isConnectedBefore = true;
   console.log('Connected to Database');
 });
 // Handle DB error
 mongoose.connection.on('error', (err) => {
   console.log(err);
+  mongoose.disconnect();
 });
+
+mongoose.connection.on('reconnected', () => {
+  console.log('Reconnected!');
+})
+
+mongoose.connection.on('disconnected', () => {
+  console.log('disconnected');
+  if(!isConnectedBefore){
+    console.log('Trying to reconnect in 3 seconds');
+    setTimeout(() => {
+      mongoose.connect(config.database, {server: {auto_reconnect: true}});
+      mongoErr = null;
+    }, 3000);
+  }
+})
 
 // Init express app
 const app = express();

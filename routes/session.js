@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const mv = require('mv');
 const mkdirp = require('mkdirp');
+const send = require('send');
 
 const config = require('../config/database');
 const Session = require('../models/session');
@@ -159,8 +160,21 @@ router.post('/remove', passport.authenticate('jwt', {session: false}), (req, res
 
 router.post('/updateIndex', passport.authenticate('jwt', {session: false}), (req, res) => {
   Img.updateIndex(req.body.id, req.body.index, (err, images) => {
-    if(err) return res.status(500).json({success: false, error: err});
+    if(err) {
+      console.log(err);
+      return res.status(500).end();
+    }
     res.json({success: true, images: images});
+  })
+})
+
+router.post('/updateDelay', passport.authenticate('jwt', {session: false}), (req, res) => {
+  Img.updateDelay(req.body.id, req.body.delay, (err) => {
+    if(err) {
+      console.log(err);
+      return res.status(500).end();
+    }
+    res.json({success: true});
   })
 })
 
@@ -173,62 +187,84 @@ router.post('/listbycategory', passport.authenticate('jwt', {session: false}), (
 
 router.get('/list', passport.authenticate('jwt', {session: false}), (req, res, next) => {
   Session.listSessions( (err, sessions) => {
-    if(err) return res.json({success: false, msg: err});
+    if(err) {
+      console.log(err);
+      return res.json({success: false, msg: err});
+    }
     res.json({success: true, data: sessions});
   });
 });
 
 router.get('/stream_files', (req, res, next) => {
-  // let file = req.body;
-  let stream;
-  const path = req.query.path
-  const stat = fs.statSync(path)
-  const fileSize = stat.size
-  const range = req.headers.range
-
-  if(path) {
-    if(range){
-      const parts = range.replace(/bytes=/, "").split("-")
-      const start = parseInt(parts[0], 10)
-      const end = parts[1]
-        ? parseInt(parts[1], 10)
-        : fileSize-1
-      const chunksize = (end-start)+1
-      stream = fs.createReadStream(path, {start, end})
-      const head = {
-        'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-        'Accept-Ranges': 'bytes',
-        'Content-Length': chunksize,
-        'Content-Type': 'video/mp4',
-      }
-
-      res.writeHead(206, head);
-      stream.pipe(res);
-
-    } else {
-      res.setHeader("Content-type", 'video/mp4');
-      res.setHeader("Content-length", fileSize);
-      let stream = fs.createReadStream(path);
-      stream.pipe(res);
-    }
-    if(stream) {
-      let had_error = false;
-      stream.on('error', (err) => {
-        //error callback
-        had_error = true;
-        console.log(err);
-      });
-
-      stream.on('close', () => {
-        if(!had_error){
-          //success callback
-        }
-      });
-    }
+  let filename = req.query.file;
+  if(filename){
+    let filePath = path.resolve(__dirname, '../uploads/'+filename);
+    send(req, filePath)
+        .on('error', (err) => {
+            res.statusCode = err.status || 500;
+            res.end(err.message);
+        })
+        .on('directory', () => {
+            res.statusCode = 403;
+            res.end("Forbidden");
+        })
+        .pipe(res);
   } else {
-    res.status(404).end(); // nothing happens. loading fails. send error status.
+    res.status(404).end();
   }
-});
+})
+
+// router.get('/stream_files', (req, res, next) => {
+//   // let file = req.body;
+//   let stream;
+//   const path = req.query.path
+//   const stat = fs.statSync(path)
+//   const fileSize = stat.size
+//   const range = req.headers.range
+//
+//   if(path) {
+//     if(range){
+//       const parts = range.replace(/bytes=/, "").split("-")
+//       const start = parseInt(parts[0], 10)
+//       const end = parts[1]
+//         ? parseInt(parts[1], 10)
+//         : fileSize-1
+//       const chunksize = (end-start)+1
+//       stream = fs.createReadStream(path, {start, end})
+//       const head = {
+//         'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+//         'Accept-Ranges': 'bytes',
+//         'Content-Length': chunksize,
+//         'Content-Type': 'video/mp4',
+//       }
+//
+//       res.writeHead(206, head);
+//       stream.pipe(res);
+//
+//     } else {
+//       res.setHeader("Content-type", 'video/mp4');
+//       res.setHeader("Content-length", fileSize);
+//       let stream = fs.createReadStream(path);
+//       stream.pipe(res);
+//     }
+//     if(stream) {
+//       let had_error = false;
+//       stream.on('error', (err) => {
+//         //error callback
+//         had_error = true;
+//         console.log(err);
+//       });
+//
+//       stream.on('close', () => {
+//         if(!had_error){
+//           //success callback
+//         }
+//       });
+//     }
+//   } else {
+//     res.status(404).end(); // nothing happens. loading fails. send error status.
+//   }
+// });
 
 router.post('/view', passport.authenticate('jwt', {session: false}), (req, res, next) => {
   Img.getImagesBySessionId(req.body.sessionId, (err, files) => {

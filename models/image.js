@@ -48,8 +48,12 @@ module.exports.addImage = (image, callback) => {
   image.save(callback);
 }
 
+module.exports.getImageById = (id, callback) => {
+  Img.findById(id, callback);
+}
+
 module.exports.getImagesBySessionId = (sessionId, callback) => {
-  Img.find({'sessionId': sessionId}, callback);
+  Img.find({'sessionId': sessionId}, callback).sort({"imageindex": 1});
 }
 
 module.exports.removeImageById = (id, callback) => {
@@ -81,4 +85,8 @@ module.exports.removeImageBySession = (sessionId, callback) => {
 
 module.exports.updateIndex = (imageId, index, callback) => {
   Img.findOneAndUpdate({_id: imageId}, {imageindex: index}, callback);
+}
+
+module.exports.updateDelay = (imageId, delay, callback) => {
+  Img.findOneAndUpdate({_id: imageId}, {imagedelay: delay}, callback);
 }
