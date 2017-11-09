@@ -322,15 +322,33 @@ router.post('/remove-viewed', (req, res) => {
   })
 })
 
+// router.post('/scan-qr', passport.authenticate('jwt', {session:false}), (req, res) => {
+//   SessionToken.setUserId(req.body.token, req.user._id, (err, token) => {
+//     if(err) return res.json({success: false, error: err});
+//     if(!token) return res.json({success: false, msg: 'Invalid token!'});
+//     Session.getSessionData(token.sessionId, (err, data) => {
+//       if(err) return res.json({success: true, session: {}, error: err});
+//       res.json({success: true, session: data});
+//     })
+//   });
+// })
+
 router.post('/scan-qr', passport.authenticate('jwt', {session:false}), (req, res) => {
-  SessionToken.setUserId(req.body.token, req.user._id, (err, token) => {
-    if(err) return res.json({success: false, error: err});
-    if(!token) return res.json({success: false, msg: 'Invalid token!'});
-    Session.getSessionData(token.sessionId, (err, data) => {
-      if(err) return res.json({success: true, session: {}, error: err});
-      res.json({success: true, session: data});
+  if(req.user.id === req.body.user) {
+    Session.updateSession(req.body.session, {isScanned: true}, (err, session) => {
+      if(err) return res.status(500).end();
+      res.json({success: true, openSelf: false, session: session});
     })
-  });
+  } else {
+    Session.getSessionData(req.body.session, (err, session) => {
+      if(err) return res.status(500).end();
+      if(!session) return res.json({success: false, msg: 'Session not found!'});
+      Img.getImagesBySessionId(req.body.session, (err, files) => {
+        if(err) return res.status(500).end();
+        res.json({success: true, openSelf: true, session: session, files: files});
+      })
+    })
+  }
 })
 
 

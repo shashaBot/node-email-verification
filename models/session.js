@@ -61,6 +61,6 @@ module.exports.getSessionData = (sessionId, callback) => {
   Session.findById(sessionId, callback);
 }
 
-module.exports.updateSession = (session, update, callback) => {
-  Session.findOneAndUpdate({_id: session.id}, update, callback);
+module.exports.updateSession = (sessionId, update, callback) => {
+  Session.findByIdAndUpdate(sessionId, update, callback);
 }

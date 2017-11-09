@@ -14,6 +14,7 @@
     "cors": "*",
     "del": "2.2.0",
     "dotenv": "^4.0.0",
+    "crypto": "*",
     "express": "*",
     "jsonwebtoken": "*",
     "method-override": "^2.3.6",
