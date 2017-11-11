@@ -25,7 +25,7 @@ router.post('/addrootcategory', (req, res) => {
   })
   Category.addRootCategory(newCategory, (err) => {
     if(err) return res.json({success: false, msg: 'Error in adding category', error: err});
-    res.json({success: true});
+    res.json({success: true, category: category});
   })
 })
 
@@ -35,9 +35,9 @@ router.post('/addsubcategory', (req, res) => {
     parentcategory: req.body.parentcategory,
     parentId: req.body.parentId
   })
-  Category.addSubCategory(newCategory, req.body.parentId, (err) => {
+  Category.addSubCategory(newCategory, req.body.parentId, (err, category) => {
     if(err) return res.json({success: false, msg: 'Error in adding category', error: err});
-    res.json({success: true});
+    res.json({success: true, category: category});
   })
 })
 

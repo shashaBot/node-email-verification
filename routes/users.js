@@ -126,7 +126,8 @@ router.post('/authenticate', (req, res, next) => {
               name: user.name,
               username: user.username,
               email: user.email,
-              isVerified: user.isVerified
+              isVerified: user.isVerified,
+              isAdmin: user.isAdmin
             }
           });
         } else {
