@@ -87,7 +87,7 @@ module.exports.updateIndex = (imageId, index, callback) => {
   Img.findByIdAndUpdate(imageId, {imageindex: index}, callback);
 }
 
-module.exports.updateTitle = (image, title, callback) => {
+module.exports.updateTitle = (imageId, title, callback) => {
   Img.findByIdAndUpdate(imageId, {imagetitle: title}, callback);
 }
 

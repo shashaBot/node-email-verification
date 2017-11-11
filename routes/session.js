@@ -51,7 +51,7 @@ const authOwner = (req, res, callback) => {
 
 router.post('/create', passport.authenticate('jwt', {session: false}), (req, res) => {
   let session = new Session({
-    sessionname: req.body.name,
+    sessionname: req.body.sessionname,
     userId: req.user.id,
     username: req.user.username,
     categoryname: req.body.categoryname,
@@ -97,6 +97,7 @@ router.post('/remove', passport.authenticate('jwt', {session: false}), (req, res
   //if it belongs to session - remove file from session files array
   let session = req.body.session;
   let file = req.body.file;
+  let id = req.body.fileId;
   if(session){
     authOwner(req, res, (err) => {
       Session.removeSession(session, (err) => {
@@ -109,8 +110,8 @@ router.post('/remove', passport.authenticate('jwt', {session: false}), (req, res
       });
     });
   }
-  if(file) {
-    Img.removeImageById(file._id, err => {
+  if(id || file) {
+    Img.removeImageById(id || file._id, err => {
       if(err) res.json({success: false, msg: 'Error in removing file!', error: err});
       res.json({success: true});
     })
