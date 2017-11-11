@@ -25,20 +25,24 @@ router.post('/register', (req, res, next) => {
       res.json({success: false, msg: 'Failed to register user.'});
     } else {
       // Create a verification token for this user
-      var email_verify_token = new verify_token({ _userId: user._id, token: crypto.randomBytes(16).toString('hex') });
+      if(req.body.email) {
+        var email_verify_token = new verify_token({ _userId: user._id, token: crypto.randomBytes(16).toString('hex') });
 
-      // Save the verification token
-      email_verify_token.save(function (err) {
+        // Save the verification token
+        email_verify_token.save(function (err) {
           if (err) { return res.json({success: false, msg: err.message }); }
 
           // Send the email
           var transporter = nodemailer.createTransport({ service: 'Sendgrid', auth: { user: process.env.SENDGRID_USERNAME, pass: process.env.SENDGRID_PASSWORD } });
           var mailOptions = { from: 'no-reply@email-verify-app.com', to: user.email, subject: 'Please verify your email', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/users\/confirmation?verify=' + email_verify_token.token + '.\n' };
           transporter.sendMail(mailOptions, function (err) {
-              if (err) { return res.json({success: false, msg: err.message }); }
-              res.json({success: true, msg:'A verification email has been sent to ' + user.email + '.'});
+            if (err) { return res.json({success: false, msg: err.message }); }
+            res.json({success: true, msg:'A verification email has been sent to ' + user.email + '.'});
           });
-      });
+        });
+      } else {
+        res.json({success: true, msg: 'User registered!'});
+      }
     }
   });
 });

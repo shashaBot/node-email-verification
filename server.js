@@ -76,9 +76,21 @@ require('./config/passport')(passport);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Cors Middleware
+// var corsOptions = {
+//   origin: 'http://localhost:8100',
+//   credentials : true
+// }
+
+var whitelist = ['http://localhost:4200', 'http://localhost:8100', '']
 var corsOptions = {
-  origin: 'http://localhost:8100',
-  credentials : true
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
+  credentials: true
 }
 app.use(cors(corsOptions));
 

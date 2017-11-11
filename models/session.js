@@ -7,10 +7,6 @@ const SessionSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  desc: {
-    type: String,
-    required: true
-  },
   userId: {
     type: String,
     required: true

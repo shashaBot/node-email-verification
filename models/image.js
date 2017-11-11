@@ -84,9 +84,13 @@ module.exports.removeImageBySession = (sessionId, callback) => {
 }
 
 module.exports.updateIndex = (imageId, index, callback) => {
-  Img.findOneAndUpdate({_id: imageId}, {imageindex: index}, callback);
+  Img.findByIdAndUpdate(imageId, {imageindex: index}, callback);
+}
+
+module.exports.updateTitle = (image, title, callback) => {
+  Img.findByIdAndUpdate(imageId, {imagetitle: title}, callback);
 }
 
 module.exports.updateDelay = (imageId, delay, callback) => {
-  Img.findOneAndUpdate({_id: imageId}, {imagedelay: delay}, callback);
+  Img.findByIdAndUpdate( imageId, {imagedelay: delay}, callback);
 }
