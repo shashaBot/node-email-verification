@@ -81,7 +81,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 //   credentials : true
 // }
 
-var whitelist = ['http://localhost:4200', 'http://localhost:8100', '']
+var whitelist = ['http://localhost:4200', 'http://localhost:8100', 'null', 'file://'];
 var corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
