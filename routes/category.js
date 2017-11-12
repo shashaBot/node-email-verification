@@ -37,6 +37,7 @@ router.post('/addsubcategory', (req, res) => {
   })
   Category.addSubCategory(newCategory, req.body.parentId, (err, category) => {
     if(err) return res.json({success: false, msg: 'Error in adding category', error: err});
+    if(!category) return res.status(404).json({success: false});
     res.json({success: true, category: category});
   })
 })
@@ -56,31 +57,31 @@ router.post('/updatecategory', (req, res, next) => {
       }
 
       if (category.parentcategory) {
-        updateUpCategories(category, newcategoryname, oldcategoryname, next);
+        updateUpCategories(category._id, newcategoryname, oldcategoryname, next);
       }
       if (category.childcategories.length) {
-        updateBelowCategories(oldcategoryname, newcategoryname, next);
+        updateBelowCategories(category._id, oldcategoryname, newcategoryname, next);
       }
       return res.json({ success: true });
 
     })
 });
 
-function updateUpCategories(category, newcategoryname, oldcategoryname, next) {
-  Category.findOne({ categoryname: category.parentcategory }, function (err, parentCategory) {
+function updateUpCategories(categoryId, newcategoryname, oldcategoryname, next) {
+  Category.findById( categoryId, function (err, parentCategory) {
     if (err) {
       console.log(err);
       return next(err);
     }
-    let newObj = parentCategory.childcategories.find(ct => ct.categoryname === oldcategoryname);
-    newObj.categoryname = newcategoryname;
+    let catIndex = parentCategory.childcategories.indexOf(ct => ct._id === categoryId);
+    parentCategory.childcategories[catIndex].categoryname = newcategoryname;
     parentCategory.save();
     return next();
   })
 }
 
-function updateBelowCategories(oldcategoryname, newcategoryname, next) {
-  Category.find({ parentcategory: oldcategoryname }, function (err, categories) {
+function updateBelowCategories(categoryId, oldcategoryname, newcategoryname, next) {
+  Category.find({ parentId: categoryId }, function (err, categories) {
     var connectedCategoryIds = [];
     categories.forEach(function (item) {
       connectedCategoryIds.push(item._id);
@@ -115,7 +116,7 @@ router.post('/deletecategory', (req, res, next) => {
         deleteBelowCategories(categories, next);
       });
     }
-    if (category.parentcategory) {
+    if (category.parentId) {
       deleteUpCategories(category, next);
     }
     return res.json({ success: true });
@@ -142,7 +143,7 @@ function deleteBelowCategories(categories, next) {
   var connectedSubCategoryIds = [];
   categories.forEach(function (item) {
     connectedCategoryIds.push(item._id);
-    if (item.childcategories && item.childcategories != []) {
+    if (item.childcategories && item.childcategories !== []) {
       for (var index = 0; index < item.childcategories.length; index++) {
         connectedSubCategoryIds.push(item.childcategories[index]);
       }

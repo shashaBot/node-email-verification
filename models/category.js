@@ -30,6 +30,7 @@ module.exports.addRootCategory = (newCategory, callback) => {
 module.exports.addSubCategory = (newCategory, parentId, callback) => {
   Category.findById(parentId, (err, category) => {
     if(err) return callback(err);
+    if(!category) return callback(null, null);
     category.childcategories.push({_id: newCategory._id, categoryname: newCategory.categoryname});
     category.save(err => {
       if(err) return callback(err);
