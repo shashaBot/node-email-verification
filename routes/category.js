@@ -126,7 +126,7 @@ router.post('/deletecategory', (req, res, next) => {
 });
 
 function deleteUpCategories(category, next) {
-  Category.findbyId(category.parentId, function (err, parentCategory) {
+  Category.findById(category.parentId, function (err, parentCategory) {
     if (err) {
       console.log(err);
       return next(err);
