@@ -46,8 +46,9 @@ router.post('/updatecategory', (req, res, next) => {
   let newcategoryname = req.body.category.newcategoryname;
   let oldcategoryname = req.body.category.oldcategoryname;
 
-  Category.findByIdAndUpdate({ _id: req.body.id }, { categoryname: newcategoryname },
+  Category.findByIdAndUpdate(req.body.id, { categoryname: newcategoryname },
     function (err, category) {
+      console.log('updating category:', category);
       if (err) {
         console.log(err);
         return res.status(500).send();
@@ -74,20 +75,27 @@ function updateUpCategories(categoryId, newcategoryname, oldcategoryname, next) 
       return next(err);
     }
     let catIndex = parentCategory.childcategories.findIndex(ct => ct._id === categoryId);
+    console.log('index of updated child: ', catIndex);
     parentCategory.childcategories[catIndex].categoryname = newcategoryname;
-    parentCategory.save();
-    return next();
+    parentCategory.save((err, saved) => {
+      if(err){
+        console.log(err)
+        return next(err);
+      }
+      return next();
+    });
   })
 }
 
 function updateBelowCategories(categoryId, oldcategoryname, newcategoryname, next) {
   Category.find({ parentId: categoryId }, function (err, categories) {
+    console.log(categories);
     var connectedCategoryIds = [];
     categories.forEach(function (item) {
       connectedCategoryIds.push(item._id);
     });
 
-    Category.update({ '_id': { '$in': connectedCategoryIds } }, { parentcategory: newcategoryname },
+    Category.update({ _id: { '$in': connectedCategoryIds } }, { parentcategory: newcategoryname },
       { multi: true },
       function (err, lastCategories) {
         if (err) {
