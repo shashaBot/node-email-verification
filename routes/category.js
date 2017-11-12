@@ -74,7 +74,7 @@ function updateUpCategories(categoryId, newcategoryname, oldcategoryname, next) 
       console.log(err);
       return next(err);
     }
-    let catIndex = parentCategory.childcategories.findIndex(ct => ct._id === categoryId);
+    let catIndex = parentCategory.childcategories.findIndex(ct => ct._id === categoryId.toString());
     console.log('index of updated child: ', catIndex);
     parentCategory.childcategories[catIndex].categoryname = newcategoryname;
     parentCategory.save((err, saved) => {
@@ -139,7 +139,7 @@ function deleteUpCategories(category, next) {
       console.log(err);
       return next(err);
     }
-    let objIndex = parentCategory.childcategories.findIndex(ct => ct._id === category._id);
+    let objIndex = parentCategory.childcategories.findIndex(ct => ct._id === category._id.toString());
     let removed = parentCategory.childcategories.splice(objIndex, 1);
     console.log('removed from parent: ', removed);
     parentCategory.save();
