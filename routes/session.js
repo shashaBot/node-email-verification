@@ -272,6 +272,8 @@ router.post('/remove-viewed', (req, res) => {
 // })
 
 router.post('/scan-qr', passport.authenticate('jwt', {session:false}), (req, res) => {
+  console.log('scanner id: ', req.user.id);
+  console.log('qr user id: ', req.body.user);
   if(req.user.id === req.body.user) {
     Session.updateSession(req.body.session, {isScanned: true}, (err, session) => {
       if(err) return res.status(500).end();

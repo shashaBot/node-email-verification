@@ -23,7 +23,7 @@ router.post('/addrootcategory', (req, res) => {
   let newCategory = new Category({
     categoryname: req.body.categoryname
   })
-  Category.addRootCategory(newCategory, (err) => {
+  Category.addRootCategory(newCategory, (err, category) => {
     if(err) return res.json({success: false, msg: 'Error in adding category', error: err});
     res.json({success: true, category: category});
   })
@@ -102,7 +102,7 @@ function updateBelowCategories(oldcategoryname, newcategoryname, next) {
 
 
 router.post('/deletecategory', (req, res, next) => {
-  Category.findByIdAndRemove({ _id: req.body.id }, function (err, category) {
+  Category.findByIdAndRemove(req.body.id, function (err, category) {
     if (err) {
       console.log(err);
       return res.status(500).send();
@@ -111,7 +111,7 @@ router.post('/deletecategory', (req, res, next) => {
       return res.status(404).send();
     }
     if (category.childcategories.length) {
-      Category.find({ parentcategory: req.body.categoryname }, function (err, categories) {
+      Category.find({ parentId: req.body.id }, function (err, categories) {
         deleteBelowCategories(categories, next);
       });
     }
@@ -124,12 +124,12 @@ router.post('/deletecategory', (req, res, next) => {
 });
 
 function deleteUpCategories(category, next) {
-  Category.findOne({ categoryname: category.parentcategory }, function (err, parentCategory) {
+  Category.findOne({ _id: category.parentId }, function (err, parentCategory) {
     if (err) {
       console.log(err);
       return next(err);
     }
-    let objIndex = parentCategory.childcategories.findIndex(ct => ct.categoryname === category.categoryname);
+    let objIndex = parentCategory.childcategories.findIndex(ct => ct._id === category._id);
     parentCategory.childcategories.splice(objIndex, 1);
     console.log(parentCategory.childcategories)
     parentCategory.save();
