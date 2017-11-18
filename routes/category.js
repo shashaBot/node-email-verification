@@ -19,7 +19,7 @@ router.post('/getsubcategories', passport.authenticate('jwt', {session: false}),
   })
 })
 
-router.post('/addrootcategory', (req, res) => {
+router.post('/addrootcategory', passport.authenticate('jwt', {session: false}), (req, res) => {
   let newCategory = new Category({
     categoryname: req.body.categoryname
   })
@@ -29,7 +29,7 @@ router.post('/addrootcategory', (req, res) => {
   })
 })
 
-router.post('/addsubcategory', (req, res) => {
+router.post('/addsubcategory', passport.authenticate('jwt', {session: false}), (req, res) => {
   let newCategory = new Category({
     categoryname: req.body.categoryname,
     parentcategory: req.body.parentcategory,
@@ -42,7 +42,7 @@ router.post('/addsubcategory', (req, res) => {
   })
 })
 
-router.post('/updatecategory', (req, res, next) => {
+router.post('/updatecategory', passport.authenticate('jwt', {session: false}), (req, res, next) => {
   let newcategoryname = req.body.category.newcategoryname;
   let oldcategoryname = req.body.category.oldcategoryname;
 
@@ -110,7 +110,7 @@ function updateBelowCategories(categoryId, oldcategoryname, newcategoryname, nex
 }
 
 
-router.post('/deletecategory', (req, res, next) => {
+router.post('/deletecategory', passport.authenticate('jwt', {session: false}), (req, res, next) => {
   Category.findByIdAndRemove(req.body.id, function (err, category) {
     if (err) {
       console.log(err);

@@ -26,20 +26,23 @@ router.post('/register', (req, res, next) => {
     } else {
       // Create a verification token for this user
       if(req.body.email) {
-        var email_verify_token = new verify_token({ _userId: user._id, token: crypto.randomBytes(16).toString('hex') });
+        Smpt.getCredentials((err, creds) => {
+          if(err) return res.status(500).end();
+          var email_verify_token = new verify_token({ _userId: user._id, token: crypto.randomBytes(16).toString('hex') });
 
-        // Save the verification token
-        email_verify_token.save(function (err) {
-          if (err) { return res.json({success: false, msg: err.message }); }
-
-          // Send the email
-          var transporter = nodemailer.createTransport({ service: 'Sendgrid', auth: { user: process.env.SENDGRID_USERNAME, pass: process.env.SENDGRID_PASSWORD } });
-          var mailOptions = { from: 'no-reply@email-verify-app.com', to: user.email, subject: 'Please verify your email', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/users\/confirmation?verify=' + email_verify_token.token + '.\n' };
-          transporter.sendMail(mailOptions, function (err) {
+          // Save the verification token
+          email_verify_token.save(function (err) {
             if (err) { return res.json({success: false, msg: err.message }); }
-            res.json({success: true, msg:'A verification email has been sent to ' + user.email + '.'});
+
+            // Send the email
+            var transporter = nodemailer.createTransport({ service: 'Sendgrid', auth: { user: creds.username || process.env.SENDGRID_USERNAME, pass: creds.password || process.env.SENDGRID_PASSWORD } });
+            var mailOptions = { from: creds.mailerId || 'no-reply@email-verify-app.com', to: user.email, subject: 'Please verify your email', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/users\/confirmation?verify=' + email_verify_token.token + '.\n' };
+            transporter.sendMail(mailOptions, function (err) {
+              if (err) { return res.json({success: false, msg: err.message }); }
+              res.json({success: true, msg:'A verification email has been sent to ' + user.email + '.'});
+            });
           });
-        });
+        })
       } else {
         res.json({success: true, msg: 'User registered!'});
       }
@@ -113,6 +116,7 @@ router.post('/authenticate', (req, res, next) => {
             username: user.username,
             name: user.name,
             isVerified: user.isVerified,
+            isAdmin: user.isAdmin,
             _id: user.id
           };
           const token = jwt.sign(signInUser, config.secret, {

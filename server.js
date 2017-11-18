@@ -10,6 +10,7 @@ const morgan = require('morgan');
 const rp = require('request-promise');
 // const fileUpload = require('express-fileupload');
 const multer = require('multer');
+const Smtp = require('./models/smtp');
 
 require('dotenv').config();
 
@@ -118,6 +119,19 @@ app.get('/validate_captcha', (req, res) => {
   rp(options)
       .then(response => res.json(response))
       .catch(() => {});
+});
+
+app.post('/admin/storemailer', passport.authenticate('jwt', {session: false}), (req, res) => {
+  //store credentials to db.
+  let newSmtp = new Smpt({
+    username: req.body.smptUser,
+    password: req.body.smtpPass,
+    mailerId: req.body.smtpMailer
+  })
+  Smtp.updateMailer(newSmtp, (err) => {
+    if(err) return res.json({success: false});
+    res.json({success: true});
+  })
 });
 
 app.get('*', (req, res) => {

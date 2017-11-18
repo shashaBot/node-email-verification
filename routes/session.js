@@ -149,10 +149,17 @@ router.post('/updateTitle', passport.authenticate('jwt', {session:false}), (req,
 })
 
 router.post('/listbycategory', passport.authenticate('jwt', {session: false}), (req, res, next) => {
-  Session.getUserSessionByCategory(req.user.id, req.body.categoryId, (err, sessions) => {
-    if(err) return res.json({success: false, msg: err});
-    res.json({success: true, data: sessions});
-  });
+  if(req.body.isParent) {
+    Session.getUserSessionByParentCat(req.user.id, req.body.categoryId, (err, sessions) => {
+      if(err) return res.json({success: false, msg: err});
+      res.json({success: true, data: sessions});
+    });
+  } else {
+    Session.getUserSessionByCategory(req.user.id, req.body.categoryId, (err, sessions) => {
+      if(err) return res.json({success: false, msg: err});
+      res.json({success: true, data: sessions});
+    });
+  }
 });
 
 router.get('/list', passport.authenticate('jwt', {session: false}), (req, res, next) => {

@@ -27,6 +27,21 @@ module.exports.addRootCategory = (newCategory, callback) => {
   newCategory.save(callback);
 }
 
+module.exports.getBottomCats = (parentId, callback) => {
+  let bottomCatIds = [];
+  Category.find({parentId: parentId}, (err, cats) => {
+    if(err) return callback(err);
+    cats.forEach(cat => {
+      if(cat.childCategories.length) {
+        module.exports.getBottomCats();
+      } else {
+        bottomCats.push(cat._id);
+      }
+    })
+    return callback(null, bottomCatIds);
+  })
+}
+
 module.exports.addSubCategory = (newCategory, parentId, callback) => {
   Category.findById(parentId, (err, category) => {
     if(err) return callback(err);

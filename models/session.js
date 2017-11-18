@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const config = require('../config/database');
+const Category = require('./category');
 
 // Session Schema
 const SessionSchema = mongoose.Schema({
@@ -52,6 +53,13 @@ module.exports.getSessionByCategory = (category, callback) => {
 
 module.exports.getUserSessionByCategory = (userId, categoryId, callback) => {
   Session.find({'userId': userId, 'categoryId': categoryId}, callback);
+}
+
+module.exports.getUserSessionByParentCat = (userId, parentId, callback) => {
+  Category.getBottomCats(parentIds, (err, catIds) => {
+    if(err) return callback(err);
+    Session.find({userId: userId, categoryId: {'$in': catIds}}, callback);    
+  })
 }
 
 module.exports.removeSession = (session, callback) => {
