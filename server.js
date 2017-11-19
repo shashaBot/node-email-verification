@@ -123,13 +123,16 @@ app.get('/validate_captcha', (req, res) => {
 
 app.post('/admin/storemailer', passport.authenticate('jwt', {session: false}), (req, res) => {
   //store credentials to db.
-  let newSmtp = new Smpt({
-    username: req.body.smptUser,
+  let newSmtp = new Smtp({
+    username: req.body.smtpUser,
     password: req.body.smtpPass,
     mailerId: req.body.smtpMailer
   })
   Smtp.updateMailer(newSmtp, (err) => {
-    if(err) return res.json({success: false});
+    if(err) {
+      console.log(err);
+      return res.json({success: false});
+    }
     res.json({success: true});
   })
 });

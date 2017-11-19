@@ -48,7 +48,6 @@ router.post('/updatecategory', passport.authenticate('jwt', {session: false}), (
 
   Category.findByIdAndUpdate(req.body.id, { categoryname: newcategoryname },
     function (err, category) {
-      console.log('updating category:', category);
       if (err) {
         console.log(err);
         return res.status(500).send();
@@ -57,24 +56,37 @@ router.post('/updatecategory', passport.authenticate('jwt', {session: false}), (
         return res.status(404).send();
       }
 
-      if (category.parentcategory) {
-        updateUpCategories(category._id, newcategoryname, oldcategoryname, next);
+      if (category.parentId) {
+        updateUpCategories(category, newcategoryname, (err, newCategory) => {
+          if(err) return res.json({success: false});
+          if (category.childcategories.length) {
+            updateBelowCategories(category, newcategoryname, (err) => {
+              if(err) return res.json({success: false});
+              return res.json({ success: true, category: newCategory });
+            });
+          } else {
+            return res.json({success: true, category: newCategory})
+          }
+        });
+      } else if(category.childcategories.length) {
+        updateBelowCategories(category, newcategoryname, (err) => {
+          if(err) return res.json({success: false});
+          return res.json({ success: true });
+        });
       }
-      if (category.childcategories.length) {
-        updateBelowCategories(category._id, oldcategoryname, newcategoryname, next);
-      }
-      return res.json({ success: true, category: category });
 
     })
 });
 
-function updateUpCategories(categoryId, newcategoryname, oldcategoryname, next) {
-  Category.findById( categoryId, function (err, parentCategory) {
+function updateUpCategories(category, newcategoryname,next) {
+  Category.findById( category.parentId, function (err, parentCategory) {
     if (err) {
       console.log(err);
       return next(err);
     }
-    let catIndex = parentCategory.childcategories.findIndex(ct => ct._id === categoryId.toString());
+    let catIndex = parentCategory.childcategories.findIndex(ct => {
+      return (ct._id === category._id.toString())
+    });
     console.log('index of updated child: ', catIndex);
     parentCategory.childcategories[catIndex].categoryname = newcategoryname;
     parentCategory.save((err, saved) => {
@@ -82,31 +94,30 @@ function updateUpCategories(categoryId, newcategoryname, oldcategoryname, next) 
         console.log(err)
         return next(err);
       }
-      return next();
+      return next(null, saved.childcategories[catIndex]);
     });
   })
 }
 
-function updateBelowCategories(categoryId, oldcategoryname, newcategoryname, next) {
-  Category.find({ parentId: categoryId }, function (err, categories) {
-    console.log(categories);
-    var connectedCategoryIds = [];
-    categories.forEach(function (item) {
-      connectedCategoryIds.push(item._id);
-    });
-
-    Category.update({ _id: { '$in': connectedCategoryIds } }, { parentcategory: newcategoryname },
-      { multi: true },
-      function (err, lastCategories) {
-        if (err) {
-          console.log(err);
-          return next(err);
-        }
-        else {
-          return next();
-        }
-      });
+function updateBelowCategories(category, newcategoryname, next) {
+  var connectedCategoryIds = [];
+  let categories = category.childcategories;
+  console.log(categories);
+  categories.forEach(function (item) {
+    connectedCategoryIds.push(item._id);
   });
+
+  Category.update({ _id: { '$in': connectedCategoryIds } }, { parentcategory: newcategoryname },
+    { multi: true },
+    function (err, lastCategories) {
+      if (err) {
+        console.log(err);
+        return next(err);
+      }
+      else {
+        return next();
+      }
+    });
 }
 
 

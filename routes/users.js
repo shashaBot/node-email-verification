@@ -8,6 +8,7 @@ const nodemailer = require('nodemailer');
 const verify_token = require('../models/token');
 const config = require('../config/database');
 const User = require('../models/user');
+const Smtp = require('../models/smtp');
 
 require('dotenv').config();
 
@@ -26,7 +27,7 @@ router.post('/register', (req, res, next) => {
     } else {
       // Create a verification token for this user
       if(req.body.email) {
-        Smpt.getCredentials((err, creds) => {
+        Smtp.getCredentials((err, creds) => {
           if(err) return res.status(500).end();
           var email_verify_token = new verify_token({ _userId: user._id, token: crypto.randomBytes(16).toString('hex') });
 
@@ -146,5 +147,41 @@ router.post('/authenticate', (req, res, next) => {
 router.get('/profile', passport.authenticate('jwt', {session: false}), (req, res, next) => {
   res.json({user: req.user});
 });
+
+//generate qr token
+router.get('/generate-qr', passport.authenticate('jwt', {session: false}), (req, res, next) => {
+  let token = new UserToken({
+    timestamp: req.body.timestamp
+  });
+  UserToken.createToken(token, (err, newToken) => {
+    if(err) return res.json({success: false, error: err});
+    console.log(newToken);
+    return res.json({success: true, token: newToken});
+  });
+})
+
+//check qr token
+router.post('/check-qr', passport.authenticate('jwt', {session: false}), (req, res) => {
+  UserToken.checkToken(req.body.timestamp, (err, token) => {
+    if(err) return res.json({success: false, error: err});
+    if(token) {
+      UserToken.removeTokenById(token._id, err => {
+        console.log(err);
+      });
+      res.json({success: true, user: req.user, authToken: token.authToken});
+    } else {
+      res.json({success: false});
+    }
+  })
+});
+
+//scan login qr
+router.post('/scan-qr', passport.authenticate('jwt', {session:false}), (req, res) => {
+  UserToken.setUser(req.body.token, req.user._id, req.header('Authorization'), (err, token) => {
+    if(err) return res.json({success: false, error: err});
+    if(!token) return res.json({success: false, msg: 'Invalid token!'});
+    res.json({success: true});
+  });
+})
 
 module.exports = router;

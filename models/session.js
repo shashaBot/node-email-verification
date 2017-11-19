@@ -43,8 +43,8 @@ module.exports.createSession = (session, callback) => {
   session.save(callback);
 }
 
-module.exports.listSessions = (callback) => {
-  Session.find({}, callback);
+module.exports.listSessions = (userId, callback) => {
+  Session.find({userId: userId}, callback);
 }
 
 module.exports.getSessionByCategory = (category, callback) => {
@@ -56,9 +56,11 @@ module.exports.getUserSessionByCategory = (userId, categoryId, callback) => {
 }
 
 module.exports.getUserSessionByParentCat = (userId, parentId, callback) => {
-  Category.getBottomCats(parentIds, (err, catIds) => {
+  Category.getBottomCats( parentId, (err, catIds) => {
     if(err) return callback(err);
-    Session.find({userId: userId, categoryId: {'$in': catIds}}, callback);    
+    if(!catIds) return callback(null, null);
+    console.log('got catIds: ', catIds);
+    Session.find({userId: userId, categoryId: {'$in': catIds}}, callback);
   })
 }
 
