@@ -9,6 +9,7 @@ const verify_token = require('../models/token');
 const config = require('../config/database');
 const User = require('../models/user');
 const Smtp = require('../models/smtp');
+const UserToken = require('../models/userToken');
 
 require('dotenv').config();
 
@@ -149,7 +150,7 @@ router.get('/profile', passport.authenticate('jwt', {session: false}), (req, res
 });
 
 //generate qr token
-router.get('/generate-qr', passport.authenticate('jwt', {session: false}), (req, res, next) => {
+router.post('/generate-qr', (req, res, next) => {
   let token = new UserToken({
     timestamp: req.body.timestamp
   });
@@ -161,8 +162,8 @@ router.get('/generate-qr', passport.authenticate('jwt', {session: false}), (req,
 })
 
 //check qr token
-router.post('/check-qr', passport.authenticate('jwt', {session: false}), (req, res) => {
-  UserToken.checkToken(req.body.timestamp, (err, token) => {
+router.post('/check-qr', (req, res) => {
+  UserToken.checkToken(req.body.tokenId, (err, token) => {
     if(err) return res.json({success: false, error: err});
     if(token) {
       UserToken.removeTokenById(token._id, err => {
@@ -174,6 +175,14 @@ router.post('/check-qr', passport.authenticate('jwt', {session: false}), (req, r
     }
   })
 });
+
+//remove all tokens by timestamp
+router.post('/remove-qr', (req, res) => {
+  UserToken.removeTokenByTimestamp(req.body.timestamp, (err, removed) => {
+    if(err) return res.json({success: false});
+    res.json({success: true});
+  })
+})
 
 //scan login qr
 router.post('/scan-qr', passport.authenticate('jwt', {session:false}), (req, res) => {

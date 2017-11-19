@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
-const config = require('../config/database');
-const Session = require('./session.js');
 
-// Session token Schema
-const SessionTokenSchema = mongoose.Schema({
+// User token Schema
+const UserTokenSchema = mongoose.Schema({
   timestamp: {
     type: String,
     required: true,
@@ -17,9 +15,9 @@ const SessionTokenSchema = mongoose.Schema({
   }
 });
 
-const SessionToken = module.exports = mongoose.model('SessionToken', SessionTokenSchema);
+const UserToken = module.exports = mongoose.model('UserToken', UserTokenSchema);
 
-module.exports.createToken = (token, timcallback) => {
+module.exports.createToken = (token, callback) => {
   token.remove({timestamp: token.timestamp}, err => {
     if(err) return callback(err);
     token.save(callback);
@@ -27,16 +25,16 @@ module.exports.createToken = (token, timcallback) => {
 }
 
 module.exports.removeTokenByTimestamp = (timestamp, callback) => {
-  let query = {'timstamp': timestamp};
-  SessionToken.remove(query, callback);
+  let query = {'timestamp': timestamp};
+  UserToken.remove(query, callback);
 }
 
 module.exports.removeTokenById = (id, callback) => {
-  SessionToken.remove({'_id': id}, callback);
+  UserToken.remove({'_id': id}, callback);
 }
 
 module.exports.setUser = (tokenId, userId, authToken, callback) => {
-  SessionToken.findById(tokenId, (err, token) => {
+  UserToken.findById(tokenId, (err, token) => {
     if(err) return callback(err);
     if(token){
       token.userId = userId;
@@ -48,8 +46,8 @@ module.exports.setUser = (tokenId, userId, authToken, callback) => {
   })
 }
 
-module.exports.checkToken = (timestamp, callback) => {
-  SessionToken.findOne({'timestamp': timestamp, 'userId': {$exists: true} }, (err, token) => {
+module.exports.checkToken = (tokenId, callback) => {
+  UserToken.findOne({'_id': tokenId, 'userId': {$exists: true} }, (err, token) => {
     if(err) return callback(err);
     if(token){
       callback(null, token);
