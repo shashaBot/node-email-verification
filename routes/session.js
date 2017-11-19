@@ -150,7 +150,7 @@ router.post('/updateTitle', passport.authenticate('jwt', {session:false}), (req,
 
 router.post('/listbycategory', passport.authenticate('jwt', {session: false}), (req, res, next) => {
   if(req.body.isParent) {
-    return res.json({success: false});
+    return res.json({success: true, data: []});
     Session.getUserSessionByParentCat(req.user.id, req.body.categoryId, (err, sessions) => {
       if(err) return res.json({success: false, msg: err});
       res.json({success: true, data: sessions});
@@ -200,7 +200,7 @@ router.post('/view', passport.authenticate('jwt', {session: false}), (req, res, 
 });
 
 router.get('/generate-qr', passport.authenticate('jwt', {session: false}), (req, res, next) => {
-  Session.listSessions((err, data) => {
+  Session.listSessions(req.user.id, (err, data) => {
     if(err) return res.json({success: false, error: error});
     let tokens = [];
     if(!data.length) return res.json({success: true, data: []});
