@@ -172,7 +172,7 @@ var _a;
 // The file contents for the current environment will overwrite these during build.
 var environment = {
     production: false,
-    baseUrl: 'http://localhost:8080/'
+    baseUrl: ''
 };
 //# sourceMappingURL=environment.js.map
 
