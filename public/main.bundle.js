@@ -172,7 +172,7 @@ var _a;
 // The file contents for the current environment will overwrite these during build.
 var environment = {
     production: false,
-    baseUrl: ''
+    baseUrl: 'https://ionic-node-auth.herokuapp.com/'
 };
 //# sourceMappingURL=environment.js.map
 
@@ -1864,7 +1864,7 @@ exports = module.exports = __webpack_require__(11)();
 
 
 // module
-exports.push([module.i, "ul {\n  padding: 0;\n  margin: 20px auto; }\n\n.image-player {\n  position: relative;\n  width: 100%;\n  /* for IE 6 */ }\n\n.image-text {\n  position: absolute;\n  top: 50px;\n  left: 10px;\n  width: 100%; }\n", ""]);
+exports.push([module.i, "ul {\n  padding: 0;\n  margin: 20px auto; }\n\n.image-player {\n  position: relative;\n  width: 100%;\n  /* for IE 6 */ }\n  .image-player img {\n    position: relative;\n    width: 90vw;\n    height: auto;\n    max-height: 90vh; }\n\n.image-text {\n  position: absolute;\n  top: 50px;\n  left: 10px;\n  width: 100%; }\n\nvg-player video {\n  max-height: 100vh; }\n", ""]);
 
 // exports
 
@@ -2120,7 +2120,7 @@ module.exports = "<div class=\"row\">\n  <div class=\"col-xs-3 col-md-4\" *ngFor
 /***/ 572:
 /***/ (function(module, exports) {
 
-module.exports = "<h2> Welcome {{ currentUser }} </h2>\n\n<h3> {{ title }} </h3>\n\n<div class=\"row\">\n\t<div class=\"col-md-6\">\n\t\t<div class=\"row\">\n\t\t\t<div class=\"form-group col-xs-4\">\n\t\t\t\t<label>Image  Transition Time</label>\n\t\t\t\t<select class=\"form-control\" name=\"time\" [(ngModel)]=\"imageSlideTime\">\n\t\t\t\t\t<option *ngFor=\"let t of times\" [value]=\"t.value\">\n\t\t\t\t\t{{t.display}}\n\t\t\t\t\t</option>\n\t\t\t\t</select>\n\t\t\t</div>\n\t\t</div>\n\t\t<vg-player (onPlayerReady)=\"onPlayerReady($event)\">\n\t\t\t<video [hidden]=\"!vPlayer\" [vgMedia]=\"media\" autoplay (ended)=\"myAddListener()\" #media id=\"singleVideo\" preload=\"auto\" controls crossorigin=\"use-credentials\">\n\t\t\t\t<source src=\"\" type=\"video/mp4\">\n\t\t\t</video>\n\t\t\t<div [hidden]=\"vPlayer\" class=\"image-player\">\n\t\t\t\t<img style=\"min-height:100%;min-width:100%;\" width=\"200\" height=\"200\" crossorigin=\"use-credentials\">\n\t\t\t\t<h2 class=\"image-text\">{{imageTitle}}</h2>\n\t\t\t</div>\n\t\t</vg-player>\n\t\t<button *ngIf=\"visibleImages.length != 0\" type=\"button\" class=\"btn btn-danger btn-big btn-warning\" (click)=\"stopPlayer()\">\n\t\t\t<span class=\"glyphicon glyphicon-stop\"></span> Stop\n\t\t</button>\n\t</div>\n</div>\n"
+module.exports = "<div class=\"\">\n\t<div class=\"\">\n\t\t<!-- <div class=\"row\">\n\t\t\t<div class=\"form-group col-xs-4\">\n\t\t\t\t<label>Image  Transition Time</label>\n\t\t\t\t<select class=\"form-control\" name=\"time\" [(ngModel)]=\"imageSlideTime\">\n\t\t\t\t\t<option *ngFor=\"let t of times\" [value]=\"t.value\">\n\t\t\t\t\t{{t.display}}\n\t\t\t\t\t</option>\n\t\t\t\t</select>\n\t\t\t</div>\n\t\t</div> -->\n\t\t<vg-player (onPlayerReady)=\"onPlayerReady($event)\">\n\t\t\t<video [hidden]=\"!vPlayer\" [vgMedia]=\"media\" autoplay (ended)=\"myAddListener()\" #media id=\"singleVideo\" preload=\"auto\" controls crossorigin=\"use-credentials\">\n\t\t\t\t<source src=\"\" type=\"video/mp4\">\n\t\t\t</video>\n\t\t\t<div [hidden]=\"vPlayer\" class=\"image-player\">\n\t\t\t\t<img style=\"min-height:100%;min-width:100%;\" crossorigin=\"use-credentials\">\n\t\t\t\t<h2 class=\"image-text\">{{imageTitle}}</h2>\n\t\t\t</div>\n\t\t</vg-player>\n\t\t<button *ngIf=\"visibleImages.length != 0\" type=\"button\" class=\"btn btn-danger btn-big btn-warning\" (click)=\"stopPlayer()\">\n\t\t\t<span class=\"glyphicon glyphicon-stop\"></span> Stop\n\t\t</button>\n\t</div>\n</div>\n"
 
 /***/ }),
 
