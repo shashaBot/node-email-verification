@@ -24,7 +24,7 @@ router.post('/register', (req, res, next) => {
   User.addUser(newUser, (err, user) => {
     if(err) {
       console.log(err);
-      res.json({success: false, msg: 'Failed to register user.'});
+      return res.json({success: false, msg: 'Failed to register user.'});
     } else {
       // Create a verification token for this user
       if(req.body.email) {
