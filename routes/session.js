@@ -244,8 +244,8 @@ router.get('/generate-qr', passport.authenticate('jwt', {session: false}), (req,
 //   })
 // })
 
-router.get('/check-qr', (req, res) => {
-  Session.findOne({isScanned: true}, (err, session) => {
+router.get('/check-qr', passport.authenticate('jwt', {session: false}), (req, res) => {
+  Session.findOne({isScanned: true, userId: req.user.id}, (err, session) => {
     if(err) {
       console.log(err);
       return res.status(500).send();
