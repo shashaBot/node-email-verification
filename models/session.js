@@ -1,4 +1,4 @@
-fconst mongoose = require('mongoose');
+const mongoose = require('mongoose');
 const config = require('../config/database');
 const Category = require('./category');
 
