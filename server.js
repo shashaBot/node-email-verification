@@ -54,6 +54,7 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
 io.on('connection', (socket) => {
+  console.log('socket connected: ' + socket);
   socket.on('disconnect', () => {
     io.emit('app-disconnect', {secret: socket.secret});
   })
@@ -184,3 +185,5 @@ const port = process.env.PORT || 8080;
 app.listen(port, () => {
   console.log('Server started on port '+ port);
 });
+
+http.listen( post, "127.0.0.1");
