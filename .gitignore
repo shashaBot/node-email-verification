@@ -63,3 +63,4 @@ directives/
 # Envrionment Variables
 **/environment.*
 !**/environment.model.ts
+

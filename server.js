@@ -11,8 +11,6 @@ const rp = require('request-promise');
 // const fileUpload = require('express-fileupload');
 const multer = require('multer');
 const Smtp = require('./models/smtp');
-const crypto = require('crypto');
-
 
 require('dotenv').config();
 
@@ -47,7 +45,6 @@ mongoose.connection.on('disconnected', () => {
 })
 
 // Socket connection
-
 
 // Init express app
 const app = express();

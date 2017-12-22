@@ -1,0 +1,6 @@
+SENDGRID_USERNAME = <enter-username>
+SENDGRID_PASSWORD = <enter-password>
+MONGODB = mongodb://<userame>:<password>@<mongodb_online.com>
+DB_SECRET = <enter-secret>
+CAPTCHA_SITE_KEY= <Google-captcha-site-key>
+CAPTCHA_SITE_SECRET = <Google-captcha-secret-key>
