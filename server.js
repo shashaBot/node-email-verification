@@ -49,9 +49,17 @@ mongoose.connection.on('disconnected', () => {
 // Init express app
 const app = express();
 
+//listen on port
+const port = process.env.PORT || 8080;
+
 // Init socket server
 const http = require('http').Server(app);
-const io = require('socket.io')(http);
+
+const server = app.listen(port, () => {
+  console.log('Server started on port '+ port);
+});
+
+const io = require('socket.io').listen(server);
 
 io.on('connection', (socket) => {
   console.log('socket connected: ' + socket);
@@ -179,11 +187,3 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
-//listen on port
-const port = process.env.PORT || 8080;
-
-app.listen(port, () => {
-  console.log('Server started on port '+ port);
-});
-
-http.listen( post, "127.0.0.1");
