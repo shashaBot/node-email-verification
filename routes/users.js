@@ -38,7 +38,7 @@ router.post('/register', (req, res, next) => {
 
             // Send the email
             var transporter = nodemailer.createTransport({ service: 'Sendgrid', auth: { user: creds.username || process.env.SENDGRID_USERNAME, pass: creds.password || process.env.SENDGRID_PASSWORD } });
-            var mailOptions = { from: creds.mailerId || 'no-reply@email-verify-app.com', to: user.email, subject: 'Please verify your email', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/users\/confirmation?verify=' + email_verify_token.token + '.\n' };
+            var mailOptions = { from: creds.mailerId || 'no-reply@email-verify-app.com', to: user.email, subject: 'Please verify your email', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \n' + req.headers.origin + '\/login\/' + email_verify_token.token + '.\n' };
             transporter.sendMail(mailOptions, function (err) {
               if (err) { return res.json({success: false, msg: err.message }); }
               res.json({success: true, msg:'A verification email has been sent to ' + user.email + '.'});
@@ -52,22 +52,31 @@ router.post('/register', (req, res, next) => {
   });
 });
 
+// Check if username is available
+router.post('/check_username', (req, res, next) => {
+  User.find({username: req.body.username}, (err, users) => {
+    if(err) return res.status(503).end();
+    if(users.length) return res.json({success: false});
+    return res.json({success: true})
+  })
+})
+
 // Confirm email route
-router.get('/confirmation', (req, res, next) => {
-  verify_token.findOne({ token: req.query.verify}, (err, token) => {
+router.post('/confirm_email', (req, res, next) => {
+  verify_token.findOne({ token: req.body.token}, (err, token) => {
     console.log('verification token', token);
     if(!token) {
       return res.json({ success: false, msg: 'Unable to verify email'});
     }
     // If we found a token then find the matching user
     User.findOne({ _id: token._userId}, (err, user) => {
-      if(!user) return res.json({ success: false, msg: 'No user found associated with the verification link.'}).redirect('/login');
-      if(user.isVerified) return res.json({success: false, msg: 'This email is already verfied!'}).redirect('/login');
+      if(!user) return res.json({ success: false, msg: 'No user found associated with the verification link.'});
+      if(user.isVerified) return res.json({success: false, msg: 'This email is already verfied!'});
       // if the user is found and is unverified, then mark the user as verified
       user.isVerified = true;
       user.save((err) => {
-        if(err) return res.json({ success: false, msg: 'There was an unknown error! Please try again.'}).redirect('/login');
-        res.json({ success: true, msg: 'Your email is verified now. Congrats!'}).redirect('/login');
+        if(err) return res.json({ success: false, msg: 'There was an unknown error! Please try again.'});
+        res.json({ success: true, msg: 'Your email is verified now. Congrats!'});
       })
     })
   })
@@ -88,7 +97,7 @@ router.post('/resend_verification', (req, res, next) => {
 
         // Send the email
         var transporter = nodemailer.createTransport({ service: 'Sendgrid', auth: { user: process.env.SENDGRID_USERNAME, pass: process.env.SENDGRID_PASSWORD } });
-        var mailOptions = { from: 'no-reply@email-verify-app.com', to: user.email, subject: 'Please verify your email', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/confirmation?verify=' + email_verify_token.token + '.\n' };
+        var mailOptions = { from: 'no-reply@email-verify-app.com', to: user.email, subject: 'Please verify your email', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \n' + req.headers.origin + '\/login\/' + email_verify_token.token + '.\n' };
         transporter.sendMail(mailOptions, function (err) {
             if (err) { return res.json({success: false, msg: err.message }); }
             res.json({success: true, msg:'A verification email has been sent to ' + user.email + '.'});
@@ -103,21 +112,21 @@ function validateEmail(email) {
 }
 
 router.post('/forgot_password', (req, res, next) => {
-  let email = '';
+  console.log(req.body.user);
   if(validateEmail(req.body.user)) {
-    email = req.body.email;
-    User.getUserByEmail(email, (err, user) => {
-      sendResetLink(email, user, req, res);      
+    User.getUserByEmail(req.body.user, (err, user) => {
+      sendResetLink(user, req, res);      
     });
   } else {
     User.getUserByUsername(req.body.user, (err, user) => {
-      email = user.email;
-      sendResetLink(email, user, req, res);   
+      sendResetLink(user, req, res);   
     });
   }
 })
 
-function sendResetLink (email, user, req, res) {
+function sendResetLink (user, req, res) {
+  if(!user) return res.json({success: false, msg: 'No such user found!'});
+  if(!user.isVerified) return res.json({success: false, msg: 'Email is not verified! Sorry, password reset not possible.'})
   let forgot_pass_token = new verify_token({_userId: user._id, token: crypto.randomBytes(16).toString('hex')});
   forgot_pass_token.save((err) => {
     if(err) {
@@ -125,52 +134,58 @@ function sendResetLink (email, user, req, res) {
       return res.json({success: false, msg: 'Server error! Please try again.'});
     }
     Smtp.getCredentials((err, creds) => {
-      var transporter = nodemailer.createTransport({ service: 'Sendgrid', auth: { user: creds.username || process.env.SENDGRID_USERNAME , pass: creds.username || process.env.SENDGRID_PASSWORD } });
-      var mailOptions = { from: creds.mailerId || 'password-reset@teqnihome-app.com', to: email, subject: 'Password reset requested', text: 'Hello,\n\n' + 'A password reset request was made for the account associate with this email. Please follow the link to reset your password for Teqnihome Gallery app.\nhttp:\/\/' + req.headers.host + '\/reset_password?token=\/' + forgot_pass_token.token + '.\n' };
+      var transporter = nodemailer.createTransport({ service: 'Sendgrid', auth: { user: creds.username || process.env.SENDGRID_USERNAME , pass: creds.password || process.env.SENDGRID_PASSWORD } });
+      var mailOptions = { from: creds.mailerId || 'password-reset@teqnihome-app.com', to: user.email, subject: 'Password reset requested', text: 'Hello,\n\n' + 'A password reset request was made for the account associate with this email. Please follow the link to reset your password for Teqnihome Gallery app.\n'+ req.headers.origin + '\/reset_password\/' + forgot_pass_token.token + '.\n' };
       transporter.sendMail(mailOptions, function (err) {
           if (err) {
             console.log(err);
             return res.json({success: false, msg: 'Server error! Please try again.' });
           }
           user.passwordResetToken = forgot_pass_token.token;
-          user.passwordResetExpires = 86400;
+          user.passwordResetExpires = Date.now() + 86400000;
           user.save();
-          res.json({success: true, msg:'A password reset link has been sent to ' + email + '.'});
+          res.json({success: true, msg:'A password reset link has been sent to ' + user.email + '.'});
       });
     })  
   });
 }
 
 // reset password with the link
-router.get('/reset_password', (req, res, next) => {
-  verify_token.findOne({ token: req.query.token}, (err, token) => {
+router.post('/verify-reset-token', (req, res, next) => {
+  verify_token.findOne({ token: req.body.token}, (err, token) => {
     console.log('password reset token', token);
     if(!token) {
       return res.json({ success: false, msg: 'Password Reset link invalid!'});
     }
     // If we found a token then find the matching user
     User.findOne({ _id: token._userId}, (err, user) => {
-      if(!user) return res.json({ success: false, msg: 'No user found associated with the verification link.'}).redirect('/login');
-      if(user.passwordResetToken !== req.query.token) return res.json({success: false, msg: 'Invalid password reset link.'}).redirect('/login');
+      if(!user) return res.json({ success: false, msg: 'Invalid password reset link.'})
+      if(user.passwordResetToken !== req.body.token) return res.json({success: false, msg: 'Invalid password reset link.'});
       // user exists and the pass reset token is matched
-      if(user.passwordResetExpires > Date.now()/1000 - token.createdAt/1000){
-        user.passwordResetToken = null;
-        user.passwordResetExpires = null;
-        return res.json({success: false, msg: 'Password reset token has expired.'})
+      if(user.passwordResetExpires < Date.now()){
+        return res.json({success: false, msg: 'Password reset link has expired. Please request a new one.'})
       } 
       // the token has not expired
-      res.json({success: true, token: req.query.token, userId: user._id});
+      res.json({success: true, userId: user._id});
     })
   })
 });
 
 // reset password request
-router.post('/resest_password', (req, res, next) => {
+router.post('/reset_password', (req, res, next) => {
   User.findById(req.body.userId, (err, user) => {
     if(err) return res.json({success: false, msg: 'Server error!'});
     if(!user) return res.json({success: false, msg: 'User does not exist!'});
+    if(user.passwordResetToken !== req.body.token) return res.json({success: false, msg: 'Invalid password reset link.'});
+    // user exists and the pass reset token is matched
+    if(user.passwordResetExpires < Date.now()){
+      return res.json({success: false, msg: 'Password reset link has expired. Please request a new one.'})
+    }
     User.setPassword(user, req.body.newPass, (err, user) => {
+      console.log(err);
       if(err) return res.json({success: false, msg: 'Server error!'})
+      user.passwordResetExpires = null;
+      user.passwordResetToken = null;
       res.json({success: true, msg: 'Password reset successful!'});
     })
   })
