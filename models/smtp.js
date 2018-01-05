@@ -4,9 +4,25 @@ const Session = require('./session.js');
 
 // Session token Schema
 const SmtpSchema = mongoose.Schema({
+  service: {
+    type: String,
+    required: false
+  },
   username: {
     type: String,
     required: true
+  },
+  secure: {
+    type: Boolean,
+    default: true
+  },
+  host: {
+    type: String,
+    required: false
+  },
+  port: {
+    type: String,
+    require: false
   },
   password: {
     type: String,
@@ -15,7 +31,7 @@ const SmtpSchema = mongoose.Schema({
   mailerId: {
     type: String,
     required: true,
-    default: 'no-reply@email-verify-ionic.com'
+    default: 'no-reply@email-verify.com'
   }
 });
 

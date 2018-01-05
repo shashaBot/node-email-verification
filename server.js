@@ -169,11 +169,19 @@ app.get('/validate_captcha', (req, res) => {
 
 app.post('/admin/storemailer', passport.authenticate('jwt', {session: false}), (req, res) => {
   //store credentials to db.
+  console.log('store mailing: ', req.body)
   let newSmtp = new Smtp({
     username: req.body.smtpUser,
     password: req.body.smtpPass,
     mailerId: req.body.smtpMailer
   })
+  if(req.body.smtpService) {
+    newSmtp.service = req.body.smtpService;    
+  } else {
+    newSmtp.host = req.body.smtpHost
+    newSmtp.port = req.body.smtpPort
+  }
+
   Smtp.updateMailer(newSmtp, (err) => {
     if(err) {
       console.log(err);
@@ -182,6 +190,15 @@ app.post('/admin/storemailer', passport.authenticate('jwt', {session: false}), (
     res.json({success: true});
   })
 });
+
+app.get('/admin/getmailer', passport.authenticate('jwt', {session:false}), (req, res) => {
+  // get mailer credentials
+  Smtp.getCredentials((err, smtp) => {
+    if(err) return res.json({success: false, msg: 'Server error! Couldn\'t fetch SMTP'})
+    if(!smtp) return res.json({success: false, msg: 'No SMTP info found. Please provide SMTP information'});
+    res.json({success: true, mailerId: smtp.mailerId, service: smtp.service, host: smtp.host, port: smtp.port, user: smtp.username});
+  })
+})
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/index.html'));
