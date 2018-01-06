@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const Session = require('./session');
+
+mongoose.Promise = Promise;
 
 let childCategorySchema = new mongoose.Schema({
     _id: { type: String },
@@ -53,6 +56,51 @@ module.exports.getSessionCats = (catId, callback) => {
         return callback(null, cats);
       })
     })
+  })
+}
+
+module.exports.removeAll = (catIds, callback) => {
+  Category.remove({_id: {$in: catIds}}, callback);
+}
+
+module.exports.getBottomCats = (catId, callback) => {
+  let cats = [];
+  getSubCats(catId, cats)
+    .then((cats) => {
+      console.log('cats: ', cats);
+      callback(null, cats);
+    }, err => {
+      callback(err);
+    })
+}
+
+function getSubCats(catId, cats) {
+  return new Promise((resolve, reject) => {
+    Category.findById(catId).exec()
+      .then(cat => {
+        let promiseArr = [];
+        if(cat.childcategories.length) {
+          cat.childcategories.forEach((child, index) => {
+            cats.push(child._id);
+            let childPromise = getSubCats(child._id, cats);
+            promiseArr.push(childPromise);
+            console.log(child.categoryname);
+            if(index === cat.childcategories.length-1){
+              console.log(promiseArr);
+              Promise.all(promiseArr).then((catsArr) => {
+                resolve(cats);
+              }, err => {
+                reject(err);
+              })
+            }
+          })
+        } else {
+          resolve([]);
+        }
+
+      }, err => {
+        reject(err);
+      })
   })
 }
 

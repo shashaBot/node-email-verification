@@ -150,7 +150,6 @@ router.post('/updateTitle', passport.authenticate('jwt', {session:false}), (req,
 
 router.post('/listbycategory', passport.authenticate('jwt', {session: false}), (req, res, next) => {
   if(req.body.isParent) {
-    return res.json({success: true, data: []});
     Session.getUserSessionByParentCat(req.user.id, req.body.categoryId, (err, sessions) => {
       if(err) return res.json({success: false, msg: err});
       res.json({success: true, data: sessions});

@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 
 const Category = require('../models/category');
+const Session = require('../models/session');
 
 
 router.get('/getrootcategories', passport.authenticate('jwt', {session: false}), (req, res) => {
@@ -128,42 +129,102 @@ function updateBelowCategories(category, newcategoryname, next) {
 }
 
 
+// router.post('/deletecategory', passport.authenticate('jwt', {session: false}), (req, res, next) => {
+//   Category.findById(req.body.id, function (err, category) {
+//     if (err) {
+//       console.log(err);
+//       return res.status(500).send();
+//     }
+//     console.log('removed category: ', category);
+//     if (!category) {
+//       return res.status(404).send();
+//     }
+//     category.remove();
+//     if (category.childcategories.length) {
+//       Category.find({ parentId: req.body.id }, function (err, categories) {
+//         deleteBelowCategories(categories, next);
+//       });
+//     }
+//     if (category.parentId) {
+//       deleteUpCategories(category, next);
+//     }
+//     return res.json({ success: true });
+
+//   })
+// });
+
 router.post('/deletecategory', passport.authenticate('jwt', {session: false}), (req, res, next) => {
-  Category.findByIdAndRemove(req.body.id, function (err, category) {
-    if (err) {
-      console.log(err);
-      return res.status(500).send();
-    }
-    console.log('removed category: ', category);
-    if (!category) {
-      return res.status(404).send();
-    }
-    if (category.childcategories.length) {
-      Category.find({ parentId: req.body.id }, function (err, categories) {
-        deleteBelowCategories(categories, next);
-      });
-    }
-    if (category.parentId) {
-      deleteUpCategories(category, next);
-    }
-    return res.json({ success: true });
+  if(req.body.warn) {
+    Category.getBottomCats(req.body.catId, (err, cats) => {
+      Session.find({categoryId: {$in: cats}}, (err, sessions) => {
+        if(err) return res.json({success: false, msg: 'Server error'})
+        if(sessions.length) {
+          return res.json({success: false, msg: 'Active sessions present in categories. Please confirm delete.', catIds: cats, sessions: sessions});
+        } else {
+          cats.push(req.body.catId);
+          deleteUpCategories(req.body.catId, next);
+          Category.removeAll(cats, (err) => {
+            if(err) return res.json({success: false, msg: 'Error in removing categories'})
+            res.json({success: true})
+          })
+        }
+      })
+    })
+  } else {
+    let cats = req.body.catIds;
+    cats.push(req.body.catId);
+    let sessions = req.body.sessions;
+    let sessionIds = [];
+    sessions.forEach((session, index) => {
+      sessionIds.push(session._id);
+      if(index === sessions.length -1) {
+        Session.remove({_id: {$in: sessionIds}}, (err) => {
+          if(err) return res.json({success: false, msg: 'Error in removing sessions!'});
+          deleteUpCategories(req.body.catId, next);
+          Category.removeAll(cats, (err) => {
+            if(err) return res.json({success: false, msg: 'Error in removing categories!'})
+            res.json({success: true})
+          })
+        })
+      }
+    })
+  }
+})
 
-  })
-});
-
-function deleteUpCategories(category, next) {
-  Category.findById(category.parentId, function (err, parentCategory) {
-    if (err) {
-      console.log(err);
-      return next(err);
+function deleteUpCategories(catId, next) {
+  Category.findById(catId, (err, category) => {
+    if(err) return next(err);
+    if(category) {
+      if(category.parentId) {
+        Category.findById(category.parentId, function (err, parentCategory) {
+          if (err) {
+            console.log(err);
+            return next(err);
+          }
+          let objIndex = parentCategory.childcategories.findIndex(ct => ct._id === category._id.toString());
+          let removed = parentCategory.childcategories.splice(objIndex, 1);
+          console.log('removed from parent: ', removed);
+          parentCategory.save();
+          return next();
+        })
+      }
     }
-    let objIndex = parentCategory.childcategories.findIndex(ct => ct._id === category._id.toString());
-    let removed = parentCategory.childcategories.splice(objIndex, 1);
-    console.log('removed from parent: ', removed);
-    parentCategory.save();
-    return next();
   })
 }
+
+// function deleteUpCategories(category, next) {
+//   Category.findById(category.parentId, function (err, parentCategory) {
+//     if (err) {
+//       console.log(err);
+//       return next(err);
+//     }
+//     let objIndex = parentCategory.childcategories.findIndex(ct => ct._id === category._id.toString());
+//     let removed = parentCategory.childcategories.splice(objIndex, 1);
+//     console.log('removed from parent: ', removed);
+//     parentCategory.save();
+//     return next();
+//   })
+// }
 
 function deleteBelowCategories(categories, next) {
   var connectedCategoryIds = [];

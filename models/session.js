@@ -3,7 +3,7 @@ const config = require('../config/database');
 const Category = require('./category');
 
 // Session Schema
-const SessionSchema = mongoose.Schema({
+const SessionSchema = new mongoose.Schema({
   sessionname: {
     type: String,
     required: true
