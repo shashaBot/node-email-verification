@@ -42,6 +42,13 @@ router.post('/addsubcategory', passport.authenticate('jwt', {session: false}), (
   })
 })
 
+router.post('/getSessionCats', passport.authenticate('jwt', {session: false}), (req, res, next) => {
+  Category.getSessionCats(req.body.catId, (err, cats) => {
+    if(err) return res.json({success: false, msg: 'Server error'});
+    res.json({success: true, cats: cats});
+  })
+})
+
 router.post('/updatecategory', passport.authenticate('jwt', {session: false}), (req, res, next) => {
   let newcategoryname = req.body.category.newcategoryname;
   let oldcategoryname = req.body.category.oldcategoryname;

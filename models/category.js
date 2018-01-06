@@ -36,6 +36,26 @@ module.exports.getBottomCats = ( parentId, callback) => {
   });
 }
 
+module.exports.getSessionCats = (catId, callback) => {
+  let cats = {};
+  cats.catthree = catId;
+  Category.findById(catId, (err, cat3) => {
+    if(err) return callback(err);
+    cats.cattwo = cat3.parentId;
+    Category.findById(cat3.parentId, (err, cat2) => {
+      if(err) return callback(err);
+      cats.catthrees = cat2.childcategories;
+      cats.catone = cat2.parentId;
+      console.log('cat two: ', cat2);
+      Category.findById(cat2.parentId, (err, cat1) => {
+        if(err) return callback(err);
+        cats.cattwos = cat1.childcategories;
+        return callback(null, cats);
+      })
+    })
+  })
+}
+
 // function getBottomCategoryIds(parentId, currId, catIds, callback) {
 //   Category.find({parentId: currId}, (err, cats) => {
 //     if(err) return callback(err);
