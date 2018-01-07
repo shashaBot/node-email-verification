@@ -62,34 +62,27 @@ const server = app.listen(port, () => {
 const io = require('socket.io').listen(server);
 
 io.on('connection', (socket) => {
-  console.log('socket connected: ' + socket);
-  socket.on('disconnect', () => {
-    io.emit('app-disconnect', {secret: socket.secret});
+  console.log('socket connected');
+
+  socket.on('web-disconnect', (data) => {
+    io.emit('web-disconnected', {secret: data.secret})
   })
 
-  socket.on('scan-session', (sessionId, secret) => {
+  socket.on('scan-session', (data) => {
     socket.secret = secret;
     console.log('scan session socket secret: '+ secret);
-    io.emit('session-scanned', {sessionId: sessionId, secret: socket.secret});
+    io.emit('session-scanned', {sessionId: data.sessionId, secret: data.secret});
   })
 
-  socket.on('pause-session', (sessionId) => {
-    io.emit('session-paused', {sessionId: sessionId, secret: socket.secret});
-  })
-
-  socket.on('unpause-session', (sessionId) => {
-    io.emit('session-unpaused', {sessionId: sessionId, secret: socket.secret});
-  })
-
-  socket.on('stop-session', (sessionId) => {
+  socket.on('stop-session', (data) => {
     console.log('stop-session');
-    io.emit('session-stopped', {sesionId: sessionId, secret: socket.secret});
+    io.emit('session-stopped', {sessionId: data.sessionId, secret: data.secret});
     socket.secret = null;
   })
 
-  socket.on('login-qr', (qrToken, userId, authToken) => {
-    console.log('login-qr socket qr token: '+ qrToken);
-    io.emit('user-login', {qrToken: qrToken, authToken: token, userId: userId})
+  socket.on('login-qr', (data) => {
+    console.log('login-qr socket qr token: ', data.qrToken);
+    io.emit('user-login', {qrToken: data.qrToken, authToken: data.authToken, userId: data.userId})
   })
 })
 
