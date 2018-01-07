@@ -69,6 +69,7 @@ io.on('connection', (socket) => {
   })
 
   socket.on('scan-session', (data) => {
+    socket.secret = data.secret;
     console.log('scan session socket secret: '+ secret);
     io.emit('session-scanned', {sessionId: data.sessionId, secret: data.secret});
   })
@@ -76,7 +77,6 @@ io.on('connection', (socket) => {
   socket.on('stop-session', (data) => {
     console.log('stop-session');
     io.emit('session-stopped', {sessionId: data.sessionId, secret: data.secret});
-    socket.secret = null;
   })
 
   socket.on('login-qr', (data) => {
