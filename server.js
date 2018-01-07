@@ -70,7 +70,7 @@ io.on('connection', (socket) => {
 
   socket.on('scan-session', (data) => {
     socket.secret = data.secret;
-    console.log('scan session socket secret: '+ secret);
+    console.log('scan session socket secret');
     io.emit('session-scanned', {sessionId: data.sessionId, secret: data.secret});
   })
 
