@@ -243,6 +243,15 @@ router.get('/profile', passport.authenticate('jwt', {session: false}), (req, res
   res.json({user: req.user});
 });
 
+// user basic info by Id
+router.post('/getUserById', (req, res) => {
+  User.findById(req.body.userId, (err, user) => {
+    if(err) return res.json({success: false, msg: 'Error getting user details'})
+    if(!user) return res.json({success: false, msg: 'No user found!'})
+    res.json({success: true, user: user});
+  })
+})
+
 //generate qr token
 router.post('/generate-qr', (req, res, next) => {
   let token = new UserToken({
