@@ -156,7 +156,7 @@ app.get('/validate_captcha', (req, res) => {
 
   rp(options)
       .then(response => res.json(response))
-      .catch(() => {});
+      .catch((err) => res.sendStatus(err.response.statusCode).send(err.error));
 });
 
 app.post('/admin/storemailer', passport.authenticate('jwt', {session: false}), (req, res) => {

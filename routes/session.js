@@ -40,7 +40,6 @@ var fileUpload = upload.single('upload_file');
 const authOwner = (req, res, callback) => {
   if(req.body.session) {
     let id = req.user.id;
-    console.log(id, req.body.session.userId);
     if(req.body.session.userId !== id) {
       return res.status(403).json({success: false, msg: 'You are not authorized!'});
     }
@@ -101,7 +100,7 @@ router.post('/remove', passport.authenticate('jwt', {session: false}), (req, res
   if(session){
     authOwner(req, res, (err) => {
       Session.removeSession(session, (err) => {
-        if(err) return res.json({success: false, msg: 'Session could not be deleted!', error: err});
+        if(err) return res.json({success: false, msg: 'You are not the creator of this session. Can\'t delete session', error: err});
 
         Img.removeImageBySession(session._id, (err) => {
           if(err) return res.json({success: true, msg: 'Error in removing files!', error: err});
