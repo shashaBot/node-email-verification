@@ -147,6 +147,18 @@ router.post('/updateTitle', passport.authenticate('jwt', {session:false}), (req,
   })
 })
 
+router.post('/updateSession', (req, res) => {
+  let sessionId = req.body._id
+  let name = req.body.sessionname;
+  let categoryId = req.body.categoryId;
+  Session.updateSession(sessionId, {sessionname: name, categoryId: categoryId}, (err) => {
+    if(err) {
+      return res.json({success: false, msg: 'Error in updating session'})
+    }
+    res.json({success: true})
+  })
+})
+
 router.post('/listbycategory', passport.authenticate('jwt', {session: false}), (req, res, next) => {
   if(req.body.isParent) {
     Session.getUserSessionByParentCat(req.user.id, req.body.categoryId, (err, sessions) => {
