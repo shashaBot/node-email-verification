@@ -30,15 +30,6 @@ module.exports.addRootCategory = (newCategory, callback) => {
   newCategory.save(callback);
 }
 
-module.exports.getBottomCats = ( parentId, callback) => {
-  let bottomCatIds = [];
-  getBottomCategoryIds(parentId, parentId, bottomCatIds, (err, cats) => {
-    if(err) return callback(err);
-    console.log(cats);
-    return callback(null, cats);
-  });
-}
-
 module.exports.getSessionCats = (catId, callback) => {
   let cats = {};
   cats.catthree = catId;
@@ -103,32 +94,6 @@ function getSubCats(catId, cats) {
       })
   })
 }
-
-// function getBottomCategoryIds(parentId, currId, catIds, callback) {
-//   Category.find({parentId: currId}, (err, cats) => {
-//     if(err) return callback(err);
-//     if(!cats) return callback(null, null);
-//     cats.forEach((cat, index) => {
-//       if(cat.childcategories.length) {
-//         getBottomCategoryIds(parentId, cat._id, catIds, (err, catIds) => {
-//           console.log('index:', index);
-//           console.log('cats length', cats.length);
-//           console.log('catIds', catIds);
-//           console.log(currId);
-//           console.log(parentId);
-//           if(index === cats.length-1) {
-//             return callback(null, catIds);
-//           }
-//         });
-//       } else {
-//         catIds.push(cat._id);
-//         if(index === cats.length -1){
-//           return callback(null, catIds);
-//         }
-//       }
-//     })
-//   })
-// }
 
 module.exports.addSubCategory = (newCategory, parentId, callback) => {
   Category.findById(parentId, (err, category) => {
