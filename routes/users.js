@@ -55,7 +55,10 @@ router.post('/register', (req, res, next) => {
 // Check if username is available
 router.post('/check_username', (req, res, next) => {
   User.find({username: req.body.username}, (err, users) => {
-    if(err) return res.status(503).end();
+    if(err) {
+      console.log(err);
+      return res.status(501).end();      
+    } 
     if(users.length) return res.json({success: false});
     return res.json({success: true})
   })

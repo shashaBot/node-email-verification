@@ -7,7 +7,6 @@
     "start": "node server"
   },
   "author": "shashaBot",
-  "license": "ISC",
   "dependencies": {
     "bcryptjs": "*",
     "body-parser": "*",

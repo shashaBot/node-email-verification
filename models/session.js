@@ -16,15 +16,6 @@ const SessionSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  isScanned: {
-    type: Boolean,
-    required: true,
-    default: false
-  },
-  categoryname: {
-    type: String,
-    required: true
-  },
   categoryId: {
     type: String,
     required: true

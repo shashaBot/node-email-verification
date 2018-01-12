@@ -53,7 +53,6 @@ router.post('/create', passport.authenticate('jwt', {session: false}), (req, res
     sessionname: req.body.sessionname,
     userId: req.user.id,
     username: req.user.username,
-    categoryname: req.body.categoryname,
     categoryId: req.body.categoryId
   });
   Session.createSession(session, (err, session) => {
@@ -151,10 +150,11 @@ router.post('/updateSession', (req, res) => {
   let sessionId = req.body._id
   let name = req.body.sessionname;
   let categoryId = req.body.categoryId;
-  Session.updateSession(sessionId, {sessionname: name, categoryId: categoryId}, (err) => {
+  Session.updateSession(sessionId, {sessionname: name, categoryId: categoryId}, (err, session) => {
     if(err) {
       return res.json({success: false, msg: 'Error in updating session'})
     }
+    if(!session) return res.json({success: false, msg: 'Invalid session!'})
     res.json({success: true})
   })
 })
