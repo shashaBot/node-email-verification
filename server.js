@@ -177,7 +177,7 @@ app.post('/admin/storemailer', passport.authenticate('jwt', {session: false}), (
   Smtp.updateMailer(newSmtp, (err) => {
     if(err) {
       console.log(err);
-      return res.json({success: false});
+      return res.json({success: false, msg: 'Error in saving SMTP details!'});
     }
     res.json({success: true});
   })

@@ -37,7 +37,7 @@ router.post('/register', (req, res, next) => {
             if (err) { return res.json({success: false, msg: err.message }); }
 
             // Send the email
-            var transporter = nodemailer.createTransport({ service: creds.service, auth: { user: creds.username, pass: creds.password }, host: creds.host, port: creds.port, secure: creds.secure });
+            var transporter = nodemailer.createTransport({ service: creds.service, auth: { user: creds.username, pass: creds.password }, host: creds.host, port: creds.port });
             var mailOptions = { from: creds.mailerId || 'no-reply@email-verify-app.com', to: user.email, subject: 'Please verify your email', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \n' + req.headers.origin + '\/login\/' + email_verify_token.token + '.\n' };
             transporter.sendMail(mailOptions, function (err) {
               if (err) { return res.json({success: false, msg: err.message }); }
@@ -114,11 +114,15 @@ function validateEmail(email) {
 router.post('/forgot_password', (req, res, next) => {
   console.log(req.body.user);
   if(validateEmail(req.body.user)) {
+    console.log('validated email');
     User.getUserByEmail(req.body.user, (err, user) => {
+      if(err) return res.json({success: false, msg: 'Server error!'})
       sendResetLink(user, req, res);      
     });
   } else {
-    User.getUserByUsername(req.body.user, (err, user) => {
+    console.log('not so much an email')
+    User.getUserByUsername2(req.body.user, (err, user) => {
+      if(err) return res.json({success: false, msg: 'Server error!'})
       sendResetLink(user, req, res);   
     });
   }
@@ -134,7 +138,12 @@ function sendResetLink (user, req, res) {
       return res.json({success: false, msg: 'Server error! Please try again.'});
     }
     Smtp.getCredentials((err, creds) => {
-      var transporter = nodemailer.createTransport({ service: 'Sendgrid', auth: { user: creds.username || process.env.SENDGRID_USERNAME , pass: creds.password || process.env.SENDGRID_PASSWORD } });
+      if(err) {
+        console.log(err);
+        return res.json({success: false, msg: 'Server error!'});
+      }
+      console.log('sending email using creds: ', creds);
+      var transporter = nodemailer.createTransport({ service: creds.service, auth: { user: creds.username , pass: creds.password } });
       var mailOptions = { from: creds.mailerId || 'password-reset@teqnihome-app.com', to: user.email, subject: 'Password reset requested', text: 'Hello,\n\n' + 'A password reset request was made for the account associate with this email. Please follow the link to reset your password for Teqnihome Gallery app.\n'+ req.headers.origin + '\/reset_password\/' + forgot_pass_token.token + '.\n' };
       transporter.sendMail(mailOptions, function (err) {
           if (err) {
@@ -195,8 +204,9 @@ router.post('/reset_password', (req, res, next) => {
 router.post('/authenticate', (req, res, next) => {
   const username = req.body.username;
   const password = req.body.password;
+  const isAdmin = req.body.isAdmin;
 
-  User.getUserByUsername(username, (err, user) => {
+  User.getUserByUsername(username, isAdmin, (err, user) => {
     if(err) {
       throw err;
     } else if(!user){
