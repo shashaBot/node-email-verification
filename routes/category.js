@@ -51,7 +51,6 @@ router.post('/getSessionCats', passport.authenticate('jwt', {session: false}), (
 
 router.post('/updatecategory', passport.authenticate('jwt', {session: false}), (req, res, next) => {
   let newcategoryname = req.body.category.newcategoryname;
-  let oldcategoryname = req.body.category.oldcategoryname;
 
   Category.findByIdAndUpdate(req.body.id, { categoryname: newcategoryname },
     function (err, category) {
@@ -66,20 +65,10 @@ router.post('/updatecategory', passport.authenticate('jwt', {session: false}), (
       if (category.parentId) {
         updateUpCategories(category, newcategoryname, (err, newCategory) => {
           if(err) return res.json({success: false});
-          if (category.childcategories.length) {
-            updateBelowCategories(category, newcategoryname, (err) => {
-              if(err) return res.json({success: false});
-              return res.json({ success: true, category: newCategory });
-            });
-          } else {
-            return res.json({success: true, category: newCategory})
-          }
+          return res.json({success: true, category: newCategory})
         });
-      } else if(category.childcategories.length) {
-        updateBelowCategories(category, newcategoryname, (err) => {
-          if(err) return res.json({success: false});
-          return res.json({ success: true });
-        });
+      } else {
+        return res.json({success: true, category: category});
       }
 
     })
