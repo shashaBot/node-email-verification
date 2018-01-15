@@ -77,7 +77,6 @@ router.post('/upload', passport.authenticate('jwt', {session: false}), (req, res
       imagetitle: req.file.originalname,
       imagetype: filetype[0],
       imagedelay: req.body.imagedelay,
-      sessionname: req.body.sessionname,
       sessionId: req.body.sessionId,
       username: req.user.username,
       userId: req.user.id

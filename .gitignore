@@ -60,6 +60,9 @@ directives/
 # dotenv environment variables file
 .env
 
+# uploads folder
+/uploads/
+
 # Envrionment Variables
 **/environment.*
 !**/environment.model.ts

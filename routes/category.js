@@ -33,7 +33,6 @@ router.post('/addrootcategory', passport.authenticate('jwt', {session: false}), 
 router.post('/addsubcategory', passport.authenticate('jwt', {session: false}), (req, res) => {
   let newCategory = new Category({
     categoryname: req.body.categoryname,
-    parentcategory: req.body.parentcategory,
     parentId: req.body.parentId
   })
   Category.addSubCategory(newCategory, req.body.parentId, (err, category) => {
@@ -128,34 +127,10 @@ function updateBelowCategories(category, newcategoryname, next) {
     });
 }
 
-
-// router.post('/deletecategory', passport.authenticate('jwt', {session: false}), (req, res, next) => {
-//   Category.findById(req.body.id, function (err, category) {
-//     if (err) {
-//       console.log(err);
-//       return res.status(500).send();
-//     }
-//     console.log('removed category: ', category);
-//     if (!category) {
-//       return res.status(404).send();
-//     }
-//     category.remove();
-//     if (category.childcategories.length) {
-//       Category.find({ parentId: req.body.id }, function (err, categories) {
-//         deleteBelowCategories(categories, next);
-//       });
-//     }
-//     if (category.parentId) {
-//       deleteUpCategories(category, next);
-//     }
-//     return res.json({ success: true });
-
-//   })
-// });
-
 router.post('/deletecategory', passport.authenticate('jwt', {session: false}), (req, res, next) => {
   if(req.body.warn) {
     Category.getBottomCats(req.body.catId, (err, cats) => {
+      if(err) return res.json({success: false, msg: 'Error in retrieving categories'})
       Session.find({categoryId: {$in: cats}}, (err, sessions) => {
         if(err) return res.json({success: false, msg: 'Server error'})
         if(sessions.length) {
@@ -211,20 +186,6 @@ function deleteUpCategories(catId, next) {
     }
   })
 }
-
-// function deleteUpCategories(category, next) {
-//   Category.findById(category.parentId, function (err, parentCategory) {
-//     if (err) {
-//       console.log(err);
-//       return next(err);
-//     }
-//     let objIndex = parentCategory.childcategories.findIndex(ct => ct._id === category._id.toString());
-//     let removed = parentCategory.childcategories.splice(objIndex, 1);
-//     console.log('removed from parent: ', removed);
-//     parentCategory.save();
-//     return next();
-//   })
-// }
 
 function deleteBelowCategories(categories, next) {
   var connectedCategoryIds = [];

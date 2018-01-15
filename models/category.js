@@ -18,7 +18,7 @@ var Category = mongoose.model('categories', categorySchema);
 module.exports = Category;
 
 module.exports.getRootCategories = (callback) => {
-  Category.find({parentcategory: null}, callback);
+  Category.find({parentId: null}, callback);
 }
 
 module.exports.getSubCategories = (parentId, callback) => {
@@ -69,7 +69,10 @@ function getSubCats(catId, cats) {
     Category.findById(catId).exec()
       .then(cat => {
         let promiseArr = [];
-        if(!cat) return reject(null);
+        if(!cat) {
+          console.log('no cat exist');
+          return reject('EEXIST')
+        };
         if(cat.childcategories.length) {
           cat.childcategories.forEach((child, index) => {
             cats.push(child._id);
@@ -86,6 +89,7 @@ function getSubCats(catId, cats) {
             }
           })
         } else {
+          console.log('no child cat exist');
           resolve([]);
         }
 
