@@ -10,7 +10,6 @@ let childCategorySchema = new mongoose.Schema({
 
 let categorySchema = new mongoose.Schema({
     categoryname: { type: String, required: true },
-    parentcategory: { type: String, default: null },
     parentId: {type: String, default: null},
     childcategories: [childCategorySchema]
 });
@@ -70,6 +69,7 @@ function getSubCats(catId, cats) {
     Category.findById(catId).exec()
       .then(cat => {
         let promiseArr = [];
+        if(!cat) return reject(null);
         if(cat.childcategories.length) {
           cat.childcategories.forEach((child, index) => {
             cats.push(child._id);
