@@ -12,6 +12,8 @@ const rp = require('request-promise');
 const multer = require('multer');
 const Smtp = require('./models/smtp');
 
+const nodemailer = require('nodemailer');
+
 require('dotenv').config();
 
 let isConnectedBefore;
@@ -163,8 +165,10 @@ app.post('/admin/storemailer', passport.authenticate('jwt', {session: false}), (
   //store credentials to db.
   console.log('store mailing: ', req.body)
   let newSmtp = new Smtp({
-    username: req.body.smtpUser,
-    password: req.body.smtpPass,
+    auth: {
+      user: req.body.smtpUser,
+      pass: req.body.smtpPass
+    },
     mailerId: req.body.smtpMailer
   })
   if(req.body.smtpService) {
@@ -174,12 +178,19 @@ app.post('/admin/storemailer', passport.authenticate('jwt', {session: false}), (
     newSmtp.port = req.body.smtpPort
   }
 
-  Smtp.updateMailer(newSmtp, (err) => {
+  let transporter = nodemailer.createTransport(newSmtp);
+
+  transporter.verify((err, success) => {
     if(err) {
-      console.log(err);
-      return res.json({success: false, msg: 'Error in saving SMTP details!'});
+      return res.json({success: false, msg: 'Your SMTP details are not configured properly. Please check and update again!'})
     }
-    res.json({success: true});
+    Smtp.updateMailer(newSmtp, (err) => {
+      if(err) {
+        console.log(err);
+        return res.json({success: false, msg: 'Error in saving SMTP details!'});
+      }
+      res.json({success: true});
+    })    
   })
 });
 
@@ -188,7 +199,7 @@ app.get('/admin/getmailer', passport.authenticate('jwt', {session:false}), (req,
   Smtp.getCredentials((err, smtp) => {
     if(err) return res.json({success: false, msg: 'Server error! Couldn\'t fetch SMTP'})
     if(!smtp) return res.json({success: false, msg: 'No SMTP info found. Please provide SMTP information'});
-    res.json({success: true, mailerId: smtp.mailerId, service: smtp.service, host: smtp.host, port: smtp.port, user: smtp.username});
+    res.json({success: true, mailerId: smtp.mailerId, service: smtp.service, host: smtp.host, port: smtp.port, user: smtp.auth.user});
   })
 })
 

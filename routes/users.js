@@ -146,7 +146,16 @@ function sendResetLink (user, req, res) {
         return res.json({success: false, msg: 'Server error!'});
       }
       console.log('sending email using creds: ', creds);
-      var transporter = nodemailer.createTransport({ service: creds.service, auth: { user: creds.username , pass: creds.password } });
+      let smtpConfig = {
+        auth: {
+          user: creds.auth.user,
+          pass: creds.auth.pass
+        },
+        host: creds.host,
+        port: creds.port,
+        service: creds.service
+      }
+      var transporter = nodemailer.createTransport(smtpConfig);
       var mailOptions = { from: creds.mailerId || 'password-reset@teqnihome-app.com', to: user.email, subject: 'Password reset requested', text: 'Hello,\n\n' + 'A password reset request was made for the account associate with this email. Please follow the link to reset your password for Teqnihome Gallery app.\n'+ req.headers.origin + '\/reset_password\/' + forgot_pass_token.token + '.\n' };
       transporter.sendMail(mailOptions, function (err) {
           if (err) {

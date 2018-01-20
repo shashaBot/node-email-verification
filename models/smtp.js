@@ -8,13 +8,15 @@ const SmtpSchema = mongoose.Schema({
     type: String,
     required: false
   },
-  username: {
-    type: String,
-    required: true
-  },
-  secure: {
-    type: Boolean,
-    default: true
+  auth: {
+  	user: {
+  		type: String,
+  		required: true
+  	},
+  	pass: {
+  		type: String,
+  		required: true
+  	}
   },
   host: {
     type: String,
@@ -23,10 +25,6 @@ const SmtpSchema = mongoose.Schema({
   port: {
     type: String,
     require: false
-  },
-  password: {
-    type: String,
-    required: true
   },
   mailerId: {
     type: String,
