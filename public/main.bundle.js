@@ -74,8 +74,8 @@ var AdminLoginComponent = (function () {
         this.router = router;
         this.toastr = toastr;
         this.captchaKey = __WEBPACK_IMPORTED_MODULE_5__environments_environment__["a" /* environment */].captchaKey;
-        this.username = new __WEBPACK_IMPORTED_MODULE_1__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_1__angular_forms__["j" /* Validators */].required);
-        this.password = new __WEBPACK_IMPORTED_MODULE_1__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_1__angular_forms__["j" /* Validators */].required);
+        this.username = new __WEBPACK_IMPORTED_MODULE_1__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_1__angular_forms__["k" /* Validators */].required);
+        this.password = new __WEBPACK_IMPORTED_MODULE_1__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_1__angular_forms__["k" /* Validators */].required);
         this.captcha = new __WEBPACK_IMPORTED_MODULE_1__angular_forms__["c" /* FormControl */](null);
         this.adminLoginForm = new __WEBPACK_IMPORTED_MODULE_1__angular_forms__["d" /* FormGroup */]({
             username: this.username,
@@ -430,10 +430,10 @@ var AdminComponent = (function () {
         }
         this.categoryService.storeMailing(credentials).subscribe(function (res) {
             if (res.success) {
-                _this.toastr.success('SMTP options saved!', 'Error');
+                _this.toastr.success('SMTP options saved!', 'Success');
             }
             else {
-                _this.toastr.error('Error occured!', 'Success');
+                _this.toastr.error(res.msg || 'There was an error', 'Error');
             }
         });
     };
@@ -563,17 +563,18 @@ var AppComponent = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_28__upload_upload_component__ = __webpack_require__("../../../../../src/app/upload/upload.component.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_29__shared_auth_guard__ = __webpack_require__("../../../../../src/app/shared/auth.guard.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_30__shared_login_guard__ = __webpack_require__("../../../../../src/app/shared/login.guard.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__register_register_component__ = __webpack_require__("../../../../../src/app/register/register.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__popup_popup_component__ = __webpack_require__("../../../../../src/app/popup/popup.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_33__session_qr_session_qr_component__ = __webpack_require__("../../../../../src/app/session-qr/session-qr.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_34__qr_login_qr_login_component__ = __webpack_require__("../../../../../src/app/qr-login/qr-login.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_35__reset_password_reset_password_component__ = __webpack_require__("../../../../../src/app/reset-password/reset-password.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_36__forgot_password_forgot_password_component__ = __webpack_require__("../../../../../src/app/forgot-password/forgot-password.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_37__confirm_popup_confirm_popup_component__ = __webpack_require__("../../../../../src/app/confirm-popup/confirm-popup.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_38__environments_environment__ = __webpack_require__("../../../../../src/environments/environment.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_39__admin_login_admin_login_component__ = __webpack_require__("../../../../../src/app/admin-login/admin-login.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_40_ngx_loading__ = __webpack_require__("../../../../ngx-loading/ngx-loading/ngx-loading.es5.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_41__validator_username__ = __webpack_require__("../../../../../src/app/validator.username.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__shared_admin_guard__ = __webpack_require__("../../../../../src/app/shared/admin.guard.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__register_register_component__ = __webpack_require__("../../../../../src/app/register/register.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_33__popup_popup_component__ = __webpack_require__("../../../../../src/app/popup/popup.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_34__session_qr_session_qr_component__ = __webpack_require__("../../../../../src/app/session-qr/session-qr.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_35__qr_login_qr_login_component__ = __webpack_require__("../../../../../src/app/qr-login/qr-login.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_36__reset_password_reset_password_component__ = __webpack_require__("../../../../../src/app/reset-password/reset-password.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_37__forgot_password_forgot_password_component__ = __webpack_require__("../../../../../src/app/forgot-password/forgot-password.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_38__confirm_popup_confirm_popup_component__ = __webpack_require__("../../../../../src/app/confirm-popup/confirm-popup.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_39__environments_environment__ = __webpack_require__("../../../../../src/environments/environment.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_40__admin_login_admin_login_component__ = __webpack_require__("../../../../../src/app/admin-login/admin-login.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_41_ngx_loading__ = __webpack_require__("../../../../ngx-loading/ngx-loading/ngx-loading.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_42__validator_username__ = __webpack_require__("../../../../../src/app/validator.username.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -622,7 +623,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 
 
-var ioConfig = { url: __WEBPACK_IMPORTED_MODULE_38__environments_environment__["a" /* environment */].socketUrl, options: {} };
+
+var ioConfig = { url: __WEBPACK_IMPORTED_MODULE_39__environments_environment__["a" /* environment */].socketUrl, options: {} };
 // const loadingConfig = {}
 var ROUTES = [
     {
@@ -641,19 +643,19 @@ var ROUTES = [
     },
     {
         path: 'qr-login',
-        component: __WEBPACK_IMPORTED_MODULE_34__qr_login_qr_login_component__["a" /* QrLoginComponent */]
+        component: __WEBPACK_IMPORTED_MODULE_35__qr_login_qr_login_component__["a" /* QrLoginComponent */]
     },
     {
         path: 'register',
-        component: __WEBPACK_IMPORTED_MODULE_31__register_register_component__["a" /* RegisterComponent */]
+        component: __WEBPACK_IMPORTED_MODULE_32__register_register_component__["a" /* RegisterComponent */]
     },
     {
         path: 'forgot_password',
-        component: __WEBPACK_IMPORTED_MODULE_36__forgot_password_forgot_password_component__["a" /* ForgotPasswordComponent */]
+        component: __WEBPACK_IMPORTED_MODULE_37__forgot_password_forgot_password_component__["a" /* ForgotPasswordComponent */]
     },
     {
         path: 'reset_password/:token',
-        component: __WEBPACK_IMPORTED_MODULE_35__reset_password_reset_password_component__["a" /* ResetPasswordComponent */]
+        component: __WEBPACK_IMPORTED_MODULE_36__reset_password_reset_password_component__["a" /* ResetPasswordComponent */]
     },
     {
         path: 'images',
@@ -671,7 +673,7 @@ var ROUTES = [
     },
     {
         path: 'session-qr',
-        component: __WEBPACK_IMPORTED_MODULE_33__session_qr_session_qr_component__["a" /* SessionQrComponent */],
+        component: __WEBPACK_IMPORTED_MODULE_34__session_qr_session_qr_component__["a" /* SessionQrComponent */],
         canActivate: [__WEBPACK_IMPORTED_MODULE_29__shared_auth_guard__["a" /* AuthGuard */]]
     },
     {
@@ -687,10 +689,10 @@ var ROUTES = [
     {
         path: 'admin',
         component: __WEBPACK_IMPORTED_MODULE_23__admin_admin_component__["a" /* AdminComponent */],
-        canActivate: [__WEBPACK_IMPORTED_MODULE_29__shared_auth_guard__["a" /* AuthGuard */]]
+        canActivate: [__WEBPACK_IMPORTED_MODULE_29__shared_auth_guard__["a" /* AuthGuard */], __WEBPACK_IMPORTED_MODULE_31__shared_admin_guard__["a" /* AdminGuard */]]
     }, {
         path: 'admin-login',
-        component: __WEBPACK_IMPORTED_MODULE_39__admin_login_admin_login_component__["a" /* AdminLoginComponent */]
+        component: __WEBPACK_IMPORTED_MODULE_40__admin_login_admin_login_component__["a" /* AdminLoginComponent */]
     }
 ];
 var AppModule = (function () {
@@ -708,20 +710,20 @@ var AppModule = (function () {
                 __WEBPACK_IMPORTED_MODULE_28__upload_upload_component__["a" /* UploadComponent */],
                 __WEBPACK_IMPORTED_MODULE_23__admin_admin_component__["a" /* AdminComponent */],
                 __WEBPACK_IMPORTED_MODULE_6_ng2_file_upload__["FileSelectDirective"],
-                __WEBPACK_IMPORTED_MODULE_31__register_register_component__["a" /* RegisterComponent */],
-                __WEBPACK_IMPORTED_MODULE_32__popup_popup_component__["a" /* PopupComponent */],
+                __WEBPACK_IMPORTED_MODULE_32__register_register_component__["a" /* RegisterComponent */],
+                __WEBPACK_IMPORTED_MODULE_33__popup_popup_component__["a" /* PopupComponent */],
                 __WEBPACK_IMPORTED_MODULE_16__shared_ionCaptcha_directive__["a" /* IonCaptchaDirective */],
-                __WEBPACK_IMPORTED_MODULE_33__session_qr_session_qr_component__["a" /* SessionQrComponent */],
-                __WEBPACK_IMPORTED_MODULE_34__qr_login_qr_login_component__["a" /* QrLoginComponent */],
-                __WEBPACK_IMPORTED_MODULE_35__reset_password_reset_password_component__["a" /* ResetPasswordComponent */],
-                __WEBPACK_IMPORTED_MODULE_36__forgot_password_forgot_password_component__["a" /* ForgotPasswordComponent */],
-                __WEBPACK_IMPORTED_MODULE_37__confirm_popup_confirm_popup_component__["a" /* ConfirmPopupComponent */],
-                __WEBPACK_IMPORTED_MODULE_39__admin_login_admin_login_component__["a" /* AdminLoginComponent */],
+                __WEBPACK_IMPORTED_MODULE_34__session_qr_session_qr_component__["a" /* SessionQrComponent */],
+                __WEBPACK_IMPORTED_MODULE_35__qr_login_qr_login_component__["a" /* QrLoginComponent */],
+                __WEBPACK_IMPORTED_MODULE_36__reset_password_reset_password_component__["a" /* ResetPasswordComponent */],
+                __WEBPACK_IMPORTED_MODULE_37__forgot_password_forgot_password_component__["a" /* ForgotPasswordComponent */],
+                __WEBPACK_IMPORTED_MODULE_38__confirm_popup_confirm_popup_component__["a" /* ConfirmPopupComponent */],
+                __WEBPACK_IMPORTED_MODULE_40__admin_login_admin_login_component__["a" /* AdminLoginComponent */],
             ],
             imports: [
                 __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__["a" /* BrowserModule */],
                 __WEBPACK_IMPORTED_MODULE_2__angular_forms__["e" /* FormsModule */],
-                __WEBPACK_IMPORTED_MODULE_2__angular_forms__["i" /* ReactiveFormsModule */],
+                __WEBPACK_IMPORTED_MODULE_2__angular_forms__["j" /* ReactiveFormsModule */],
                 __WEBPACK_IMPORTED_MODULE_3__ng_bootstrap_ng_bootstrap__["a" /* NgbModule */].forRoot(),
                 __WEBPACK_IMPORTED_MODULE_4__angular_http__["HttpModule"],
                 __WEBPACK_IMPORTED_MODULE_9_videogular2_core__["VgCoreModule"],
@@ -736,11 +738,11 @@ var AppModule = (function () {
                 }),
                 __WEBPACK_IMPORTED_MODULE_15_ng2_bootstrap_modal__["BootstrapModalModule"].forRoot({ container: document.body }),
                 __WEBPACK_IMPORTED_MODULE_14_ng_socket_io__["SocketIoModule"].forRoot(ioConfig),
-                __WEBPACK_IMPORTED_MODULE_40_ngx_loading__["a" /* LoadingModule */]
+                __WEBPACK_IMPORTED_MODULE_41_ngx_loading__["a" /* LoadingModule */]
             ],
             entryComponents: [
-                __WEBPACK_IMPORTED_MODULE_32__popup_popup_component__["a" /* PopupComponent */],
-                __WEBPACK_IMPORTED_MODULE_37__confirm_popup_confirm_popup_component__["a" /* ConfirmPopupComponent */]
+                __WEBPACK_IMPORTED_MODULE_33__popup_popup_component__["a" /* PopupComponent */],
+                __WEBPACK_IMPORTED_MODULE_38__confirm_popup_confirm_popup_component__["a" /* ConfirmPopupComponent */]
             ],
             providers: [
                 __WEBPACK_IMPORTED_MODULE_25__shared_image_service__["a" /* ImageService */],
@@ -748,8 +750,9 @@ var AppModule = (function () {
                 __WEBPACK_IMPORTED_MODULE_26__shared_category_service__["a" /* CategoryService */],
                 __WEBPACK_IMPORTED_MODULE_29__shared_auth_guard__["a" /* AuthGuard */],
                 __WEBPACK_IMPORTED_MODULE_30__shared_login_guard__["a" /* LoginGuard */],
+                __WEBPACK_IMPORTED_MODULE_31__shared_admin_guard__["a" /* AdminGuard */],
                 __WEBPACK_IMPORTED_MODULE_5__shared_http_interceptor__["a" /* HttpInterceptor */],
-                __WEBPACK_IMPORTED_MODULE_41__validator_username__["a" /* UsernameValidator */]
+                __WEBPACK_IMPORTED_MODULE_42__validator_username__["a" /* UsernameValidator */]
             ],
             bootstrap: [__WEBPACK_IMPORTED_MODULE_18__app_component__["a" /* AppComponent */]]
         })
@@ -764,7 +767,7 @@ var AppModule = (function () {
 /***/ "../../../../../src/app/confirm-popup/confirm-popup.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"modal-dialog\">\n  <div class=\"modal-content\">\n     <div class=\"modal-header\">\n       <button type=\"button\" class=\"close\" (click)=\"close()\" >&times;</button>\n       <h4 class=\"modal-title\">{{title || 'Confirm'}}</h4>\n     </div>\n     <div class=\"modal-body\">\n       <p>{{message || 'Are you sure you want to proceed?'}}</p>\n     </div>\n     <div class=\"modal-footer\">\n       <button type=\"button\" class=\"btn btn-primary\" (click)=\"confirm()\">Confirm</button>\n       <button type=\"button\" class=\"btn btn-default\" (click)=\"close()\" >Cancel</button>\n    </div>\n  </div>\n </div>"
+module.exports = "<div class=\"modal-dialog\">\n  <div class=\"modal-content\">\n     <div class=\"modal-header\">\n        <h4 class=\"modal-title\">{{title || 'Confirm'}}</h4>\n        <button type=\"button\" class=\"close\" (click)=\"close()\" data-dismiss=\"modal\" aria-label=\"Close\">\n          <span aria-hidden=\"true\">&times;</span>\n        </button>\n     </div>\n     <div class=\"modal-body\">\n       <p>{{message || 'Are you sure you want to proceed?'}}</p>\n     </div>\n     <div class=\"modal-footer\">\n       <button type=\"button\" class=\"btn btn-primary\" (click)=\"confirm()\">Confirm</button>\n       <button type=\"button\" class=\"btn btn-default\" (click)=\"close()\" >Cancel</button>\n    </div>\n  </div>\n </div>"
 
 /***/ }),
 
@@ -842,7 +845,7 @@ var ConfirmPopupComponent = (function (_super) {
 /***/ "../../../../../src/app/forgot-password/forgot-password.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container\">\n\n  <form class=\"form-signin\" (ngSubmit)=\"onForgot()\" [formGroup]=\"forgotPassForm\">\n    <h2 class=\"form-signin-heading\">Forgot Password</h2>\n    <label for=\"user\" class=\"sr-only\">Username/Email</label>\n    <input type=\"email\" id=\"user\" formControlName=\"user\" class=\"form-control\" placeholder=\"Username/Email\" required autofocus>\n    <div class=\"captcha-div\" ionCaptcha [key]=\"captchaKey\" formControlName=\"captcha\"></div>    \n    <button class=\"btn btn-lg btn-warning btn-block\" type=\"submit\">Send me Reset Link</button>\n  </form>\n\n</div>\n\n"
+module.exports = "<div class=\"container\">\n    <ngx-loading [show]=\"isLoading\"></ngx-loading>\n    <form class=\"form-signin\" (ngSubmit)=\"onForgot()\" [formGroup]=\"forgotPassForm\">\n        <h2 class=\"form-signin-heading\">Forgot Password</h2>\n        <label for=\"user\" class=\"sr-only\">Username/Email</label>\n        <input type=\"email\" id=\"user\" formControlName=\"user\" class=\"form-control\" placeholder=\"Username/Email\" required autofocus>\n        <div class=\"captcha-div\" ionCaptcha [key]=\"captchaKey\" formControlName=\"captcha\"></div>\n        <button class=\"btn btn-lg btn-warning btn-block\" [disabled]=\"forgotPassForm.invalid\" type=\"submit\">Send me Reset Link</button>\n    </form>\n</div>"
 
 /***/ }),
 
@@ -873,6 +876,7 @@ module.exports = module.exports.toString();
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__shared_auth_service__ = __webpack_require__("../../../../../src/app/shared/auth.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_ngx_toastr__ = __webpack_require__("../../../../ngx-toastr/toastr.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__environments_environment__ = __webpack_require__("../../../../../src/environments/environment.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -886,15 +890,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 var ForgotPasswordComponent = (function () {
     function ForgotPasswordComponent(auth, toastr) {
         this.auth = auth;
         this.toastr = toastr;
         this.forgotPassForm = new __WEBPACK_IMPORTED_MODULE_1__angular_forms__["d" /* FormGroup */]({
-            user: new __WEBPACK_IMPORTED_MODULE_1__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_1__angular_forms__["j" /* Validators */].required),
+            user: new __WEBPACK_IMPORTED_MODULE_1__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_1__angular_forms__["k" /* Validators */].required),
             captcha: new __WEBPACK_IMPORTED_MODULE_1__angular_forms__["c" /* FormControl */]()
         });
-        this.captchaKey = '6LevrjQUAAAAAM5WB0Xu_ttsNRqpXeSPV6F0_zek';
+        this.captchaKey = __WEBPACK_IMPORTED_MODULE_4__environments_environment__["a" /* environment */].captchaKey;
+        this.isLoading = false;
     }
     ForgotPasswordComponent.prototype.ngOnInit = function () {
         this.auth.logout();
@@ -903,13 +909,17 @@ var ForgotPasswordComponent = (function () {
         var _this = this;
         var user = this.forgotPassForm.value.user;
         console.log(user);
+        this.isLoading = true;
         this.auth.sendResetLink(user).subscribe(function (res) {
+            _this.isLoading = false;
             if (res.success) {
                 _this.toastr.success(res.msg, 'Success');
             }
             else {
                 _this.toastr.error(res.msg, 'Error');
             }
+        }, function (error) {
+            _this.isLoading = false;
         });
     };
     ForgotPasswordComponent = __decorate([
@@ -931,7 +941,7 @@ var ForgotPasswordComponent = (function () {
 /***/ "../../../../../src/app/gallery/gallery.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<main role=\"main\">\n    <div class=\"album text-muted\">\n        <div class=\"container\">\n            <ngx-loading [show]=\"isLoading\"></ngx-loading>\n            <div class=\"row\">\n                <div class=\"card search-form-card\">\n                    <div class=\"card-body\">\n                        <h4 class=\"card-title\">Search categories</h4>\n                        <form class=\"form-inline\" novalidate>\n                            <select class=\"custom-select mb-3 form-control\" [ngModel]=\"catone\" (ngModelChange)=\"catSelect(1, $event)\" name=\"catone_select\">\n                                <option [value]=\"cat._id\" *ngFor=\"let cat of catones\">{{cat.categoryname}}</option>\n                            </select>\n                            <select class=\"custom-select mb-3 form-control\" [disabled]=\"!cattwos?.length\" [ngModel]=\"cattwo\" (ngModelChange)=\"catSelect(2, $event)\" name=\"cattwo_select\">\n                                <option [value]=\"cat._id\" *ngFor=\"let cat of cattwos\">{{cat.categoryname}}</option>\n                            </select>\n                            <select class=\"custom-select mb-3 form-control\" [disabled]=\"!catthrees?.length\" (ngModelChange)=\"catSelect(2, $event)\" name=\"catthree_select\">\n                                <option [value]=\"cat._id\" *ngFor=\"let cat of catthrees\">{{cat.categoryname}}</option>\n                            </select>\n                        </form>\n                    </div>\n                </div>\n            </div>\n            <div class=\"row justify-content-center mx-0\">\n                <div class=\"col col-md-4 col-xs-12\" *ngFor=\"let session of totalSessions; let i=index\">\n                    <div class=\"card\">\n                        <div class=\"qr-div\">\n                            <qr-code class=\"qr-code\" [value]=\"JSON.stringify(qrCodes[i])\" [size]=\"160\"></qr-code>\n                        </div>\n                        <div class=\"card-body\">\n                            <h5 class=\"card-title text-center\">{{session.sessionname}}</h5>\n                            <div class=\"row justify-content-space-evenly\">\n                                <div class=\"col text-center\">\n                                    <button class=\"btn btn-primary\" (click)=\"startSlideShow(session)\">\n                                        <i class=\"icon ion-play\"></i>\n                                    </button>\n                                </div>\n                                <div class=\"col text-center\">\n                                    <a class=\"btn btn-outline-danger\" [routerLink]=\"['/edit-session', session._id]\">\n                                        <i class=\"icon ion-edit\"></i>\n                                    </a>        \n                                </div>\n                            </div>\n                        </div>\n                        <div class=\"card-footer text-muted\">\n                            Created: {{session.createdAt | date}}\n                        </div>\n                    </div>\n                </div>\n                <div class=\"col col-xs-12\" *ngIf=\"!totalSessions.length\">\n                    <div class=\"card\">\n                        <div class=\"card-title text-center\">\n                            No sessions found\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</main>"
+module.exports = "<main role=\"main\">\n    <div class=\"album text-muted\">\n        <div class=\"container\">\n            <ngx-loading [show]=\"isLoading\"></ngx-loading>\n            <div class=\"row\">\n                <div class=\"card search-form-card\">\n                    <div class=\"card-body\">\n                        <h4 class=\"card-title\">Search categories</h4>\n                        <form class=\"form-inline\" novalidate>\n                            <select class=\"custom-select mb-3 form-control\" [ngModel]=\"catone\" (ngModelChange)=\"catSelect(1, $event)\" name=\"catone_select\">\n                                <option [value]=\"cat._id\" *ngFor=\"let cat of catones\">{{cat.categoryname}}</option>\n                            </select>\n                            <select class=\"custom-select mb-3 form-control\" [disabled]=\"!cattwos?.length\" [ngModel]=\"cattwo\" (ngModelChange)=\"catSelect(2, $event)\" name=\"cattwo_select\">\n                                <option [value]=\"cat._id\" *ngFor=\"let cat of cattwos\">{{cat.categoryname}}</option>\n                            </select>\n                            <select class=\"custom-select mb-3 form-control\" [disabled]=\"!catthrees?.length\" [ngModel]=\"catthree\" (ngModelChange)=\"catSelect(3, $event)\" name=\"catthree_select\">\n                                <option [value]=\"cat._id\" *ngFor=\"let cat of catthrees\">{{cat.categoryname}}</option>\n                            </select>\n                        </form>\n                    </div>\n                </div>\n            </div>\n            <div class=\"row justify-content-start mx-0\">\n                <div class=\"col col-md-4 col-xs-12\" *ngFor=\"let session of totalSessions; let i=index\">\n                    <div class=\"card\">\n                        <div class=\"qr-div\">\n                            <qr-code class=\"qr-code\" [value]=\"JSON.stringify(qrCodes[i])\" [size]=\"160\"></qr-code>\n                        </div>\n                        <div class=\"card-body\">\n                            <h5 class=\"card-title text-center\">{{session.sessionname}}</h5>\n                            <div class=\"row justify-content-space-evenly\">\n                                <div class=\"col text-center\">\n                                    <button class=\"btn btn-primary\" (click)=\"startSlideShow(session)\">\n                                        <i class=\"icon ion-play\"></i>\n                                    </button>\n                                </div>\n                                <div class=\"col text-center\">\n                                    <a class=\"btn btn-outline-danger\" [routerLink]=\"['/edit-session', session._id]\">\n                                        <i class=\"icon ion-edit\"></i>\n                                    </a>        \n                                </div>\n                            </div>\n                        </div>\n                        <div class=\"card-footer text-muted\">\n                            Created: {{session.createdAt | date}}\n                        </div>\n                    </div>\n                </div>\n                <div class=\"col col-xs-12\" *ngIf=\"!totalSessions.length\">\n                    <div class=\"card\">\n                        <div class=\"card-title text-center\">\n                            No sessions found\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</main>"
 
 /***/ }),
 
@@ -1151,6 +1161,7 @@ var GalleryComponent = (function () {
         }
         else if (which == 3) {
             this.catthree = e;
+            this.populateSessions(e);
         }
     };
     GalleryComponent.prototype.startSlideShow = function (session) {
@@ -1388,7 +1399,7 @@ var ImageComponent = (function () {
 /***/ "../../../../../src/app/login/login.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container\">\n\n  <form class=\"form-signin\" (ngSubmit)=\"onLogin()\" [formGroup]=\"logIn\">\n    <h2 class=\"form-signin-heading\">Please sign in</h2>\n    <label for=\"username\" class=\"sr-only\">Username</label>\n    <input type=\"text\" id=\"username\" formControlName=\"username\" class=\"form-control\" placeholder=\"Username\" [ngClass]=\"checkValid(username)\" autofocus>\n    <div class=\"invalid-feedback\" *ngIf=\"username.errors?.required && (username.touched || username.dirty)\">Username is required</div>\n    <label for=\"password\" class=\"sr-only\">Password</label>\n    <input type=\"password\" id=\"password\" formControlName=\"password\" class=\"form-control\" placeholder=\"Password\" [ngClass]=\"checkValid(password)\" >\n    <div class=\"invalid-feedback\" *ngIf=\"password.errors?.required && (password.touched || password.dirty)\">Password is required</div>\n    <a class=\"btn btn-link\" routerLink=\"/forgot_password\">Forgot Password?</a>\n    <div class=\"captcha-div\" ionCaptcha [key]=\"captchaKey\" formControlName=\"captcha\"></div>\n    <button class=\"btn btn-lg btn-primary btn-block\" type=\"submit\" [disabled]=\"!logIn.valid && !isLoading\">Sign in</button>\n    <button class=\"btn btn-outline-primary btn-block\" routerLink=\"/register\">Create an account</button>\n  </form>\n\n</div>\n"
+module.exports = "<div class=\"container\">\n\n  <form class=\"form-signin\" (ngSubmit)=\"onLogin()\" [formGroup]=\"logIn\">\n    <h2 class=\"form-signin-heading\">Please sign in</h2>\n    <label for=\"username\" class=\"sr-only\">Username</label>\n    <input type=\"text\" id=\"username\" formControlName=\"username\" class=\"form-control\" placeholder=\"Username\" [ngClass]=\"checkValid(username)\">\n    <div class=\"invalid-feedback\" *ngIf=\"username.errors?.required && (username.touched || username.dirty)\">Username is required</div>\n    <label for=\"password\" class=\"sr-only\">Password</label>\n    <input type=\"password\" id=\"password\" formControlName=\"password\" class=\"form-control\" placeholder=\"Password\" [ngClass]=\"checkValid(password)\" >\n    <div class=\"invalid-feedback\" *ngIf=\"password.errors?.required && (password.touched || password.dirty)\">Password is required</div>\n    <a class=\"btn btn-link\" routerLink=\"/forgot_password\">Forgot Password?</a>\n    <div class=\"captcha-div\" ionCaptcha [key]=\"captchaKey\" formControlName=\"captcha\"></div>\n    <button class=\"btn btn-lg btn-primary btn-block\" type=\"submit\" [disabled]=\"!logIn.valid && !isLoading\">Sign in</button>\n    <button class=\"btn btn-outline-primary btn-block\" routerLink=\"/register\">Create an account</button>\n  </form>\n\n</div>\n"
 
 /***/ }),
 
@@ -1445,8 +1456,8 @@ var LoginComponent = (function () {
         this.toastr = toastr;
         this.isLoading = false;
         this.captchaKey = __WEBPACK_IMPORTED_MODULE_5__environments_environment__["a" /* environment */].captchaKey;
-        this.username = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["j" /* Validators */].required);
-        this.password = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["j" /* Validators */].required);
+        this.username = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required);
+        this.password = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required);
         this.captcha = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null);
         this.logIn = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["d" /* FormGroup */]({
             username: this.username,
@@ -1593,7 +1604,7 @@ var PopupComponent = (function (_super) {
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
             selector: 'popup',
             styles: [__webpack_require__("../../../../../src/app/popup/popup.component.scss")],
-            template: "<div class=\"modal-dialog\">\n                <div class=\"modal-content\">\n                   <div class=\"modal-header\">\n                     <button type=\"button\" class=\"close\" (click)=\"close()\" >&times;</button>\n                     <h4 class=\"modal-title\">{{title || 'Confirm'}}</h4>\n                   </div>\n                   <div class=\"modal-body\">\n                     <p>{{message || 'Enter image delay and title for'+filename}}</p>\n                     <input class=\"form-control\" placeholder=\"Delay (in seconds)\" type=\"number\" [(ngModel)]=\"delay\"/>\n                     <br>\n                     <input class=\"form-control\" placeholder=\"Title\" type=\"text\" [(ngModel)]=\"imgTitle\"/>\n                   </div>\n                   <div class=\"modal-footer\">\n                     <button type=\"button\" class=\"btn btn-primary\" (click)=\"confirm()\">OK</button>\n                     <button type=\"button\" class=\"btn btn-default\" (click)=\"close()\" >Cancel</button>\n                   </div>\n                 </div>\n              </div>"
+            template: "<div class=\"modal-dialog\">\n                <div class=\"modal-content\">\n                   <div class=\"modal-header\">\n                      <h4 class=\"modal-title\">{{title || 'Confirm'}}</h4>\n                      <button type=\"button\" class=\"close\" (click)=\"close()\" data-dismiss=\"modal\" aria-label=\"Close\">\n                        <span aria-hidden=\"true\">&times;</span>\n                      </button>                     \n                   </div>\n                   <div class=\"modal-body\">\n                     <p>{{message || 'Enter image delay and title for'+filename}}</p>\n                     <input class=\"form-control\" placeholder=\"Delay (in seconds)\" type=\"number\" [(ngModel)]=\"delay\"/>\n                     <br>\n                     <input class=\"form-control\" placeholder=\"Title\" type=\"text\" [(ngModel)]=\"imgTitle\"/>\n                   </div>\n                   <div class=\"modal-footer\">\n                     <button type=\"button\" class=\"btn btn-primary\" (click)=\"confirm()\">OK</button>\n                     <button type=\"button\" class=\"btn btn-default\" (click)=\"close()\" >Cancel</button>\n                   </div>\n                 </div>\n              </div>"
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ng2_bootstrap_modal__["DialogService"]])
     ], PopupComponent);
@@ -1720,7 +1731,7 @@ var QrLoginComponent = (function () {
 /***/ "../../../../../src/app/register/register.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container\">\n    <form class=\"form-signin\" (ngSubmit)=\"onRegister()\" [formGroup]=\"registerForm\">\n        <h2 class=\"form-signin-heading\">Create an account</h2>\n        \n        <label for=\"name\" class=\"sr-only\">Name</label>\n        <input type=\"text\" id=\"name\" formControlName=\"name\" class=\"form-control\" placeholder=\"Name\" required autofocus [ngClass]=\"checkValid(name)\">\n        <div class=\"invalid-feedback\" *ngIf=\"name.errors?.required && (name.touched || name.dirty)\">\n            Name is required\n        </div>\n        \n        <label for=\"username\" class=\"sr-only\">Username</label>\n        <input type=\"text\" id=\"username\" formControlName=\"username\" class=\"form-control\" placeholder=\"Username\" required autofocus [ngClass]=\"checkValid(username)\">\n        <div class=\"invalid-feedback\" *ngIf=\"username.errors?.required && (username.touched || username.dirty)\">Username is required</div>\n        <div class=\"invalid-feedback\" *ngIf=\"!username.errors?.required && username.errors?.usernameInUse && (username.touched || username.dirty)\">Username is not available</div>\n\n        <label for=\"email\" class=\"sr-only\" >Email</label>\n        <input type=\"email\" id=\"email\" formControlName=\"email\" class=\"form-control\" placeholder=\"Email\" required autofocus [ngClass]=\"checkValid(email)\">\n        <div class=\"invalid-feedback\" *ngIf=\"email.errors?.required && (email.touched || email.dirty)\">Email is required</div>\n        <div class=\"invalid-feedback\" *ngIf=\"!email.errors?.required && email.errors?.email && (email.touched || email.dirty)\">Provide a valid email address</div>\n        \n        <label for=\"password\" class=\"sr-only\">Password</label>\n        <input type=\"password\" id=\"password\" formControlName=\"password\" class=\"form-control\" placeholder=\"Password\" required [ngClass]=\"checkValid(email)\">\n        <div class=\"invalid-feedback\" *ngIf=\"password.errors?.required && (password.touched || password.dirty)\">Password is required</div>\n        <div class=\"invalid-feedback\" *ngIf=\"password.errors?.pattern && (password.touched || password.dirty)\">Must contain one lowercase, one uppercase, one numeral and a special character.</div>\n        <div class=\"invalid-feedback\" *ngIf=\"password.errors?.minLength && (password.touched || password.dirty)\">Password must be 8 characters long</div>\n        \n        <input type=\"password\" id=\"confirm_pass\" formControlName=\"confirmPass\" [ngClass]=\"checkValid(confirmPass)\">\n        <div class=\"invalid-feedback\" *ngIf=\"confirmPass.errors?.required && (confirmPass.touched || confirmPass.dirty)\">Passwords don't match</div>\n\n        <div class=\"captcha-div\" ionCaptcha [key]=\"captchaKey\" formControlName=\"captcha\"></div>\n        \n        <button class=\"btn btn-lg btn-primary btn-block\" type=\"submit\" [disabled]=\"!registerForm.valid\">Register</button>\n    </form>\n</div>"
+module.exports = "<div class=\"container\">\n    <form class=\"form-signin\" (ngSubmit)=\"onRegister()\" [formGroup]=\"registerForm\">\n        <h2 class=\"form-signin-heading\">Create an account</h2>\n        \n        <label for=\"name\" class=\"sr-only\">Name</label>\n        <input type=\"text\" id=\"name\" formControlName=\"name\" class=\"form-control\" placeholder=\"Name\" required  [ngClass]=\"checkValid(name)\">\n        <div class=\"invalid-feedback\" *ngIf=\"name.errors?.required && (name.touched || name.dirty)\">\n            Name is required\n        </div>\n        \n        <label for=\"username\" class=\"sr-only\">Username</label>\n        <input type=\"text\" id=\"username\" formControlName=\"username\" class=\"form-control\" placeholder=\"Username\" required  [ngClass]=\"checkValid(username)\">\n        <div class=\"invalid-feedback\" *ngIf=\"username.errors?.required && (username.touched || username.dirty)\">Username is required</div>\n        <div class=\"invalid-feedback\" *ngIf=\"!username.errors?.required && username.errors?.usernameInUse && (username.touched || username.dirty)\">Username is not available</div>\n\n        <label for=\"email\" class=\"sr-only\" >Email</label>\n        <input type=\"email\" id=\"email\" formControlName=\"email\" class=\"form-control\" placeholder=\"Email\" required  [ngClass]=\"checkValid(email)\">\n        <div class=\"invalid-feedback\" *ngIf=\"email.errors?.required && (email.touched || email.dirty)\">Email is required</div>\n        <div class=\"invalid-feedback\" *ngIf=\"!email.errors?.required && email.errors?.email && (email.touched || email.dirty)\">Provide a valid email address</div>\n        \n        <label for=\"password\" class=\"sr-only\">Password</label>\n        <input type=\"password\" id=\"password\" formControlName=\"password\" class=\"form-control\" placeholder=\"Password\" required [ngClass]=\"checkValid(password)\">\n        <div class=\"invalid-feedback\" *ngIf=\"password.errors?.required && (password.touched || password.dirty)\">Password is required</div>\n        <div class=\"invalid-feedback\" *ngIf=\"password.errors?.pattern && !password.errors?.minLength && (password.touched || password.dirty)\">Must contain one lowercase, one uppercase, one numeral and a special character. Min length: 8 characters</div>\n        <div class=\"invalid-feedback\" *ngIf=\"password.errors?.minLength && (password.touched || password.dirty)\">Password must be at least 8 characters long</div>\n        \n        <input type=\"password\" class=\"form-control\" id=\"confirm_pass\" formControlName=\"confirmPass\" [ngClass]=\"checkValid(confirmPass)\" placeholder=\"Confirm password\">\n        <div class=\"invalid-feedback\" *ngIf=\"confirmPass.errors?.required && (confirmPass.touched || confirmPass.dirty)\">Please re enter your password</div>\n\n        <div class=\"invalid-feedback\" *ngIf=\"confirmPass.errors?.MatchPassword && (confirmPass.touched || confirmPass.dirty)\">\n            Passwords don't match\n        </div>\n\n        <div class=\"captcha-div\" ionCaptcha [key]=\"captchaKey\" formControlName=\"captcha\"></div>\n        \n        <button class=\"btn btn-lg btn-primary btn-block\" type=\"submit\" [disabled]=\"!registerForm.valid\">Register</button>\n    </form>\n</div>"
 
 /***/ }),
 
@@ -1732,7 +1743,7 @@ exports = module.exports = __webpack_require__("../../../../css-loader/lib/css-b
 
 
 // module
-exports.push([module.i, "app-login {\n  padding-top: 40px;\n  padding-bottom: 40px;\n  background-color: #eee; }\n\n.form-signin {\n  max-width: 330px;\n  padding: 15px;\n  margin: 0 auto; }\n\n.form-signin .form-signin-heading,\n.form-signin .checkbox {\n  margin-bottom: 10px; }\n\n.form-signin .checkbox {\n  font-weight: 400; }\n\n.form-signin .form-control {\n  position: relative;\n  box-sizing: border-box;\n  height: auto;\n  padding: 10px;\n  font-size: 16px; }\n\n.form-signin .form-control:focus {\n  z-index: 2; }\n\n.form-signin input[type=\"text\"] {\n  margin-bottom: -1px;\n  border-bottom-right-radius: 0;\n  border-bottom-left-radius: 0; }\n\n.form-signin input[type=\"password\"] {\n  margin-bottom: 10px;\n  border-top-left-radius: 0;\n  border-top-right-radius: 0; }\n\n.captcha-div {\n  margin-bottom: 20px; }\n", ""]);
+exports.push([module.i, "app-login {\n  padding-top: 40px;\n  padding-bottom: 40px;\n  background-color: #eee; }\n\n.form-signin {\n  max-width: 330px;\n  padding: 15px;\n  margin: 0 auto; }\n\n.form-signin .form-signin-heading,\n.form-signin .checkbox {\n  margin-bottom: 10px; }\n\n.form-signin .checkbox {\n  font-weight: 400; }\n\n.form-signin .form-control {\n  position: relative;\n  box-sizing: border-box;\n  height: auto;\n  padding: 10px;\n  font-size: 16px; }\n\n.form-signin .form-control:focus {\n  z-index: 2; }\n\n.form-signin input {\n  margin-bottom: -1px;\n  border-bottom-right-radius: 0;\n  border-bottom-left-radius: 0; }\n\n.form-signin input#confirm_pass {\n  margin-bottom: 10px;\n  border-top-left-radius: 0;\n  border-top-right-radius: 0; }\n\n.captcha-div {\n  margin-bottom: 20px; }\n", ""]);
 
 // exports
 
@@ -1780,12 +1791,12 @@ var RegisterComponent = (function () {
         this.usernameValidator = usernameValidator;
         this.fb = fb;
         this.captchaKey = __WEBPACK_IMPORTED_MODULE_7__environments_environment__["a" /* environment */].captchaKey;
-        var strongPassRegex = new RegExp("^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8}$");
-        this.username = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["j" /* Validators */].required, usernameValidator.checkUsername.bind(usernameValidator));
-        this.password = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["j" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["j" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["j" /* Validators */].pattern(strongPassRegex), __WEBPACK_IMPORTED_MODULE_2__angular_forms__["j" /* Validators */].minLength(8)]));
-        this.name = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["j" /* Validators */].required);
-        this.email = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["j" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["j" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["j" /* Validators */].email]));
-        this.confirmPass = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["j" /* Validators */].required);
+        var strongPassRegex = new RegExp("^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8,}$");
+        this.username = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required, usernameValidator.checkUsername.bind(usernameValidator));
+        this.password = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].pattern(strongPassRegex), __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].minLength(8)]));
+        this.name = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required);
+        this.email = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].email]));
+        this.confirmPass = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required);
         this.captcha = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null);
         this.registerForm = fb.group({
             username: this.username,
@@ -1851,7 +1862,7 @@ var RegisterComponent = (function () {
 /***/ "../../../../../src/app/reset-password/reset-password.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container\">\n    <form class=\"form-signin\" (ngSubmit)=\"onResetPass()\" [formGroup]=\"resetPassForm\">\n        <h2 class=\"form-signin-heading\">Reset Password</h2>\n        \n        <label for=\"password\" class=\"sr-only\">New Password</label>\n        <input type=\"password\" id=\"password\" formControlName=\"password\" class=\"form-control\" placeholder=\"Password\" required>\n\n        <label for=\"confirm_pass\" class=\"sr-only\">Re-type Password</label>\n        <input type=\"password\" id=\"confirm_pass\" formControlName=\"confirmPass\" class=\"form-control\" placeholder=\"Confirm password\" required>\n\n        <div class=\"alert alert-danger\" *ngIf=\"resetPassForm.controls.confirmPass.errors?.MatchPassword && (confirmPass.touched || confirmPass.dirty)\">Passwords don't match</div>\n        <button class=\"btn btn-lg btn-primary btn-block\" [disabled]=\"!resetPassForm.valid\" type=\"submit\">Reset</button>\n    </form>\n</div>"
+module.exports = "<div class=\"container\">\n    <form class=\"form-signin\" (ngSubmit)=\"onResetPass()\" [formGroup]=\"resetPassForm\">\n        <h2 class=\"form-signin-heading\">Reset Password</h2>\n        \n        <label for=\"password\" class=\"sr-only\">New Password</label>\n        <input type=\"password\" id=\"password\" formControlName=\"password\" class=\"form-control\" [ngClass]=\"checkValid(password)\" placeholder=\"Password\" required>\n        <div class=\"invalid-feedback\" *ngIf=\"password.errors?.required && (password.touched || password.dirty)\">\n        \tPassword is required\n        </div>\n        <div class=\"invalid-feedback\" *ngIf=\"password.errors?.pattern && !password.errors?.minLength && (password.touched || password.dirty)\">Must contain one lowercase, one uppercase, one numeral and a special character. Min-length: 8 characters.</div>\n        <div class=\"invalid-feedback\" *ngIf=\"password.errors?.minLength && (password.touched || password.dirty)\">Password must be at least 8 characters long</div>        \n\n        <label for=\"confirm_pass\" class=\"sr-only\">Re-type Password</label>\n        <input type=\"password\" id=\"confirm_pass\" formControlName=\"confirmPass\" class=\"form-control\" [ngClass]=\"checkValid(confirmPass)\" placeholder=\"Confirm password\" required>\n\n        <div class=\"invalid-feedback\" *ngIf=\"confirmPass.errors?.required && (confirmPass.touched || confirmPass.dirty)\">\n        \tPlease re-enter your password\n        </div>\n        <div class=\"invalid-feedback\" *ngIf=\"resetPassForm.controls.confirmPass.errors?.MatchPassword && (confirmPass.touched || confirmPass.dirty)\">\n        \tPasswords don't match\n        </div>\n        <button class=\"btn btn-lg btn-primary btn-block\" [disabled]=\"!resetPassForm.valid\" type=\"submit\">Reset</button>\n    </form>\n</div>"
 
 /***/ }),
 
@@ -1899,6 +1910,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+var strongPassRegex = new RegExp("^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8,}$");
 var ResetPasswordComponent = (function () {
     function ResetPasswordComponent(auth, toastr, router, route, fb) {
         this.auth = auth;
@@ -1906,8 +1918,8 @@ var ResetPasswordComponent = (function () {
         this.router = router;
         this.route = route;
         this.fb = fb;
-        this.password = new __WEBPACK_IMPORTED_MODULE_4__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_4__angular_forms__["j" /* Validators */].required);
-        this.confirmPass = new __WEBPACK_IMPORTED_MODULE_4__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_4__angular_forms__["j" /* Validators */].required);
+        this.password = new __WEBPACK_IMPORTED_MODULE_4__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_4__angular_forms__["k" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_4__angular_forms__["k" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_4__angular_forms__["k" /* Validators */].pattern(strongPassRegex), __WEBPACK_IMPORTED_MODULE_4__angular_forms__["k" /* Validators */].minLength(8)]));
+        this.confirmPass = new __WEBPACK_IMPORTED_MODULE_4__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_4__angular_forms__["k" /* Validators */].required);
         this.resetPassForm = this.fb.group({
             password: this.password,
             confirmPass: this.confirmPass
@@ -1953,6 +1965,14 @@ var ResetPasswordComponent = (function () {
                 _this.toastr.error(res.msg, 'Error');
             }
         });
+    };
+    ResetPasswordComponent.prototype.checkValid = function (control) {
+        if (control.errors && (control.touched || control.dirty)) {
+            return 'is-invalid';
+        }
+        else if (!control.errors && (control.touched || control.dirty)) {
+            return 'is-valid';
+        }
     };
     ResetPasswordComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
@@ -2091,6 +2111,51 @@ var SessionQrComponent = (function () {
             __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */]])
     ], SessionQrComponent);
     return SessionQrComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/app/shared/admin.guard.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AdminGuard; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_router__ = __webpack_require__("../../../router/esm5/router.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__auth_service__ = __webpack_require__("../../../../../src/app/shared/auth.service.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+
+var AdminGuard = (function () {
+    function AdminGuard(auth, router) {
+        this.auth = auth;
+        this.router = router;
+    }
+    AdminGuard.prototype.canActivate = function (next, state) {
+        if (this.auth.adminLogIn()) {
+            return true;
+        }
+        else {
+            this.router.navigate(['/login']);
+            return false;
+        }
+    };
+    AdminGuard = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2__auth_service__["a" /* AuthService */], __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */]])
+    ], AdminGuard);
+    return AdminGuard;
 }());
 
 
@@ -2664,7 +2729,7 @@ var IonCaptchaDirective = (function () {
      * Therefore, we need to call updateValueAndValidity to trigger the update
      */
     IonCaptchaDirective.prototype.setValidators = function () {
-        this.control.setValidators(__WEBPACK_IMPORTED_MODULE_1__angular_forms__["j" /* Validators */].required);
+        this.control.setValidators(__WEBPACK_IMPORTED_MODULE_1__angular_forms__["k" /* Validators */].required);
         this.control.updateValueAndValidity();
     };
     IonCaptchaDirective.prototype.writeValue = function (obj) {
@@ -3015,7 +3080,7 @@ var SlideshowComponent = (function () {
 /***/ "../../../../../src/app/upload/upload.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container\">\n    <ngx-loading [show]=\"isLoading\"></ngx-loading>\n    <div class=\"row mt-3\">\n        <h4 class=\"full-width\">Edit Session</h4>\n        <div class=\"card edit-session-card\">\n            <div class=\"card-body\">\n                <form (ngSubmit)=\"updateSession(editing)\" novalidate>\n                    <div class=\"form-group\">\n                        <label for=\"name\">Session Name</label>\n                        <input *ngIf=\"editing\" type=\"text\" class=\"form-control\" id=\"name\" aria-describedby=\"nameHelp\" placeholder=\"Enter Session Name\" [(ngModel)]=\"currSession.sessionname\" name=\"sessionName_input\">\n                        <input *ngIf=\"!editing\" type=\"text\" class=\"form-control\" id=\"name\" aria-describedby=\"nameHelp\" placeholder=\"Enter Session Name\" [(ngModel)]=\"sessionname\" name=\"sessionName_input\">\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"catone\">Category</label>\n                        <select class=\"custom-select mb-3 form-control\" [disabled]=\"!catones?.length\" [ngModel]=\"catone\" (ngModelChange)=\"catSelect(1, $event)\" id=\"catone\" name=\"catone_select\" required>\n                            <option selected>Choose Category</option>\n                            <option [value]=\"cat._id\" *ngFor=\"let cat of catones\">{{cat.categoryname}}</option>\n                        </select>\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"subcat1\">Select Subcategory - I</label>\n                        <select class=\"custom-select mb-3 form-control\" [disabled]=\"!cattwos?.length\" [ngModel]=\"cattwo\" (ngModelChange)=\"catSelect(2, $event)\" name=\"cattwo_select\" required>\n                            <option selected>Choose Subcategory I</option>\n                            <option [value]=\"cat._id\" *ngFor=\"let cat of cattwos\">{{cat.categoryname}}</option>\n                        </select>\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"subcat1\">Select Subcategory - II</label>\n                        <select class=\"custom-select mb-3 form-control\" [disabled]=\"!catthrees?.length\" [ngModel]=\"catthree\" (ngModelChange)=\"catSelect(3, $event)\" name=\"catthree_select\" required>\n                            <option selected>Choose Subcategory II</option>\n                            <option [value]=\"cat._id\" *ngFor=\"let cat of catthrees\">{{cat.categoryname}}</option>\n                        </select>\n                    </div>\n                    <button type=\"submit\" *ngIf=\"!editing\" class=\"btn btn-primary\"> <i class=\"icon ion-edit\"></i> Create</button>\n                    <button type=\"submit\" *ngIf=\"editing\" class=\"btn btn-primary\"> <i class=\"icon ion-checkmark-round\"></i> Update</button>\n                    <button type=\"button\" *ngIf=\"editing\" class=\"btn btn-danger\" (click)=\"removeSession()\"> <i class=\"icon ion-trash-b\"></i> Delete</button>\n                </form>\n            </div>\n        </div>\n    </div>\n    <div class=\"row mt-3\">\n        <h4 *ngIf=\"sessionMedia.length\" class=\"my-3\">Uploaded Media</h4>\n        <div *ngIf=\"sessionMedia.length\" dnd-sortable-container [sortableData]=\"sessionMedia\">\n            <div class=\"card media-card my-2\" *ngFor=\"let media of sessionMedia; let i=index\" (onDropSuccess)=\"dragEnd(sessionMedia)\" dnd-sortable [sortableIndex]=\"i\">\n                <div class=\"card-body\">\n                    <img *ngIf=\"media.imagetype == 'image'\" class=\"col col-sm-4 col-xs-12\" [src]=\"getImage(media)\" />\n                    <div class=\"col-sm-8 col-xs-12\">\n                        <h5 class=\"\">{{media.imagetitle}}</h5>\n                    </div>\n                    <div class=\"row justify-content-space-evenly\">\n                        <button class=\"btn btn-outline-primary\" (click)=\"editMediaInfoModal(media, i)\" *ngIf=\"media?.imagetype==='image'\">\n                            <i class=\"icon ion-edit\"></i>\n                        </button>\n                        <button class=\"btn btn-outline-danger\" (click)=\"removeImage(media, i)\"> <i class=\"icon ion-trash-b\"></i></button>\n                    </div>\n                </div>\n            </div>\n        </div>\n        <ng-template [ngIf]=\"currSession._id\">\n            <h4 class=\"my-3\">Upload Files</h4>\n            <form>\n                <div class=\"form-group\">\n                    <label for=\"single\">Select your image:</label>\n                    <input type=\"file\" class=\"form-control\" name=\"single\" ng2FileSelect [uploader]=\"uploader\" />\n                </div>\n            </form>\n            <table class=\"table table-bordered\" *ngIf=\"uploader.queue.length\">\n                <thead>\n                    <tr>\n                        <th>Name</th>\n                        <th>Size</th>\n                        <th>Progress</th>\n                        <th>Status</th>\n                        <th>Actions</th>\n                    </tr>\n                </thead>\n                <tbody>\n                    <tr *ngFor=\"let item of uploader.queue\">\n                        <td>\n                            <input type=\"text\" class=\"form-control\" [(ngModel)]=\"item.file.name\" required>\n                        </td>\n                        <td nowrap>{{ item.file.size/1024/1024 | number:'.2' }} MB</td>\n                        <td>\n                            <p>\n                                <ngb-progressbar type=\"success\" [value]=\"item.progress\"></ngb-progressbar>\n                            </p>\n                        </td>\n                        <td class=\"text-center\">\n                            <span *ngIf=\"item.isSuccess\"><i class=\"glyphicon glyphicon-ok\"></i></span>\n                            <span *ngIf=\"item.isCancel\"><i class=\"glyphicon glyphicon-ban-circle\"></i></span>\n                            <span *ngIf=\"item.isError\"><i class=\"glyphicon glyphicon-remove\"></i></span>\n                        </td>\n                        <td nowrap>\n                            <button type=\"button\" class=\"btn btn-success btn-xs\" (click)=\"item.upload()\" [disabled]=\"item.isReady || item.isUploading || item.isSuccess\">\n                                Upload\n                            </button>\n                            <button type=\"button\" class=\"btn btn-warning btn-xs\" (click)=\"item.cancel()\" [disabled]=\"!item.isUploading\">\n                                <span class=\"glyphicon glyphicon-ban-circle\"></span> Cancel\n                            </button>\n                            <button type=\"button\" class=\"btn btn-danger btn-xs\" (click)=\"item.remove()\">\n                                <span class=\"glyphicon glyphicon-trash\"></span> Remove\n                            </button>\n                        </td>\n                    </tr>\n                </tbody>\n            </table>\n            <div *ngIf=\"uploader.queue.length\" class=\"full-width\">\n                <div>\n                    Upload progress:\n                    <p>\n                        <ngb-progressbar type=\"success\" [value]=\"uploader.progress\"></ngb-progressbar>\n                    </p>\n                </div>\n                <button type=\"button\" class=\"btn btn-success btn-s\" (click)=\"uploader.uploadAll()\" [disabled]=\"!uploader.getNotUploadedItems().length\">\n                    <span class=\"glyphicon glyphicon-upload\"></span> Upload all\n                </button>\n                <button type=\"button\" class=\"btn btn-warning btn-s\" (click)=\"uploader.cancelAll()\" [disabled]=\"!uploader.isUploading\">\n                    <span class=\"glyphicon glyphicon-ban-circle\"></span> Cancel all\n                </button>\n                <button type=\"button\" class=\"btn btn-danger btn-s\" (click)=\"uploader.clearQueue()\" [disabled]=\"!uploader.queue.length\">\n                    <span class=\"glyphicon glyphicon-trash\"></span> Remove all\n                </button>\n            </div>\n        </ng-template>\n    </div>\n</div>"
+module.exports = "<div class=\"container\">\n    <ngx-loading [show]=\"isLoading\"></ngx-loading>\n    <div class=\"row mt-3\">\n        <h4>Edit Session</h4>\n        <div class=\"card\">\n            <div class=\"card-body\">\n                <form (ngSubmit)=\"updateSession(f, editing)\" #f=\"ngForm\" novalidate>\n                    <div class=\"form-group\">\n                        <label for=\"name\">Session Name</label>\n                        <input type=\"text\" class=\"form-control\" id=\"name\" [(ngModel)]=\"currSession.sessionname\" name=\"name\" #name=\"ngModel\" [ngClass]=\"checkValid(name)\" required>\n                        <div class=\"invalid-feedback\" *ngIf=\"name.errors?.required && (name.touched || name.dirty)\">\n                            Session name is required\n                        </div>\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"catone\">Category</label>\n                        <select class=\"custom-select form-control\" [disabled]=\"!catones?.length\" [ngModel]=\"currSession.catone\" (ngModelChange)=\"catSelect(1, $event)\" id=\"catone\" name=\"catone\" #catone=\"ngModel\" [ngClass]=\"checkValid(catone)\" required>\n                            <option [value]=\"cat._id\" *ngFor=\"let cat of catones\">{{cat.categoryname}}</option>\n                        </select>\n                        <div class=\"invalid-feedback\" *ngIf=\"catone.errors?.required && (catone.touched || catone.dirty)\">\n                            Category is required\n                        </div>\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"subcat1\">Select Subcategory - I</label>\n                        <select class=\"custom-select form-control\" [disabled]=\"!cattwos?.length\" [ngModel]=\"currSession.cattwo\" (ngModelChange)=\"catSelect(2, $event)\" name=\"cattwo\" #cattwo=\"ngModel\" [ngClass]=\"checkValid(cattwo)\" required>\n                            <option [value]=\"cat._id\" *ngFor=\"let cat of cattwos\">{{cat.categoryname}}</option>\n                        </select>\n                        <div class=\"invalid-feedback\" *ngIf=\"cattwo.errors?.required && (cattwo.touched || cattwo.dirty)\">\n                            Sub-category I is required\n                        </div>\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"subcat1\">Select Subcategory - II</label>\n                        <select class=\"custom-select form-control\" [disabled]=\"!catthrees?.length\" [ngModel]=\"currSession.categoryId\" (ngModelChange)=\"catSelect(3, $event)\" name=\"catthree\" #catthree=\"ngModel\" [ngClass]=\"checkValid(catthree)\" required>\n                            <option [value]=\"cat._id\" *ngFor=\"let cat of catthrees\">{{cat.categoryname}}</option>\n                        </select>\n                        <div class=\"invalid-feedback\" *ngIf=\"catthree.errors?.required && (catthree.touched || catthree.dirty)\">\n                            Sub-category II is required\n                        </div>\n                    </div>\n                    <button type=\"submit\" [disabled]=\"f.invalid\" *ngIf=\"!editing\" class=\"btn btn-primary\"> <i class=\"icon ion-edit\"></i> Create</button>\n                    <button type=\"submit\" [disabled]=\"f.invalid\" *ngIf=\"editing\" class=\"btn btn-primary\"> <i class=\"icon ion-checkmark-round\"></i> Update</button>\n                    <button type=\"button\" *ngIf=\"editing\" class=\"btn btn-danger\" (click)=\"removeSession()\"> <i class=\"icon ion-trash-b\"></i> Delete</button>\n                </form>\n                <!-- <pre>{{f.form.value | json}}</pre> -->\n            </div>\n        </div>\n    </div>\n    <div class=\"row mt-3\">\n        <h4 *ngIf=\"sessionMedia.length\" class=\"my-3\">Uploaded Media</h4>\n        <div *ngIf=\"sessionMedia.length\" dnd-sortable-container [sortableData]=\"sessionMedia\">\n            <div class=\"card media-card my-2\" *ngFor=\"let media of sessionMedia; let i=index\" (onDropSuccess)=\"dragEnd(sessionMedia)\" dnd-sortable [sortableIndex]=\"i\">\n                <div class=\"card-body\">\n                    <img *ngIf=\"media.imagetype == 'image'\" [src]=\"getImage(media)\" class=\"col-6 session-img\" />\n                    <img src=\"/assets/img/video-icon.png\" class=\"session-img col-6\" alt=\"video-file\" *ngIf=\"media.imagetype=='video'\">\n                    <img src=\"/assets/img/audio-icon.png\" class=\"session-img col-6\" alt=\"video-file\" *ngIf=\"media.imagetype=='audio'\">\n                    <div class=\"col-6 float-right\">\n                        <h5 class=\"card-title\">{{media.imagetitle}}</h5>\n                        <div class=\"row justify-content-start\">\n                            <div class=\"col\" *ngIf=\"media?.imagetype==='image'\">\n                                <button class=\"btn btn-outline-primary\" (click)=\"editMediaInfoModal(media, i)\">\n                                    <i class=\"icon ion-edit\"></i>\n                                </button>\n                            </div>\n                            <div class=\"col\">\n                                <button class=\"btn btn-outline-danger\" (click)=\"removeImage(media, i)\"> <i class=\"icon ion-trash-b\"></i></button>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n        <h4 class=\"my-3\" *ngIf=\"currSession._id\">Upload Files</h4>\n        <form *ngIf=\"currSession._id\">\n            <div class=\"form-group\">\n                <label for=\"single\">Select your image:</label>\n                <input type=\"file\" class=\"form-control\" name=\"single\" ng2FileSelect [uploader]=\"uploader\" />\n            </div>\n        </form>\n        <table class=\"table table-bordered\" *ngIf=\"uploader.queue.length\">\n            <thead>\n                <tr>\n                    <th>Name</th>\n                    <th>Size</th>\n                    <th>Progress</th>\n                    <th>Status</th>\n                    <th>Actions</th>\n                </tr>\n            </thead>\n            <tbody>\n                <tr *ngFor=\"let item of uploader.queue\">\n                    <td>\n                        <input type=\"text\" class=\"form-control\" [(ngModel)]=\"item.file.name\" required>\n                    </td>\n                    <td nowrap>{{ item.file.size/1024/1024 | number:'.2' }} MB</td>\n                    <td>\n                        <p>\n                            <ngb-progressbar type=\"success\" [value]=\"item.progress\"></ngb-progressbar>\n                        </p>\n                    </td>\n                    <td class=\"text-center\">\n                        <span *ngIf=\"item.isSuccess\"><i class=\"icon ion-checkmark-round\"></i></span>\n                        <span *ngIf=\"item.isCancel\"><i class=\"icon ion-close\"></i></span>\n                        <span *ngIf=\"item.isError\"><i class=\"icon ion-close-circle\"></i></span>\n                    </td>\n                    <td nowrap>\n                        <button type=\"button\" class=\"btn btn-success btn-xs\" (click)=\"item.upload()\" [disabled]=\"item.isReady || item.isUploading || item.isSuccess\">\n                            <i class=\"icon ion-upload\"></i> Upload\n                        </button>\n                        <button type=\"button\" class=\"btn btn-warning btn-xs\" (click)=\"item.cancel()\" [disabled]=\"!item.isUploading\">\n                            <i class=\"icon ion-close-circled\"></i> Cancel\n                        </button>\n                        <button type=\"button\" class=\"btn btn-danger btn-xs\" (click)=\"item.remove()\">\n                            <i class=\"icon ion-trash-b\"></i> Remove\n                        </button>\n                    </td>\n                </tr>\n            </tbody>\n        </table>\n        <div *ngIf=\"uploader.queue.length\">\n            <div>\n                Upload progress:\n                <p>\n                    <ngb-progressbar type=\"success\" [value]=\"uploader.progress\"></ngb-progressbar>\n                </p>\n            </div>\n            <button type=\"button\" class=\"btn btn-success btn-s\" (click)=\"uploader.uploadAll()\" [disabled]=\"!uploader.getNotUploadedItems().length\">\n                <i class=\"icon ion-upload\"></i> Upload all\n            </button>\n            <button type=\"button\" class=\"btn btn-warning btn-s\" (click)=\"uploader.cancelAll()\" [disabled]=\"!uploader.isUploading\">\n                <i class=\"icon ion-android-cancel\"></i> Cancel all\n            </button>\n            <button type=\"button\" class=\"btn btn-danger btn-s\" (click)=\"uploader.clearQueue()\" [disabled]=\"!uploader.queue.length\">\n                <i class=\"icon ion-trash-b\"></i> Remove all\n            </button>\n        </div>\n    </div>\n</div>"
 
 /***/ }),
 
@@ -3027,7 +3092,7 @@ exports = module.exports = __webpack_require__("../../../../css-loader/lib/css-b
 
 
 // module
-exports.push([module.i, "h4 {\n  width: 100%; }\n\ntable {\n  width: 100%; }\n\n.full-width {\n  width: 100%; }\n\n.icon.thumbnail {\n  font-size: 8rem; }\n", ""]);
+exports.push([module.i, "h4:not(.col), div:not(.col), table:not(.col) {\n  width: 100%; }\n\n.icon.thumbnail {\n  font-size: 8rem; }\n\ndiv.col-6 {\n  width: 50%; }\n\nimg.session-img {\n  max-width: 30%;\n  margin: auto; }\n", ""]);
 
 // exports
 
@@ -3041,6 +3106,7 @@ module.exports = module.exports.toString();
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* unused harmony export Session */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return UploadComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ng2_file_upload__ = __webpack_require__("../../../../ng2-file-upload/index.js");
@@ -3054,6 +3120,7 @@ module.exports = module.exports.toString();
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__confirm_popup_confirm_popup_component__ = __webpack_require__("../../../../../src/app/confirm-popup/confirm-popup.component.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__environments_environment__ = __webpack_require__("../../../../../src/environments/environment.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_ngx_toastr__ = __webpack_require__("../../../../ngx-toastr/toastr.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -3073,6 +3140,23 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
+var Session = (function () {
+    function Session(_id, sessionname, catone, cattwo, categoryId) {
+        if (_id === void 0) { _id = null; }
+        if (sessionname === void 0) { sessionname = null; }
+        if (catone === void 0) { catone = null; }
+        if (cattwo === void 0) { cattwo = null; }
+        if (categoryId === void 0) { categoryId = null; }
+        this._id = _id;
+        this.sessionname = sessionname;
+        this.catone = catone;
+        this.cattwo = cattwo;
+        this.categoryId = categoryId;
+    }
+    return Session;
+}());
+
 var UploadComponent = (function () {
     function UploadComponent(imageService, route, router, categoryService, dialogService, toastr) {
         this.imageService = imageService;
@@ -3084,12 +3168,10 @@ var UploadComponent = (function () {
         // baseUrl: string = 'http://localhost:8080/';
         // baseUrl: string = 'https://ionic-node-auth.herokuapp.com/';
         this.editing = false;
-        this.currSession = {
-            sessionname: ''
-        };
         this.sessionMedia = [];
         this.baseUrl = __WEBPACK_IMPORTED_MODULE_8__environments_environment__["a" /* environment */].baseUrl;
         this.uploadUrl = this.baseUrl + '/session/upload';
+        this.currSession = new Session();
         this.isLoading = false;
         this.uploader = new __WEBPACK_IMPORTED_MODULE_1_ng2_file_upload__["FileUploader"]({ url: this.uploadUrl });
     }
@@ -3104,7 +3186,7 @@ var UploadComponent = (function () {
                 _this.imageService.getSessionById(params['id']).subscribe(function (res) {
                     if (res.success) {
                         _this.currSession = res.session; // warning: this makes the form dirty
-                        _this.getSessionCategories(_this.currSession.categoryId);
+                        _this.getSessionCategories(res.session.categoryId);
                         _this.sessionMedia = res.files;
                         _this.setUploaderCallbacks(_this.currSession);
                     }
@@ -3122,9 +3204,8 @@ var UploadComponent = (function () {
                 //get all the categories regarding the session and the selected ones
                 _this.catthrees = res.cats.catthrees;
                 _this.cattwos = res.cats.cattwos;
-                _this.catone = res.cats.catone;
-                _this.cattwo = res.cats.cattwo;
-                _this.catthree = res.cats.catthree;
+                _this.currSession.catone = res.cats.catone;
+                _this.currSession.cattwo = res.cats.cattwo;
             }
         });
     };
@@ -3152,15 +3233,18 @@ var UploadComponent = (function () {
         var _this = this;
         this.catthrees = [];
         if (id) {
+            this.isLoading = true;
             this.categoryService.getSubCategory(id)
                 .subscribe(function (data) {
-                console.log(data);
+                _this.isLoading = false;
                 if (data.success) {
                     _this.catthrees = data.category ? data.category.childcategories : [];
                 }
                 else {
                     _this.toastr.error(data.msg, 'Error');
                 }
+            }, function (error) {
+                _this.isLoading = false;
             });
         }
     };
@@ -3182,21 +3266,21 @@ var UploadComponent = (function () {
     };
     UploadComponent.prototype.catSelect = function (which, e) {
         if (which == 1) {
-            this.catone = e;
+            this.currSession.catone = e;
             this.populateSubCategoriesII(e);
         }
         else if (which == 2) {
-            this.cattwo = e;
+            this.currSession.cattwo = e;
             this.populateSubCategoriesIII(e);
         }
         else if (which == 3) {
-            this.catthree = e;
+            this.currSession.categoryId = e;
         }
     };
     UploadComponent.prototype.editMediaInfoModal = function (file, index) {
         var _this = this;
         console.log('edit meidainfo modal');
-        this.showDelayPopup(file.imagetitle).subscribe(function (data) {
+        this.showDelayPopup(file.imagetitle, file.imagedelay).subscribe(function (data) {
             if (data && data.delay) {
                 _this.imageService.updateDelay(file._id, data.delay).subscribe(function (res) {
                     if (res.success) {
@@ -3286,16 +3370,20 @@ var UploadComponent = (function () {
             }
         };
     };
-    UploadComponent.prototype.updateSession = function (editing) {
+    UploadComponent.prototype.updateSession = function (form, editing) {
         var _this = this;
-        if (!this.catthree || (!this.currSession.sessionname && !this.sessionname)) {
+        if (form.invalid) {
             this.toastr.error('Please fill the complete form', 'Error');
             return;
         }
-        this.currSession.categoryId = this.catthree;
         if (!editing)
-            return this.createNewSession();
-        this.imageService.updateSession(this.currSession)
+            return this.createNewSession(form);
+        var updatedSession = {
+            _id: this.currSession._id,
+            sessionname: this.currSession.sessionname,
+            categoryId: this.currSession.categoryId
+        };
+        this.imageService.updateSession(updatedSession)
             .subscribe(function (res) {
             if (res.success) {
                 _this.toastr.success('Session updated successfully!', 'Success');
@@ -3319,15 +3407,15 @@ var UploadComponent = (function () {
             }
         });
     };
-    UploadComponent.prototype.createNewSession = function () {
+    UploadComponent.prototype.createNewSession = function (form) {
         var _this = this;
-        var sessionname = this.sessionname;
-        if (this.catthree) {
-            this.imageService.createSessions(sessionname, this.catthree)
+        var sessionname = this.currSession.sessionname;
+        if (this.currSession.categoryId) {
+            this.imageService.createSessions(sessionname, this.currSession.categoryId)
                 .subscribe(function (data) {
                 if (data.success) {
                     _this.sessionname = null;
-                    _this.currSession = data.session;
+                    form.reset();
                     _this.toastr.success('Session created successfully!', 'Success');
                     _this.router.navigate(['/edit-session', data.session._id]);
                 }
@@ -3338,10 +3426,12 @@ var UploadComponent = (function () {
         }
     };
     ;
-    UploadComponent.prototype.showDelayPopup = function (filename) {
+    UploadComponent.prototype.showDelayPopup = function (filename, delay) {
         var disposable = this.dialogService.addDialog(__WEBPACK_IMPORTED_MODULE_6__popup_popup_component__["a" /* PopupComponent */], {
-            title: 'Enter delay for image',
-            message: 'Enter Delay for image: ' + filename
+            title: 'Enter title and delay for image',
+            message: 'Enter Delay for image: ' + filename,
+            imgTitle: filename,
+            delay: delay
         });
         return disposable;
     };
@@ -3386,8 +3476,20 @@ var UploadComponent = (function () {
             return this.baseUrl + '/session/stream_files?file=' + file.imagename;
         }
     };
+    UploadComponent.prototype.checkValid = function (control) {
+        if (control.errors && (control.touched || control.dirty)) {
+            return 'is-invalid';
+        }
+        else if (!control.errors && (control.touched || control.dirty)) {
+            return 'is-valid';
+        }
+    };
     UploadComponent.prototype.ngOnDestroy = function () {
     };
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["ViewChild"])('f'),
+        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_10__angular_forms__["i" /* NgForm */])
+    ], UploadComponent.prototype, "sessionForm", void 0);
     UploadComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
             selector: 'app-upload',
