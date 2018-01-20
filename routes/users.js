@@ -37,7 +37,16 @@ router.post('/register', (req, res, next) => {
             if (err) { return res.json({success: false, msg: err.message }); }
 
             // Send the email
-            var transporter = nodemailer.createTransport({ service: creds.service, auth: { user: creds.username, pass: creds.password }, host: creds.host, port: creds.port });
+            let smtpConfig = {
+              auth: {
+                user: creds.auth.user,
+                pass: creds.auth.pass
+              },
+              host: creds.host,
+              port: creds.port,
+              service: creds.service
+            }    
+            var transporter = nodemailer.createTransport(smtpConfig);
             var mailOptions = { from: creds.mailerId || 'no-reply@email-verify-app.com', to: user.email, subject: 'Please verify your email', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \n' + req.headers.origin + '\/login\/' + email_verify_token.token + '.\n' };
             transporter.sendMail(mailOptions, function (err) {
               if (err) { return res.json({success: false, msg: err.message }); }
