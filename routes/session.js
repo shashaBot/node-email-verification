@@ -37,6 +37,8 @@ const upload = multer({ storage: storage});
 // const upload = multer({dest: '../uploads/temp'});
 var fileUpload = upload.single('upload_file');
 
+
+// middleware to check if the user owns the session they are trying to change
 const authOwner = (req, res, callback) => {
   if(req.body.session) {
     let id = req.user.id;
