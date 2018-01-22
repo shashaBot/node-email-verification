@@ -96,6 +96,9 @@ const session = require('./routes/session');
 // Category route
 const category = require('./routes/category');
 
+// Packages route
+const package = require('./routes/package');
+
 // Body-parser Middleware
 app.use(bodyParser.json());                                     // parse application/json
 app.use(bodyParser.urlencoded({'extended':'true'}));            // parse application/x-www-form-urlencoded
@@ -144,6 +147,7 @@ app.get('/', (req, res) => {
 app.use('/users', users);
 app.use('/category', category);
 app.use('/session', session);
+app.use('/package', package);
 
 app.get('/validate_captcha', (req, res) => {
   const options = {
