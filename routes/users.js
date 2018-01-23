@@ -244,7 +244,9 @@ router.post('/authenticate', (req, res, next) => {
             name: user.name,
             isVerified: user.isVerified,
             isAdmin: user.isAdmin,
-            _id: user.id
+            _id: user.id,
+            subscription: user.subscription
+
           };
           const token = jwt.sign(signInUser, config.secret, {
             expiresIn: 604800 // 1 week
@@ -258,7 +260,8 @@ router.post('/authenticate', (req, res, next) => {
               username: user.username,
               email: user.email,
               isVerified: user.isVerified,
-              isAdmin: user.isAdmin
+              isAdmin: user.isAdmin,
+              subscription: user.subscription
             }
           });
         } else {
@@ -280,6 +283,19 @@ router.post('/getUserById', (req, res) => {
     if(err) return res.json({success: false, msg: 'Error getting user details'})
     if(!user) return res.json({success: false, msg: 'No user found!'})
     res.json({success: true, user: user});
+  })
+})
+
+router.get('/checkSubscription', passport.authenticate('jwt', {session: false}), (req, res) => {
+  User.checkSubscription(req.user, (err, hasExpired) => {
+    // check if sub is trial, if yes, then check if expired
+  })
+})
+
+router.post('/changeSubscription', passport.authenticate('jwt', {session: false}), (req, res) => {
+  User.changeSubscription(req.body.packageId, req.body.isTrial, req.user, (err, updatedUser) => {
+    if(err) res.json({success: false, msg: 'Could not change subscription'});
+    res.json({success: true});
   })
 })
 

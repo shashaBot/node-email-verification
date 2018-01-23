@@ -127,6 +127,13 @@ router.post('/updateIndex', passport.authenticate('jwt', {session: false}), (req
   })
 })
 
+router.post('/updateImage', passport.authenticate('jwt', {session: false}), (req, res) => {
+  Img.updateMedia(req.body.id, req.body.update, (err, image) => {
+    if(err) return res.json({success: false})
+    res.json({success: true})
+  })
+})
+
 router.post('/updateDelay', passport.authenticate('jwt', {session: false}), (req, res) => {
   Img.updateDelay(req.body.id, req.body.delay, (err) => {
     if(err) {

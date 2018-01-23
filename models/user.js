@@ -37,6 +37,7 @@ const UserSchema =  mongoose.Schema({
     type: Date
   },
   subscription: {
+    type: Object,
     required: false,
     packageId: {
       type: String,
@@ -106,4 +107,14 @@ module.exports.comparePassword = function(candidatePassword, hash, callback) {
     if(err) throw err;
     callback(null, isMatch);
   });
+}
+
+
+module.exports.changeSubscription = (packId, isTrial, userId, callback) => {
+  let sub = {
+    packageId: packId,
+    isTrial: isTrial,
+    startDate: Date.now()
+  }
+  User.findByIdAndUpdate(userId, {subscription: sub}, callback);
 }

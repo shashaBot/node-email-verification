@@ -35,6 +35,14 @@ const ImageSchema = mongoose.Schema({
   imageindex: {
     type: Number,
     default: 0
+  },
+  titleAlign: {
+    type: String,
+    default: 'tl'
+  },
+  titleSize: {
+    type: String,
+    required: false
   }
 });
 
@@ -89,4 +97,8 @@ module.exports.updateTitle = (imageId, title, callback) => {
 
 module.exports.updateDelay = (imageId, delay, callback) => {
   Img.findByIdAndUpdate( imageId, {imagedelay: delay}, callback);
+}
+
+module.exports.updateMedia = (imageId, update, callback) => {
+  Img.findByIdAndUpdate(imageId, update, callback);
 }
