@@ -35,6 +35,22 @@ const UserSchema =  mongoose.Schema({
   },
   passwordResetExpires: {
     type: Date
+  },
+  subscription: {
+    required: false,
+    packageId: {
+      type: String,
+      required: true
+    },
+    isTrial: {
+      type: Boolean,
+      required: true,
+      default: false
+    },
+    startDate: {
+      type: Date,
+      required: true
+    }
   }
 });
 
