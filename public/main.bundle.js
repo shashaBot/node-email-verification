@@ -141,7 +141,7 @@ var AdminLoginComponent = (function () {
 /***/ "../../../../../src/app/admin/admin.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container\">\n    <ngx-loading [show]=\"isLoading\"></ngx-loading>\n    <div class=\"row mt-3\">\n        <ngb-tabset (tabChange)=\"changeAdminTab($event)\">\n            <ngb-tab title=\"Edit SMTP Details\" id=\"edit_smtp\">\n                <ng-template ngbTabContent>\n                    <div class=\"card\">\n                        <div class=\"card-body\">\n                            <form class=\"form\" (ngSubmit)=\"storeMailingCredentials()\">\n                                <div class=\"form-group\">\n                                    <label for=\"mailerId\">Mailing address:</label>\n                                    <input type=\"text\" class=\"form-control\" placeholder=\"no-reply@app-mail-service.com\" name=\"mailerId\" [(ngModel)]=\"smtpMailer\" id=\"mailerId\">\n                                </div>\n                                <div class=\"radio\">\n                                    <label>\n                                        <input type=\"radio\" name=\"smtp_opt\" (change)=\"selectSmtpType(1)\" [checked]=\"smtpType===1\">Use a well known service</label>\n                                    <label>\n                                        <input type=\"radio\" name=\"smtp_opt\" (change)=\"selectSmtpType(2)\" [checked]=\"smtpType===2\">I'll provide host and port for custom SMTP</label>\n                                </div>\n                                <div *ngIf=\"smtpType\">\n                                    <div class=\"form-group\" *ngIf=\"smtpType===1\">\n                                        <label for=\"service\">Service Name (see list of <a href=\"https://nodemailer.com/smtp/well-known/\" target=\"_blank\">supported services</a>)</label>\n                                        <input type=\"text\" class=\"form-control\" placeholder=\"eg. SendGrid, Gmail, Hotmail\" [(ngModel)]=\"smtpService\" name=\"service\" id=\"service\">\n                                    </div>\n                                    <div class=\"form-group\" *ngIf=\"smtpType === 2\">\n                                        <label for=\"host\">SMTP Host:</label>\n                                        <input type=\"text\" class=\"form-control\" placeholder=\"mail.my-smtp.com\" [(ngModel)]=\"smtpHost\" name=\"host\" id=\"host\">\n                                    </div>\n                                    <div class=\"form-group\" *ngIf=\"smtpType === 2\">\n                                        <label for=\"pwd\">SMTP Port:</label>\n                                        <input type=\"text\" class=\"form-control\" placeholder=\"2442\" [(ngModel)]=\"smtpPort\" name=\"port\" id=\"port\">\n                                    </div>\n                                    <div class=\"form-group\">\n                                        <label for=\"username\">SMTP Username:</label>\n                                        <input type=\"text\" class=\"form-control\" placeholder=\"user_name\" [(ngModel)]=\"smtpUser\" name=\"username\" id=\"username\">\n                                    </div>\n                                    <div class=\"form-group\">\n                                        <label for=\"pwd\">SMTP Password:</label>\n                                        <input type=\"password\" class=\"form-control\" placeholder=\"*******\" [(ngModel)]=\"smtpPass\" name=\"pwd\" id=\"pwd\">\n                                    </div>\n                                </div>\n                                <button type=\"submit\" class=\"btn btn-default\" [disabled]=\"!smtpPass || !smtpUser || !smtpMailer\">Update</button>\n                            </form>\n                        </div>\n                    </div>\n                </ng-template>\n            </ngb-tab>\n            <ngb-tab title=\"Manage Categories\" id=\"manage_categories\">\n                <ng-template ngbTabContent>\n                    <div class=\"row mx-0 mt-3\">\n                        <nav aria-label=\"breadcrumb\">\n                          <ol class=\"breadcrumb\">\n                            <li class=\"breadcrumb-item clickable\" [class.active]=\"!pathCategories.length\" (click)=\"goToRootCats()\" [attr.aria-current]=\"{'page': !pathCategories.length}\">\n                                Root Categories\n                            </li>\n                            <li class=\"breadcrumb-item\" *ngFor=\"let pathCat of pathCategories; let i=index\" aria-current=\"page\" [class.active]=\"pathCategories.length -1 == i\" (click)=\"getSubCats(pathCat)\" [attr.aria-current]=\"{'page': pathCategories.length-1 == i}\">\n                                {{pathCat.categoryname}}\n                            </li>\n                          </ol>\n                        </nav>                        \n                    </div>\n                    <div class=\"row mx-0 mt-3\">\n                        <div class=\"col col-12 col-xs-12 col-md-12 mb-3\">\n                            <div class=\"card\">\n                                <div class=\"card-body\">\n                                    <div class=\"card-text\">\n                                        <form class=\"form-inline\" (ngSubmit)=\"createNewCategory()\">\n                                          <div class=\"form-group\">\n                                            <label for=\"categoryname\" class=\" mr-3\">Add {{categoryType}}:</label>\n                                            <input type=\"text\" class=\"form-control mr-2\" [(ngModel)]=\"newCategoryName\" id=\"categoryname\" name=\"categoryname\">\n                                          </div>\n                                          <button type=\"submit\" class=\"btn btn-primary mb-2\" [disabled]=\"!newCategoryName\"><i class=\"icon ion-plus\"></i>  Create</button>\n                                        </form>                                        \n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                        <div class=\"col col-md-4 col-xs-12\" *ngFor=\"let cat of categories; let i=index\">\n                            <div class=\"card\">\n                                <div class=\"card-body\">\n                                    <h5 class=\"card-title text-center\" *ngIf=\"!editing[cat._id]\">{{cat.categoryname}}</h5>\n                                    <input class=\"form-control\" *ngIf=\"editing[cat._id]\" [(ngModel)]=\"newCatName[cat._id]\">\n                                    <div class=\"row justify-content-space-evenly\">\n                                        <div class=\"text-center\">\n                                            <button class=\"btn btn-primary\" (click)=\"startEdit(cat)\" *ngIf=\"!editing[cat._id]\"><i class=\"icon ion-edit\"></i></button>\n                                            <button class=\"btn btn-warning\" *ngIf=\"editing[cat._id]\" (click)=\"renameCategory(cat._id, i)\">Save</button>\n                                        </div>\n                                        <div class=\" text-center\">\n                                            <button class=\"btn btn-outline-primary\" (click)=\"getSubCats(cat)\"> <i class=\"icon ion-eye\"></i></button>\n                                        </div>                                        \n                                        <div class=\"text-center\">\n                                            <button class=\"btn btn-danger\" (click)=\"removeCategory(cat, i)\">\n                                                <i class=\"icon ion-trash-b\"></i>\n                                            </button>\n                                        </div>\n                                    </div>\n                                </div>\n                                <div class=\"card-footer text-muted\">\n                                    {{cat.childcategories?.length || 'Zero'}} subcategories\n                                </div>\n                            </div>\n                        </div>\n                        <div class=\"col col-xs-12\" *ngIf=\"!categories?.length\">\n                            <div class=\"card\">\n                                <div class=\"card-title text-center\">\n                                    <h5>No categories found</h5>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </ng-template>\n            </ngb-tab>\n        </ngb-tabset>\n    </div>\n</div>"
+module.exports = "<div class=\"container\">\n    <ngx-loading [show]=\"isLoading\"></ngx-loading>\n    <div class=\"row mt-3\">\n        <ngb-tabset (tabChange)=\"changeAdminTab($event)\">\n            <ngb-tab title=\"Edit SMTP Details\" id=\"edit_smtp\">\n                <ng-template ngbTabContent>\n                    <div class=\"card\">\n                        <div class=\"card-body\">\n                            <form class=\"form\" (ngSubmit)=\"storeMailingCredentials()\">\n                                <div class=\"form-group\">\n                                    <label for=\"mailerId\">Mailing address:</label>\n                                    <input type=\"text\" class=\"form-control\" placeholder=\"no-reply@app-mail-service.com\" name=\"mailerId\" [(ngModel)]=\"smtpMailer\" id=\"mailerId\">\n                                </div>\n                                <div class=\"radio\">\n                                    <label>\n                                        <input type=\"radio\" name=\"smtp_opt\" (change)=\"selectSmtpType(1)\" [checked]=\"smtpType===1\">Use a well known service</label>\n                                    <label>\n                                        <input type=\"radio\" name=\"smtp_opt\" (change)=\"selectSmtpType(2)\" [checked]=\"smtpType===2\">I'll provide host and port for custom SMTP</label>\n                                </div>\n                                <div *ngIf=\"smtpType\">\n                                    <div class=\"form-group\" *ngIf=\"smtpType===1\">\n                                        <label for=\"service\">Service Name (see list of <a href=\"https://nodemailer.com/smtp/well-known/\" target=\"_blank\">supported services</a>)</label>\n                                        <input type=\"text\" class=\"form-control\" placeholder=\"eg. SendGrid, Gmail, Hotmail\" [(ngModel)]=\"smtpService\" name=\"service\" id=\"service\">\n                                    </div>\n                                    <div class=\"form-group\" *ngIf=\"smtpType === 2\">\n                                        <label for=\"host\">SMTP Host:</label>\n                                        <input type=\"text\" class=\"form-control\" placeholder=\"mail.my-smtp.com\" [(ngModel)]=\"smtpHost\" name=\"host\" id=\"host\">\n                                    </div>\n                                    <div class=\"form-group\" *ngIf=\"smtpType === 2\">\n                                        <label for=\"pwd\">SMTP Port:</label>\n                                        <input type=\"text\" class=\"form-control\" placeholder=\"2442\" [(ngModel)]=\"smtpPort\" name=\"port\" id=\"port\">\n                                    </div>\n                                    <div class=\"form-group\">\n                                        <label for=\"username\">SMTP Username:</label>\n                                        <input type=\"text\" class=\"form-control\" placeholder=\"user_name\" [(ngModel)]=\"smtpUser\" name=\"username\" id=\"username\">\n                                    </div>\n                                    <div class=\"form-group\">\n                                        <label for=\"pwd\">SMTP Password:</label>\n                                        <input type=\"password\" class=\"form-control\" placeholder=\"*******\" [(ngModel)]=\"smtpPass\" name=\"pwd\" id=\"pwd\">\n                                    </div>\n                                </div>\n                                <button type=\"submit\" class=\"btn btn-default\" [disabled]=\"!smtpPass || !smtpUser || !smtpMailer\">Update</button>\n                            </form>\n                        </div>\n                    </div>\n                </ng-template>\n            </ngb-tab>\n            <ngb-tab title=\"Manage Categories\" id=\"manage_categories\">\n                <ng-template ngbTabContent>\n                    <div class=\"row mx-0 mt-3\">\n                        <nav aria-label=\"breadcrumb\">\n                            <ol class=\"breadcrumb\">\n                                <li class=\"breadcrumb-item clickable\" [class.active]=\"!pathCategories.length\" (click)=\"goToRootCats()\" [attr.aria-current]=\"{'page': !pathCategories.length}\">\n                                    Root Categories\n                                </li>\n                                <li class=\"breadcrumb-item\" *ngFor=\"let pathCat of pathCategories; let i=index\" aria-current=\"page\" [class.active]=\"pathCategories.length -1 == i\" (click)=\"getSubCats(pathCat)\" [attr.aria-current]=\"{'page': pathCategories.length-1 == i}\">\n                                    {{pathCat.categoryname}}\n                                </li>\n                            </ol>\n                        </nav>\n                    </div>\n                    <div class=\"row mx-0 mt-3\">\n                        <div class=\"col col-12 col-xs-12 col-md-12 mb-3\">\n                            <div class=\"card\">\n                                <div class=\"card-body\">\n                                    <div class=\"card-text\">\n                                        <form class=\"form-inline\" (ngSubmit)=\"createNewCategory()\">\n                                            <div class=\"form-group\">\n                                                <label for=\"categoryname\" class=\" mr-3\">Add {{categoryType}}:</label>\n                                                <input type=\"text\" class=\"form-control mr-2\" [(ngModel)]=\"newCategoryName\" id=\"categoryname\" name=\"categoryname\">\n                                            </div>\n                                            <button type=\"submit\" class=\"btn btn-primary mb-2\" [disabled]=\"!newCategoryName\"><i class=\"icon ion-plus\"></i> Create</button>\n                                        </form>\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                        <div class=\"col col-md-4 col-xs-12\" *ngFor=\"let cat of categories; let i=index\">\n                            <div class=\"card\">\n                                <div class=\"card-body\">\n                                    <h5 class=\"card-title text-center\" *ngIf=\"!editing[cat._id]\">{{cat.categoryname}}</h5>\n                                    <input class=\"form-control\" *ngIf=\"editing[cat._id]\" [(ngModel)]=\"newCatName[cat._id]\">\n                                    <div class=\"row justify-content-space-evenly\">\n                                        <div class=\"text-center\">\n                                            <button class=\"btn btn-primary\" (click)=\"startEdit(cat)\" *ngIf=\"!editing[cat._id]\"><i class=\"icon ion-edit\"></i></button>\n                                            <button class=\"btn btn-warning\" *ngIf=\"editing[cat._id]\" (click)=\"renameCategory(cat._id, i)\">Save</button>\n                                        </div>\n                                        <div class=\" text-center\">\n                                            <button class=\"btn btn-outline-primary\" (click)=\"getSubCats(cat)\"> <i class=\"icon ion-eye\"></i></button>\n                                        </div>\n                                        <div class=\"text-center\">\n                                            <button class=\"btn btn-danger\" (click)=\"removeCategory(cat, i)\">\n                                                <i class=\"icon ion-trash-b\"></i>\n                                            </button>\n                                        </div>\n                                    </div>\n                                </div>\n                                <div class=\"card-footer text-muted\">\n                                    {{cat.childcategories?.length || 'Zero'}} subcategories\n                                </div>\n                            </div>\n                        </div>\n                        <div class=\"col col-xs-12\" *ngIf=\"!categories?.length\">\n                            <div class=\"card\">\n                                <div class=\"card-title text-center\">\n                                    <h5>No categories found</h5>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </ng-template>\n            </ngb-tab>\n            <ngb-tab title=\"Packages\" id=\"user_packages\">\n                <ng-template ngbTabContent>\n                    <div class=\"row justify-content-start mx-0 mt-3\">\n                        <div class=\"col col-md-4 col-xs-12\" *ngFor=\"let pack of packList; let i=index\">\n                            <div class=\"card mb-2\">\n                                <div class=\"card-body\">\n                                    <h5 class=\"card-title text-center\">{{pack.name}}</h5>\n                                    <hr>\n                                    <h6 class=\"text-center text-muted\">\n                                        {{pack.storage.amount}} {{pack.storage.unit}}\n                                    </h6>\n                                    <h6 class=\"text-center\">\n                                        Monthly: {{pack.pricing.monthly.pay | currency: pack.pricing.currency}}\n                                    </h6>\n                                    <h6 class=\"text-center\">\n                                        Annually: {{pack.pricing.annually.pay | currency: pack.pricing.currency}}\n                                    </h6>\n                                    <ul>\n                                        <li *ngFor=\"let detail of pack.details\">{{detail}}</li>\n                                    </ul>\n                                    <div class=\"row justify-content-start\">\n                                        <div class=\"col text-center\">\n                                            <a class=\"btn btn-warning\" [routerLink]=\"['/edit-package', pack._id]\">\n                                                <i class=\"icon ion-edit\"></i>\n                                            </a>\n                                        </div>\n                                        <div class=\"col text-center\">\n                                            <button class=\"btn btn-outline-danger\" (click)=\"removePackage(pack, i)\">\n                                                <i class=\"icon ion-trash-b\"></i>\n                                            </button>\n                                        </div>                                        \n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                        <div class=\"col col-xs-12\" *ngIf=\"!packList?.length\">\n                            <div class=\"card\">\n                                <div class=\"card-title text-muted text-center py-3\">\n                                    No packages found\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </ng-template>\n            </ngb-tab>\n        </ngb-tabset>\n    </div>\n</div>"
 
 /***/ }),
 
@@ -171,10 +171,11 @@ module.exports = module.exports.toString();
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__shared_category_service__ = __webpack_require__("../../../../../src/app/shared/category.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__shared_auth_service__ = __webpack_require__("../../../../../src/app/shared/auth.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_ngx_toastr__ = __webpack_require__("../../../../ngx-toastr/toastr.es5.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_ng2_bootstrap_modal__ = __webpack_require__("../../../../ng2-bootstrap-modal/index.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_ng2_bootstrap_modal___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_ng2_bootstrap_modal__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__confirm_popup_confirm_popup_component__ = __webpack_require__("../../../../../src/app/confirm-popup/confirm-popup.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__shared_package_service__ = __webpack_require__("../../../../../src/app/shared/package.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_ngx_toastr__ = __webpack_require__("../../../../ngx-toastr/toastr.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_ng2_bootstrap_modal__ = __webpack_require__("../../../../ng2-bootstrap-modal/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_ng2_bootstrap_modal___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_ng2_bootstrap_modal__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__confirm_popup_confirm_popup_component__ = __webpack_require__("../../../../../src/app/confirm-popup/confirm-popup.component.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -190,13 +191,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 var AdminComponent = (function () {
-    function AdminComponent(categoryService, toastr, auth, dialogService) {
+    function AdminComponent(categoryService, toastr, auth, dialogService, packSer) {
         var _this = this;
         this.categoryService = categoryService;
         this.toastr = toastr;
         this.auth = auth;
         this.dialogService = dialogService;
+        this.packSer = packSer;
         this.categories = [];
         this.rootCategories = [];
         this.subCategories = [];
@@ -437,15 +440,49 @@ var AdminComponent = (function () {
             }
         });
     };
-    AdminComponent.prototype.changeAdminTab = function (e) {
-        console.log(e);
-    };
     AdminComponent.prototype.showConfirm = function (title, message) {
-        var popup = this.dialogService.addDialog(__WEBPACK_IMPORTED_MODULE_5__confirm_popup_confirm_popup_component__["a" /* ConfirmPopupComponent */], {
+        var popup = this.dialogService.addDialog(__WEBPACK_IMPORTED_MODULE_6__confirm_popup_confirm_popup_component__["a" /* ConfirmPopupComponent */], {
             title: title,
             message: message
         });
         return popup;
+    };
+    AdminComponent.prototype.changeAdminTab = function (e) {
+        console.log(e);
+        if (e.nextId == 'user_packages') {
+            this.getPackList();
+        }
+    };
+    AdminComponent.prototype.getPackList = function () {
+        var _this = this;
+        this.isLoading = true;
+        this.packSer.getAllPackages().subscribe(function (res) {
+            _this.isLoading = false;
+            if (res.success) {
+                _this.packList = res.packages;
+            }
+            else {
+                _this.toastr.error(res.msg, 'Error');
+            }
+        }, function (error) {
+            _this.isLoading = false;
+        });
+    };
+    AdminComponent.prototype.removePackage = function (pack, index) {
+        var _this = this;
+        this.isLoading = true;
+        this.packSer.removePackage(pack._id).subscribe(function (res) {
+            _this.isLoading = false;
+            if (res.success) {
+                _this.toastr.success('Package deleted successfully!', 'Success');
+                _this.packList.splice(index, 1);
+            }
+            else {
+                _this.toastr.error(res.msg, 'Error');
+            }
+        }, function (error) {
+            _this.isLoading = false;
+        });
     };
     AdminComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
@@ -455,9 +492,10 @@ var AdminComponent = (function () {
             styles: [__webpack_require__("../../../../../src/app/admin/admin.component.scss")]
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__shared_category_service__["a" /* CategoryService */],
-            __WEBPACK_IMPORTED_MODULE_3_ngx_toastr__["b" /* ToastrService */],
+            __WEBPACK_IMPORTED_MODULE_4_ngx_toastr__["b" /* ToastrService */],
             __WEBPACK_IMPORTED_MODULE_2__shared_auth_service__["a" /* AuthService */],
-            __WEBPACK_IMPORTED_MODULE_4_ng2_bootstrap_modal__["DialogService"]])
+            __WEBPACK_IMPORTED_MODULE_5_ng2_bootstrap_modal__["DialogService"],
+            __WEBPACK_IMPORTED_MODULE_3__shared_package_service__["a" /* PackageService */]])
     ], AdminComponent);
     return AdminComponent;
 }());
@@ -548,33 +586,37 @@ var AppComponent = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15_ng2_bootstrap_modal__ = __webpack_require__("../../../../ng2-bootstrap-modal/index.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15_ng2_bootstrap_modal___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_15_ng2_bootstrap_modal__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__shared_ionCaptcha_directive__ = __webpack_require__("../../../../../src/app/shared/ionCaptcha.directive.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17_angular2_flash_messages__ = __webpack_require__("../../../../angular2-flash-messages/index.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17_angular2_flash_messages___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_17_angular2_flash_messages__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__app_component__ = __webpack_require__("../../../../../src/app/app.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__login_login_component__ = __webpack_require__("../../../../../src/app/login/login.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__slideshow_slideshow_component__ = __webpack_require__("../../../../../src/app/slideshow/slideshow.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__header_header_component__ = __webpack_require__("../../../../../src/app/header/header.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__gallery_gallery_component__ = __webpack_require__("../../../../../src/app/gallery/gallery.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__admin_admin_component__ = __webpack_require__("../../../../../src/app/admin/admin.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__image_image_component__ = __webpack_require__("../../../../../src/app/image/image.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__shared_image_service__ = __webpack_require__("../../../../../src/app/shared/image.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_26__shared_category_service__ = __webpack_require__("../../../../../src/app/shared/category.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_27__shared_auth_service__ = __webpack_require__("../../../../../src/app/shared/auth.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_28__upload_upload_component__ = __webpack_require__("../../../../../src/app/upload/upload.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_29__shared_auth_guard__ = __webpack_require__("../../../../../src/app/shared/auth.guard.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_30__shared_login_guard__ = __webpack_require__("../../../../../src/app/shared/login.guard.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__shared_admin_guard__ = __webpack_require__("../../../../../src/app/shared/admin.guard.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__register_register_component__ = __webpack_require__("../../../../../src/app/register/register.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_33__popup_popup_component__ = __webpack_require__("../../../../../src/app/popup/popup.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_34__session_qr_session_qr_component__ = __webpack_require__("../../../../../src/app/session-qr/session-qr.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_35__qr_login_qr_login_component__ = __webpack_require__("../../../../../src/app/qr-login/qr-login.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_36__reset_password_reset_password_component__ = __webpack_require__("../../../../../src/app/reset-password/reset-password.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_37__forgot_password_forgot_password_component__ = __webpack_require__("../../../../../src/app/forgot-password/forgot-password.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_38__confirm_popup_confirm_popup_component__ = __webpack_require__("../../../../../src/app/confirm-popup/confirm-popup.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_39__environments_environment__ = __webpack_require__("../../../../../src/environments/environment.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_40__admin_login_admin_login_component__ = __webpack_require__("../../../../../src/app/admin-login/admin-login.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_41_ngx_loading__ = __webpack_require__("../../../../ngx-loading/ngx-loading/ngx-loading.es5.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_42__validator_username__ = __webpack_require__("../../../../../src/app/validator.username.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17_ngx_loading__ = __webpack_require__("../../../../ngx-loading/ngx-loading/ngx-loading.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18_angular2_flash_messages__ = __webpack_require__("../../../../angular2-flash-messages/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18_angular2_flash_messages___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_18_angular2_flash_messages__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__shared_image_service__ = __webpack_require__("../../../../../src/app/shared/image.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__shared_category_service__ = __webpack_require__("../../../../../src/app/shared/category.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__shared_auth_service__ = __webpack_require__("../../../../../src/app/shared/auth.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__shared_package_service__ = __webpack_require__("../../../../../src/app/shared/package.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__shared_auth_guard__ = __webpack_require__("../../../../../src/app/shared/auth.guard.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__shared_login_guard__ = __webpack_require__("../../../../../src/app/shared/login.guard.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__shared_admin_guard__ = __webpack_require__("../../../../../src/app/shared/admin.guard.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_26__shared_pack_guard__ = __webpack_require__("../../../../../src/app/shared/pack.guard.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_27__app_component__ = __webpack_require__("../../../../../src/app/app.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_28__login_login_component__ = __webpack_require__("../../../../../src/app/login/login.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_29__slideshow_slideshow_component__ = __webpack_require__("../../../../../src/app/slideshow/slideshow.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_30__header_header_component__ = __webpack_require__("../../../../../src/app/header/header.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__gallery_gallery_component__ = __webpack_require__("../../../../../src/app/gallery/gallery.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__admin_admin_component__ = __webpack_require__("../../../../../src/app/admin/admin.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_33__image_image_component__ = __webpack_require__("../../../../../src/app/image/image.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_34__upload_upload_component__ = __webpack_require__("../../../../../src/app/upload/upload.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_35__register_register_component__ = __webpack_require__("../../../../../src/app/register/register.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_36__popup_popup_component__ = __webpack_require__("../../../../../src/app/popup/popup.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_37__session_qr_session_qr_component__ = __webpack_require__("../../../../../src/app/session-qr/session-qr.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_38__qr_login_qr_login_component__ = __webpack_require__("../../../../../src/app/qr-login/qr-login.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_39__reset_password_reset_password_component__ = __webpack_require__("../../../../../src/app/reset-password/reset-password.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_40__forgot_password_forgot_password_component__ = __webpack_require__("../../../../../src/app/forgot-password/forgot-password.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_41__confirm_popup_confirm_popup_component__ = __webpack_require__("../../../../../src/app/confirm-popup/confirm-popup.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_42__admin_login_admin_login_component__ = __webpack_require__("../../../../../src/app/admin-login/admin-login.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_43__package_package_component__ = __webpack_require__("../../../../../src/app/package/package.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_44__select_pack_select_pack_component__ = __webpack_require__("../../../../../src/app/select-pack/select-pack.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_45__validator_username__ = __webpack_require__("../../../../../src/app/validator.username.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_46__environments_environment__ = __webpack_require__("../../../../../src/environments/environment.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -624,7 +666,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 
 
-var ioConfig = { url: __WEBPACK_IMPORTED_MODULE_39__environments_environment__["a" /* environment */].socketUrl, options: {} };
+
+
+
+
+var ioConfig = { url: __WEBPACK_IMPORTED_MODULE_46__environments_environment__["a" /* environment */].socketUrl, options: {} };
 // const loadingConfig = {}
 var ROUTES = [
     {
@@ -634,65 +680,81 @@ var ROUTES = [
     },
     {
         path: 'login',
-        component: __WEBPACK_IMPORTED_MODULE_19__login_login_component__["a" /* LoginComponent */],
-        canActivate: [__WEBPACK_IMPORTED_MODULE_30__shared_login_guard__["a" /* LoginGuard */]]
+        component: __WEBPACK_IMPORTED_MODULE_28__login_login_component__["a" /* LoginComponent */],
+        canActivate: [__WEBPACK_IMPORTED_MODULE_24__shared_login_guard__["a" /* LoginGuard */]]
     },
     {
         path: 'login/:token',
-        component: __WEBPACK_IMPORTED_MODULE_19__login_login_component__["a" /* LoginComponent */]
+        component: __WEBPACK_IMPORTED_MODULE_28__login_login_component__["a" /* LoginComponent */]
     },
     {
         path: 'qr-login',
-        component: __WEBPACK_IMPORTED_MODULE_35__qr_login_qr_login_component__["a" /* QrLoginComponent */]
+        component: __WEBPACK_IMPORTED_MODULE_38__qr_login_qr_login_component__["a" /* QrLoginComponent */]
     },
     {
         path: 'register',
-        component: __WEBPACK_IMPORTED_MODULE_32__register_register_component__["a" /* RegisterComponent */]
+        component: __WEBPACK_IMPORTED_MODULE_35__register_register_component__["a" /* RegisterComponent */]
     },
     {
         path: 'forgot_password',
-        component: __WEBPACK_IMPORTED_MODULE_37__forgot_password_forgot_password_component__["a" /* ForgotPasswordComponent */]
+        component: __WEBPACK_IMPORTED_MODULE_40__forgot_password_forgot_password_component__["a" /* ForgotPasswordComponent */]
     },
     {
         path: 'reset_password/:token',
-        component: __WEBPACK_IMPORTED_MODULE_36__reset_password_reset_password_component__["a" /* ResetPasswordComponent */]
+        component: __WEBPACK_IMPORTED_MODULE_39__reset_password_reset_password_component__["a" /* ResetPasswordComponent */]
     },
     {
         path: 'images',
-        component: __WEBPACK_IMPORTED_MODULE_24__image_image_component__["a" /* ImageComponent */]
+        component: __WEBPACK_IMPORTED_MODULE_33__image_image_component__["a" /* ImageComponent */]
     },
     {
         path: 'gallery',
-        component: __WEBPACK_IMPORTED_MODULE_22__gallery_gallery_component__["a" /* GalleryComponent */],
-        canActivate: [__WEBPACK_IMPORTED_MODULE_29__shared_auth_guard__["a" /* AuthGuard */]]
+        component: __WEBPACK_IMPORTED_MODULE_31__gallery_gallery_component__["a" /* GalleryComponent */],
+        canActivate: [__WEBPACK_IMPORTED_MODULE_23__shared_auth_guard__["a" /* AuthGuard */]]
     },
     {
         path: 'slideshow/:id',
-        component: __WEBPACK_IMPORTED_MODULE_20__slideshow_slideshow_component__["a" /* SlideshowComponent */],
-        canActivate: [__WEBPACK_IMPORTED_MODULE_29__shared_auth_guard__["a" /* AuthGuard */]]
+        component: __WEBPACK_IMPORTED_MODULE_29__slideshow_slideshow_component__["a" /* SlideshowComponent */],
+        canActivate: [__WEBPACK_IMPORTED_MODULE_23__shared_auth_guard__["a" /* AuthGuard */]]
     },
     {
         path: 'session-qr',
-        component: __WEBPACK_IMPORTED_MODULE_34__session_qr_session_qr_component__["a" /* SessionQrComponent */],
-        canActivate: [__WEBPACK_IMPORTED_MODULE_29__shared_auth_guard__["a" /* AuthGuard */]]
+        component: __WEBPACK_IMPORTED_MODULE_37__session_qr_session_qr_component__["a" /* SessionQrComponent */],
+        canActivate: [__WEBPACK_IMPORTED_MODULE_23__shared_auth_guard__["a" /* AuthGuard */]]
     },
     {
         path: 'create',
-        component: __WEBPACK_IMPORTED_MODULE_28__upload_upload_component__["a" /* UploadComponent */],
-        canActivate: [__WEBPACK_IMPORTED_MODULE_29__shared_auth_guard__["a" /* AuthGuard */]]
+        component: __WEBPACK_IMPORTED_MODULE_34__upload_upload_component__["a" /* UploadComponent */],
+        canActivate: [__WEBPACK_IMPORTED_MODULE_23__shared_auth_guard__["a" /* AuthGuard */]]
     },
     {
         path: 'edit-session/:id',
-        component: __WEBPACK_IMPORTED_MODULE_28__upload_upload_component__["a" /* UploadComponent */],
-        canActive: [__WEBPACK_IMPORTED_MODULE_29__shared_auth_guard__["a" /* AuthGuard */]]
+        component: __WEBPACK_IMPORTED_MODULE_34__upload_upload_component__["a" /* UploadComponent */],
+        canActive: [__WEBPACK_IMPORTED_MODULE_23__shared_auth_guard__["a" /* AuthGuard */]]
     },
     {
         path: 'admin',
-        component: __WEBPACK_IMPORTED_MODULE_23__admin_admin_component__["a" /* AdminComponent */],
-        canActivate: [__WEBPACK_IMPORTED_MODULE_29__shared_auth_guard__["a" /* AuthGuard */], __WEBPACK_IMPORTED_MODULE_31__shared_admin_guard__["a" /* AdminGuard */]]
-    }, {
+        component: __WEBPACK_IMPORTED_MODULE_32__admin_admin_component__["a" /* AdminComponent */],
+        canActivate: [__WEBPACK_IMPORTED_MODULE_23__shared_auth_guard__["a" /* AuthGuard */], __WEBPACK_IMPORTED_MODULE_25__shared_admin_guard__["a" /* AdminGuard */]]
+    },
+    {
         path: 'admin-login',
-        component: __WEBPACK_IMPORTED_MODULE_40__admin_login_admin_login_component__["a" /* AdminLoginComponent */]
+        component: __WEBPACK_IMPORTED_MODULE_42__admin_login_admin_login_component__["a" /* AdminLoginComponent */]
+    },
+    {
+        path: 'add-package',
+        component: __WEBPACK_IMPORTED_MODULE_43__package_package_component__["a" /* PackageComponent */],
+        canActivate: [__WEBPACK_IMPORTED_MODULE_25__shared_admin_guard__["a" /* AdminGuard */]]
+    },
+    {
+        path: 'edit-package/:id',
+        component: __WEBPACK_IMPORTED_MODULE_43__package_package_component__["a" /* PackageComponent */],
+        canActivate: [__WEBPACK_IMPORTED_MODULE_25__shared_admin_guard__["a" /* AdminGuard */]]
+    },
+    {
+        path: 'pricing',
+        component: __WEBPACK_IMPORTED_MODULE_44__select_pack_select_pack_component__["a" /* SelectPackComponent */],
+        canActivate: [__WEBPACK_IMPORTED_MODULE_26__shared_pack_guard__["a" /* PackGuard */]]
     }
 ];
 var AppModule = (function () {
@@ -701,24 +763,26 @@ var AppModule = (function () {
     AppModule = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["NgModule"])({
             declarations: [
-                __WEBPACK_IMPORTED_MODULE_18__app_component__["a" /* AppComponent */],
-                __WEBPACK_IMPORTED_MODULE_19__login_login_component__["a" /* LoginComponent */],
-                __WEBPACK_IMPORTED_MODULE_21__header_header_component__["a" /* HeaderComponent */],
-                __WEBPACK_IMPORTED_MODULE_22__gallery_gallery_component__["a" /* GalleryComponent */],
-                __WEBPACK_IMPORTED_MODULE_20__slideshow_slideshow_component__["a" /* SlideshowComponent */],
-                __WEBPACK_IMPORTED_MODULE_24__image_image_component__["a" /* ImageComponent */],
-                __WEBPACK_IMPORTED_MODULE_28__upload_upload_component__["a" /* UploadComponent */],
-                __WEBPACK_IMPORTED_MODULE_23__admin_admin_component__["a" /* AdminComponent */],
+                __WEBPACK_IMPORTED_MODULE_27__app_component__["a" /* AppComponent */],
+                __WEBPACK_IMPORTED_MODULE_28__login_login_component__["a" /* LoginComponent */],
+                __WEBPACK_IMPORTED_MODULE_30__header_header_component__["a" /* HeaderComponent */],
+                __WEBPACK_IMPORTED_MODULE_31__gallery_gallery_component__["a" /* GalleryComponent */],
+                __WEBPACK_IMPORTED_MODULE_29__slideshow_slideshow_component__["a" /* SlideshowComponent */],
+                __WEBPACK_IMPORTED_MODULE_33__image_image_component__["a" /* ImageComponent */],
+                __WEBPACK_IMPORTED_MODULE_34__upload_upload_component__["a" /* UploadComponent */],
+                __WEBPACK_IMPORTED_MODULE_32__admin_admin_component__["a" /* AdminComponent */],
                 __WEBPACK_IMPORTED_MODULE_6_ng2_file_upload__["FileSelectDirective"],
-                __WEBPACK_IMPORTED_MODULE_32__register_register_component__["a" /* RegisterComponent */],
-                __WEBPACK_IMPORTED_MODULE_33__popup_popup_component__["a" /* PopupComponent */],
+                __WEBPACK_IMPORTED_MODULE_35__register_register_component__["a" /* RegisterComponent */],
+                __WEBPACK_IMPORTED_MODULE_36__popup_popup_component__["a" /* PopupComponent */],
                 __WEBPACK_IMPORTED_MODULE_16__shared_ionCaptcha_directive__["a" /* IonCaptchaDirective */],
-                __WEBPACK_IMPORTED_MODULE_34__session_qr_session_qr_component__["a" /* SessionQrComponent */],
-                __WEBPACK_IMPORTED_MODULE_35__qr_login_qr_login_component__["a" /* QrLoginComponent */],
-                __WEBPACK_IMPORTED_MODULE_36__reset_password_reset_password_component__["a" /* ResetPasswordComponent */],
-                __WEBPACK_IMPORTED_MODULE_37__forgot_password_forgot_password_component__["a" /* ForgotPasswordComponent */],
-                __WEBPACK_IMPORTED_MODULE_38__confirm_popup_confirm_popup_component__["a" /* ConfirmPopupComponent */],
-                __WEBPACK_IMPORTED_MODULE_40__admin_login_admin_login_component__["a" /* AdminLoginComponent */],
+                __WEBPACK_IMPORTED_MODULE_37__session_qr_session_qr_component__["a" /* SessionQrComponent */],
+                __WEBPACK_IMPORTED_MODULE_38__qr_login_qr_login_component__["a" /* QrLoginComponent */],
+                __WEBPACK_IMPORTED_MODULE_39__reset_password_reset_password_component__["a" /* ResetPasswordComponent */],
+                __WEBPACK_IMPORTED_MODULE_40__forgot_password_forgot_password_component__["a" /* ForgotPasswordComponent */],
+                __WEBPACK_IMPORTED_MODULE_41__confirm_popup_confirm_popup_component__["a" /* ConfirmPopupComponent */],
+                __WEBPACK_IMPORTED_MODULE_42__admin_login_admin_login_component__["a" /* AdminLoginComponent */],
+                __WEBPACK_IMPORTED_MODULE_43__package_package_component__["a" /* PackageComponent */],
+                __WEBPACK_IMPORTED_MODULE_44__select_pack_select_pack_component__["a" /* SelectPackComponent */],
             ],
             imports: [
                 __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__["a" /* BrowserModule */],
@@ -731,30 +795,32 @@ var AppModule = (function () {
                 __WEBPACK_IMPORTED_MODULE_8_ngx_bootstrap__["a" /* AlertModule */].forRoot(),
                 __WEBPACK_IMPORTED_MODULE_7__angular_router__["c" /* RouterModule */].forRoot(ROUTES),
                 __WEBPACK_IMPORTED_MODULE_10_ng2_dnd__["a" /* DndModule */].forRoot(),
-                __WEBPACK_IMPORTED_MODULE_17_angular2_flash_messages__["FlashMessagesModule"],
+                __WEBPACK_IMPORTED_MODULE_18_angular2_flash_messages__["FlashMessagesModule"],
                 __WEBPACK_IMPORTED_MODULE_12__angular_platform_browser_animations__["a" /* BrowserAnimationsModule */],
                 __WEBPACK_IMPORTED_MODULE_13_ngx_toastr__["a" /* ToastrModule */].forRoot({
                     preventDuplicates: true
                 }),
                 __WEBPACK_IMPORTED_MODULE_15_ng2_bootstrap_modal__["BootstrapModalModule"].forRoot({ container: document.body }),
                 __WEBPACK_IMPORTED_MODULE_14_ng_socket_io__["SocketIoModule"].forRoot(ioConfig),
-                __WEBPACK_IMPORTED_MODULE_41_ngx_loading__["a" /* LoadingModule */]
+                __WEBPACK_IMPORTED_MODULE_17_ngx_loading__["a" /* LoadingModule */]
             ],
             entryComponents: [
-                __WEBPACK_IMPORTED_MODULE_33__popup_popup_component__["a" /* PopupComponent */],
-                __WEBPACK_IMPORTED_MODULE_38__confirm_popup_confirm_popup_component__["a" /* ConfirmPopupComponent */]
+                __WEBPACK_IMPORTED_MODULE_36__popup_popup_component__["a" /* PopupComponent */],
+                __WEBPACK_IMPORTED_MODULE_41__confirm_popup_confirm_popup_component__["a" /* ConfirmPopupComponent */]
             ],
             providers: [
-                __WEBPACK_IMPORTED_MODULE_25__shared_image_service__["a" /* ImageService */],
-                __WEBPACK_IMPORTED_MODULE_27__shared_auth_service__["a" /* AuthService */],
-                __WEBPACK_IMPORTED_MODULE_26__shared_category_service__["a" /* CategoryService */],
-                __WEBPACK_IMPORTED_MODULE_29__shared_auth_guard__["a" /* AuthGuard */],
-                __WEBPACK_IMPORTED_MODULE_30__shared_login_guard__["a" /* LoginGuard */],
-                __WEBPACK_IMPORTED_MODULE_31__shared_admin_guard__["a" /* AdminGuard */],
+                __WEBPACK_IMPORTED_MODULE_19__shared_image_service__["a" /* ImageService */],
+                __WEBPACK_IMPORTED_MODULE_21__shared_auth_service__["a" /* AuthService */],
+                __WEBPACK_IMPORTED_MODULE_22__shared_package_service__["a" /* PackageService */],
+                __WEBPACK_IMPORTED_MODULE_20__shared_category_service__["a" /* CategoryService */],
+                __WEBPACK_IMPORTED_MODULE_23__shared_auth_guard__["a" /* AuthGuard */],
+                __WEBPACK_IMPORTED_MODULE_24__shared_login_guard__["a" /* LoginGuard */],
+                __WEBPACK_IMPORTED_MODULE_25__shared_admin_guard__["a" /* AdminGuard */],
+                __WEBPACK_IMPORTED_MODULE_26__shared_pack_guard__["a" /* PackGuard */],
                 __WEBPACK_IMPORTED_MODULE_5__shared_http_interceptor__["a" /* HttpInterceptor */],
-                __WEBPACK_IMPORTED_MODULE_42__validator_username__["a" /* UsernameValidator */]
+                __WEBPACK_IMPORTED_MODULE_45__validator_username__["a" /* UsernameValidator */]
             ],
-            bootstrap: [__WEBPACK_IMPORTED_MODULE_18__app_component__["a" /* AppComponent */]]
+            bootstrap: [__WEBPACK_IMPORTED_MODULE_27__app_component__["a" /* AppComponent */]]
         })
     ], AppModule);
     return AppModule;
@@ -1255,7 +1321,7 @@ var GalleryComponent = (function () {
 /***/ "../../../../../src/app/header/header.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<nav class=\"navbar fixed-top navbar-expand-lg navbar-dark bg-dark\">\n    <div class=\"container\">\n        <a class=\"navbar-brand\" href=\"#\">{{title}}</a>\n        <button class=\"navbar-toggler\" type=\"button\" data-toggle=\"collapse\" data-target=\"#navbar_main\" aria-controls=\"navbar_main\" aria-expanded=\"false\" [attr.aria-expanded]=\"!isCollapsed\" aria-label=\"Toggle navigation\" (click)=\"isCollapsed=!isCollapsed\">\n            <span class=\"navbar-toggler-icon\"></span>\n        </button>\n        <div class=\"collapse navbar-collapse\" id=\"navbar_main\" [ngbCollapse]=\"isCollapsed\">\n            <ul class=\"navbar-nav mr-auto\" *ngIf=\"auth.loggedIn() && !auth.adminLogIn()\">\n                <li class=\"nav-item\" *ngIf=\"!auth.scannedLogIn()\">\n                    <a class=\"nav-link\" routerLink=\"/gallery\">Gallery <span class=\"sr-only\">(current)</span></a>\n                </li>\n                <li class=\"nav-item\" *ngIf=\"!auth.scannedLogIn()\">\n                    <a class=\"nav-link\" routerLink=\"/create\">Create</a>\n                </li>\n                <li class=\"nav-item\">\n                    <a class=\"nav-link\" routerLink=\"/session-qr\">Session QRs</a>\n                </li>\n            </ul>\n            <ul class=\"navbar-nav mr-auto\" *ngIf=\"!auth.loggedIn()\">\n                <li class=\"nav-item\">\n                    <a class=\"nav-link\" routerLink=\"/login\">Login</a>\n                </li>\\\n                <li class=\"nav-item\"><a class=\"nav-link\" routerLink=\"/qr-login\">QR Login</a></li>\n            </ul>\n            <ul class=\"navbar-nav mr-auto\" *ngIf=\"auth.loggedIn() && auth.adminLogIn()\">\n                <li class=\"nav-item\"><a class=\"nav-link\" routerLink=\"/admin\">Admin</a></li>\n            </ul>\n            <ul class=\"navbar-nav ml-auto\" *ngIf=\"auth.loggedIn()\">\n                <li class=\"nav-item\">\n                    <button class=\"btn btn-link nav-link\" (click)=\"onLogout()\">Logout</button>\n                </li>\n            </ul>\n        </div>\n    </div>\n</nav>"
+module.exports = "<nav class=\"navbar fixed-top navbar-expand-lg navbar-dark bg-dark\">\n    <div class=\"container\">\n        <a class=\"navbar-brand\" href=\"#\">{{title}}</a>\n        <button class=\"navbar-toggler\" type=\"button\" data-toggle=\"collapse\" data-target=\"#navbar_main\" aria-controls=\"navbar_main\" aria-expanded=\"false\" [attr.aria-expanded]=\"!isCollapsed\" aria-label=\"Toggle navigation\" (click)=\"isCollapsed=!isCollapsed\">\n            <span class=\"navbar-toggler-icon\"></span>\n        </button>\n        <div class=\"collapse navbar-collapse\" id=\"navbar_main\" [ngbCollapse]=\"isCollapsed\">\n            <ul class=\"navbar-nav mr-auto\" *ngIf=\"auth.customerLogin()\">\n                <li class=\"nav-item\" *ngIf=\"!auth.scannedLogIn()\">\n                    <a class=\"nav-link\" routerLink=\"/gallery\">Gallery <span class=\"sr-only\">(current)</span></a>\n                </li>\n                <li class=\"nav-item\" *ngIf=\"!auth.scannedLogIn()\">\n                    <a class=\"nav-link\" routerLink=\"/create\">Create</a>\n                </li>\n                <li class=\"nav-item\" *ngIf=\"!auth.scannedLogIn()\">\n                    <a class=\"nav-link\" routerLink=\"/pricing\">Change Package</a>\n                </li>\n                <li class=\"nav-item\">\n                    <a class=\"nav-link\" routerLink=\"/session-qr\">Session QRs</a>\n                </li>\n            </ul>\n            <ul class=\"navbar-nav mr-auto\" *ngIf=\"!auth.loggedIn()\">\n                <li class=\"nav-item\">\n                    <a class=\"nav-link\" routerLink=\"/login\">Login</a>\n                </li>\n                <li class=\"nav-item\">\n                    <a class=\"nav-link\" routerLink=\"/pricing\">Pricing</a>\n                </li>\n                <li class=\"nav-item\"><a class=\"nav-link\" routerLink=\"/qr-login\">QR Login</a></li>\n            </ul>\n            <ul class=\"navbar-nav mr-auto\" *ngIf=\"auth.loggedIn() && auth.adminLogIn()\">\n                <li class=\"nav-item\"><a class=\"nav-link\" routerLink=\"/admin\">Admin</a></li>\n                <li class=\"nav-item\"><a href=\"\" class=\"nav-link\" routerLink=\"/add-package\">Add package</a></li>\n            </ul>\n            <ul class=\"navbar-nav ml-auto\" *ngIf=\"auth.loggedIn()\">\n                <li class=\"nav-item\">\n                    <button class=\"btn btn-link nav-link\" (click)=\"onLogout()\">Logout</button>\n                </li>\n            </ul>\n        </div>\n    </div>\n</nav>"
 
 /***/ }),
 
@@ -1499,11 +1565,26 @@ var LoginComponent = (function () {
         this.isLoading = true;
         this.authService.authenticateUser(credentials)
             .subscribe(function (data) {
-            _this.isLoading = false;
+            // this.isLoading = false;
             if (data.success) {
                 console.log(data);
                 _this.authService.storeUserData(data.user, data.token);
-                _this.router.navigate(['gallery']);
+                _this.authService.hasActiveSub().subscribe(function (res) {
+                    _this.isLoading = false;
+                    if (res.success) {
+                        if (res.hasSub) {
+                            _this.router.navigate(['/gallery']);
+                        }
+                        else {
+                            _this.router.navigate(['/pricing']);
+                        }
+                    }
+                    else {
+                        _this.toastr.error('', 'Error');
+                    }
+                }, function (error) {
+                    _this.isLoading = false;
+                });
             }
             else {
                 console.log(data);
@@ -1535,6 +1616,212 @@ var LoginComponent = (function () {
             __WEBPACK_IMPORTED_MODULE_4_ngx_toastr__["b" /* ToastrService */]])
     ], LoginComponent);
     return LoginComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/app/package/package.component.html":
+/***/ (function(module, exports) {
+
+module.exports = "<main role=\"main\">\n    <div class=\"container\">\n        <ngx-loading [show]=\"isLoading\"></ngx-loading>\n        <h4 *ngIf=\"packEdit\" class=\"mt-3 mx-0\">Edit Package</h4>\n        <h4 *ngIf=\"!packEdit\" class=\"mt-3 mx-0\">Add Package</h4>\n        <div class=\"row mt-3 mx-0\">\n            <div class=\"card package-card\">\n                <div class=\"card-body\">\n                    <form (ngSubmit)=\"submitPackForm()\" [formGroup]=\"packForm\" novalidate>\n                        <div class=\"form-group\">\n                            <label for=\"name\">Package Name</label>\n                            <input type=\"text\" class=\"form-control\" id=\"name\" formControlName=\"name\" [ngClass]=\"checkValid(name)\">\n                            <div class=\"invalid-feedback\" *ngIf=\"name.errors?.required && (name.touched || name.dirty)\">\n                                Package name is required\n                            </div>\n                        </div>\n                        <div class=\"form-group\" formGroupName=\"pricing\">\n                            <div class=\"form-group pb-3\">\n                                <label for=\"currency\">Currency</label>\n                                <select formControlName=\"currency\" id=\"currency\" class=\"custom-select form-control\">\n                                    <option [value]=\"currency\" *ngFor=\"let currency of currencies\">{{currency}}</option>\n                                </select>\n                                <div class=\"invalid-feedback\" *ngIf=\"monthly_pricing.errors?.required && (monthly_pricing.touched || monthly_pricing.dirty)\">\n                                    Currency is required\n                                </div>                                \n                            </div>\n\n                            <div class=\"form-group\" formGroupName=\"monthly\">\n                                <label for=\"monthly_pricing\">Pricing (monthly)</label>\n                                <input type=\"number\" formControlName=\"pay\" class=\"form-control\" id=\"monthly_pricing\" [ngClass]=\"checkValid(monthly_pricing)\" (change)=\"floatify(monthly_pricing)\">\n\n                                <div class=\"invalid-feedback\" *ngIf=\"monthly_pricing.errors?.required && (monthly_pricing.touched || monthly_pricing.dirty)\">\n                                    Pricing is required\n                                </div>\n\n                            </div>\n                            <div class=\"form-group\" formGroupName=\"annually\">\n                                <label for=\"yearly_pricing\">Pricing (Yearly)</label>\n                                <input type=\"number\" formControlName=\"pay\" class=\"form-control\" id=\"montly_pricing\" [ngClass]=\"checkValid(yearly_pricing)\" (change)=\"floatify(yearly_pricing)\">              \n                            </div>\n                        </div>\n                        <div class=\"form-group\" formGroupName=\"storage\">\n                            <div class=\"form-group\">\n                                <label for=\"amount\">Storage Amount: </label>\n\n                                <input type=\"number\" class=\"form-control\" id=\"amount\" formControlName=\"amount\" [ngClass]=\"checkValid(storage_amount)\">\n                                <div class=\"invalid-feedback\" *ngIf=\"storage_amount.errors?.required && (storage_amount.touched || storage_amount.dirty)\">\n                                    Storage amount is required\n                                </div>\n                            </div>\n                            <div class=\"form-group pb-3\">\n                                <label for=\"unit\">Storage Unit:</label>\n                                <select formControlName=\"unit\" class=\"custom-select form-control\" [ngClass]=\"checkValid(storage_unit)\" id=\"unit\">\n                                    <option [value]=\"unit\" *ngFor=\"let unit of storage_units_list\">{{unit}}</option>\n                                </select>\n                                <div class=\"invalid-feedback\" *ngIf=\"storage_unit.errors?.required && (storage_unit.touched || storage_unit.dirty)\">\n                                    Storage unit is required\n                                </div>                         \n                            </div>\n                        </div>\n                        <div class=\"form-group\">\n                            <label for=\"trialPeriod\">\n                                Trial period (in days): \n                            </label>\n                            <input type=\"number\" formControlName=\"trialPeriod\" id=\"trialPeriod\" class=\"form-control\" [ngClass]=\"checkValid(trialPeriod)\">\n\n                            <div class=\"invalid-feedback\" *ngIf=\"trialPeriod.errors?.required && (trialPeriod.touched || trialPeriod.dirty)\">\n                                Trial period is required\n                            </div>\n                        </div>\n                        <button class=\"btn btn-primary\" *ngIf=\"!packEdit\">\n                            <i class=\"icon ion-plus\"></i>\n                            Add package\n                        </button>\n                        <button class=\"btn btn-success\" *ngIf=\"packEdit\">\n                            <i class=\"icon ion-checkmark-round\"></i>\n                            Update\n                        </button>\n                    </form>\n                </div>\n            </div>\n        </div>\n    </div>    \n</main>\n"
+
+/***/ }),
+
+/***/ "../../../../../src/app/package/package.component.scss":
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__("../../../../css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".package-card {\n  width: 100%; }\n", ""]);
+
+// exports
+
+
+/*** EXPORTS FROM exports-loader ***/
+module.exports = module.exports.toString();
+
+/***/ }),
+
+/***/ "../../../../../src/app/package/package.component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return PackageComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_router__ = __webpack_require__("../../../router/esm5/router.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_ngx_toastr__ = __webpack_require__("../../../../ngx-toastr/toastr.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__shared_package_service__ = __webpack_require__("../../../../../src/app/shared/package.service.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+
+
+
+var PackageComponent = (function () {
+    function PackageComponent(packSer, router, route, toastr, fb) {
+        this.packSer = packSer;
+        this.router = router;
+        this.route = route;
+        this.toastr = toastr;
+        this.fb = fb;
+        this.isLoading = false;
+        this.packEdit = false;
+        this.name = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required);
+        this.monthly_pricing = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required);
+        this.yearly_pricing = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null);
+        this.currency = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required);
+        this.details = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null);
+        this.storage_amount = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required);
+        this.storage_unit = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required);
+        this.trialPeriod = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](15);
+    }
+    PackageComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this.currencies = ['USD', 'CAD', 'GBP', 'INR', 'EUR', 'YEN'];
+        this.storage_units_list = ['Mb', 'Gb', 'MB', 'GB'];
+        this.route.params.subscribe(function (params) {
+            if (params['id']) {
+                _this.initEditPack(params['id']);
+            }
+        });
+        this.packForm = this.fb.group({
+            name: this.name,
+            pricing: this.fb.group({
+                monthly: this.fb.group({
+                    pay: this.monthly_pricing,
+                }),
+                annually: this.fb.group({
+                    pay: this.yearly_pricing,
+                }),
+                currency: this.currency
+            }),
+            storage: this.fb.group({
+                amount: this.storage_amount,
+                unit: this.storage_unit
+            }),
+            details: this.details,
+            trialPeriod: this.trialPeriod
+        });
+    };
+    PackageComponent.prototype.initEditPack = function (packId) {
+        var _this = this;
+        this.packEdit = true;
+        this.isLoading = true;
+        this.packSer.getPackage(packId).subscribe(function (res) {
+            _this.isLoading = false;
+            if (res.success) {
+                _this.currPack = res.package;
+                _this.setFormValues(res.package);
+            }
+            else {
+                _this.toastr.error(res.msg, 'Error');
+            }
+        }, function (error) {
+            _this.isLoading = false;
+        });
+    };
+    PackageComponent.prototype.setFormValues = function (pack) {
+        this.packForm.setValue({
+            name: pack.name,
+            pricing: pack.pricing,
+            storage: pack.storage,
+            details: pack.details,
+            trialPeriod: pack.trialPeriod
+        }, {
+            emitEvent: false
+        });
+    };
+    PackageComponent.prototype.submitPackForm = function () {
+        var _this = this;
+        if (this.packForm.invalid) {
+            // show errors
+            Object.keys(this.packForm.controls).forEach(function (field) {
+                var control = _this.packForm.get(field);
+                console.log(control);
+                control.markAsTouched({ onlySelf: true });
+            });
+            return;
+        }
+        if (this.packEdit) {
+            this.updatePackage();
+        }
+        else {
+            this.addNewPackage();
+        }
+    };
+    PackageComponent.prototype.updatePackage = function () {
+        var _this = this;
+        this.isLoading = true;
+        this.packSer.updatePackage(this.currPack._id, this.packForm.value).subscribe(function (res) {
+            _this.isLoading = false;
+            if (res.success) {
+                _this.currPack = res.package;
+                _this.toastr.success('Package updated', 'Success');
+            }
+            else {
+                _this.toastr.error(res.msg, 'Error');
+            }
+        }, function (error) {
+            _this.isLoading = false;
+        });
+    };
+    PackageComponent.prototype.addNewPackage = function () {
+        var _this = this;
+        this.isLoading = true;
+        this.packSer.addPackage(this.packForm.value).subscribe(function (res) {
+            _this.isLoading = false;
+            if (res.success) {
+                _this.packForm.reset();
+                _this.toastr.success('New package added!', 'Success');
+                _this.currPack = null;
+            }
+            else {
+                _this.toastr.error(res.msg, 'Error');
+            }
+        }, function (error) {
+            _this.isLoading = false;
+        });
+    };
+    PackageComponent.prototype.floatify = function (control) {
+        control.setValue(control.value.toFixed(2), {
+            emitEvent: false
+        });
+    };
+    PackageComponent.prototype.checkValid = function (control) {
+        if (control.errors && (control.touched || control.dirty)) {
+            return 'is-invalid';
+        }
+        else if (!control.errors && (control.touched || control.dirty)) {
+            return 'is-valid';
+        }
+    };
+    PackageComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
+            selector: 'app-package',
+            template: __webpack_require__("../../../../../src/app/package/package.component.html"),
+            styles: [__webpack_require__("../../../../../src/app/package/package.component.scss")]
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__shared_package_service__["a" /* PackageService */],
+            __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */],
+            __WEBPACK_IMPORTED_MODULE_1__angular_router__["a" /* ActivatedRoute */],
+            __WEBPACK_IMPORTED_MODULE_3_ngx_toastr__["b" /* ToastrService */],
+            __WEBPACK_IMPORTED_MODULE_2__angular_forms__["b" /* FormBuilder */]])
+    ], PackageComponent);
+    return PackageComponent;
 }());
 
 
@@ -1596,7 +1883,9 @@ var PopupComponent = (function (_super) {
     PopupComponent.prototype.confirm = function () {
         this.result = {
             delay: this.delay,
-            title: this.imgTitle
+            title: this.imgTitle,
+            titleSize: this.titleSize,
+            titleAlign: this.titleAlign
         };
         this.close();
     };
@@ -1604,7 +1893,7 @@ var PopupComponent = (function (_super) {
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
             selector: 'popup',
             styles: [__webpack_require__("../../../../../src/app/popup/popup.component.scss")],
-            template: "<div class=\"modal-dialog\">\n                <div class=\"modal-content\">\n                   <div class=\"modal-header\">\n                      <h4 class=\"modal-title\">{{title || 'Confirm'}}</h4>\n                      <button type=\"button\" class=\"close\" (click)=\"close()\" data-dismiss=\"modal\" aria-label=\"Close\">\n                        <span aria-hidden=\"true\">&times;</span>\n                      </button>                     \n                   </div>\n                   <div class=\"modal-body\">\n                     <p>{{message || 'Enter image delay and title for'+filename}}</p>\n                     <input class=\"form-control\" placeholder=\"Delay (in seconds)\" type=\"number\" [(ngModel)]=\"delay\"/>\n                     <br>\n                     <input class=\"form-control\" placeholder=\"Title\" type=\"text\" [(ngModel)]=\"imgTitle\"/>\n                   </div>\n                   <div class=\"modal-footer\">\n                     <button type=\"button\" class=\"btn btn-primary\" (click)=\"confirm()\">OK</button>\n                     <button type=\"button\" class=\"btn btn-default\" (click)=\"close()\" >Cancel</button>\n                   </div>\n                 </div>\n              </div>"
+            template: "<div class=\"modal-dialog\">\n                <div class=\"modal-content\">\n                   <div class=\"modal-header\">\n                      <h4 class=\"modal-title\">{{title || 'Confirm'}}</h4>\n                      <button type=\"button\" class=\"close\" (click)=\"close()\" data-dismiss=\"modal\" aria-label=\"Close\">\n                        <span aria-hidden=\"true\">&times;</span>\n                      </button>                     \n                   </div>\n                   <div class=\"modal-body\">\n                     <p>{{message || 'Edit title and delay for'+filename}}</p>\n                     <input class=\"form-control\" placeholder=\"Delay (in seconds)\" type=\"number\" [(ngModel)]=\"delay\"/>\n                     <br>\n                     <input class=\"form-control\" placeholder=\"Title\" type=\"text\" [(ngModel)]=\"imgTitle\"/>\n                     <br>\n                     <label>Title font size</label>\n                      <select class=\"custom-select form-control mb-2\" placeholder=\"Title font size\" [(ngModel)]=\"titleSize\">\n                        <option value=\"16\">16px</option>\n                        <option value=\"18\">18px</option>\n                        <option value=\"20\">20px</option>\n                        <option value=\"24\">24px</option>\n                        <option value=\"28\">28px</option>\n                      </select>\n                      <label>Title font alignment</label>\n                      <select class=\"form-control mb-2 custom-select\" [(ngModel)]=\"titleAlign\">\n                         <option value=\"tl\">Top left</option>\n                         <option value=\"bl\">Bottom left</option>\n                         <option value=\"tr\">Top Right</option>\n                         <option value=\"br\">Bottom Right</option>\n                      </select>\n                   </div>\n                   <div class=\"modal-footer\">\n                     <button type=\"button\" class=\"btn btn-primary\" (click)=\"confirm()\">OK</button>\n                     <button type=\"button\" class=\"btn btn-default\" (click)=\"close()\" >Cancel</button>\n                   </div>\n                 </div>\n              </div>"
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ng2_bootstrap_modal__["DialogService"]])
     ], PopupComponent);
@@ -1784,12 +2073,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 var RegisterComponent = (function () {
-    function RegisterComponent(authService, router, toastr, usernameValidator, fb) {
+    function RegisterComponent(authService, router, toastr, usernameValidator, fb, route) {
         this.authService = authService;
         this.router = router;
         this.toastr = toastr;
         this.usernameValidator = usernameValidator;
         this.fb = fb;
+        this.route = route;
         this.captchaKey = __WEBPACK_IMPORTED_MODULE_7__environments_environment__["a" /* environment */].captchaKey;
         var strongPassRegex = new RegExp("^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8,}$");
         this.username = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required, usernameValidator.checkUsername.bind(usernameValidator));
@@ -1810,6 +2100,13 @@ var RegisterComponent = (function () {
         });
     }
     RegisterComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this.route.queryParamMap.subscribe(function (params) {
+            _this.userSubscription = {
+                packageId: params.get('pack'),
+                isTrial: params.get('trial')
+            };
+        });
     };
     RegisterComponent.prototype.onRegister = function () {
         var _this = this;
@@ -1819,7 +2116,8 @@ var RegisterComponent = (function () {
             username: this.registerForm.value.username,
             email: this.registerForm.value.email,
             password: this.registerForm.value.password,
-            name: this.registerForm.value.name
+            name: this.registerForm.value.name,
+            subscription: this.userSubscription
         };
         this.authService.registerUser(credentials)
             .subscribe(function (data) {
@@ -1850,7 +2148,8 @@ var RegisterComponent = (function () {
             __WEBPACK_IMPORTED_MODULE_1__angular_router__["b" /* Router */],
             __WEBPACK_IMPORTED_MODULE_3_ngx_toastr__["b" /* ToastrService */],
             __WEBPACK_IMPORTED_MODULE_5__validator_username__["a" /* UsernameValidator */],
-            __WEBPACK_IMPORTED_MODULE_2__angular_forms__["b" /* FormBuilder */]])
+            __WEBPACK_IMPORTED_MODULE_2__angular_forms__["b" /* FormBuilder */],
+            __WEBPACK_IMPORTED_MODULE_1__angular_router__["a" /* ActivatedRoute */]])
     ], RegisterComponent);
     return RegisterComponent;
 }());
@@ -1987,6 +2286,131 @@ var ResetPasswordComponent = (function () {
             __WEBPACK_IMPORTED_MODULE_4__angular_forms__["b" /* FormBuilder */]])
     ], ResetPasswordComponent);
     return ResetPasswordComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/app/select-pack/select-pack.component.html":
+/***/ (function(module, exports) {
+
+module.exports = "<div class=\"pricing-header px-3 pt-md-5 pb-md-4 mx-auto text-center\" *ngIf=\"auth.customerLogin() && currPack\">\n    <h1 class=\"display-4\">Current Package</h1>\n</div>\n<pre>{{currPack | json}}</pre>\n<div class=\"container\" *ngIf=\"auth.customerLogin() && currPack\">\n    <div class=\"card mb-4 box-shadow\">\n        <div class=\"card-header\">\n            <h4 class=\"my-0 font-weight-normal\">{{currPack.name}}</h4>\n        </div>\n        <div class=\"card-body\">\n            <h2 class=\"card-title pricing-card-title\">{{currPack.pricing.monthly.pay | currency: currPack.pricing.currency}} <small class=\"text-muted\">/ mo</small></h2>\n            <h4 class=\"card-title pricing-card-title\">{{currPack.pricing.annually.pay | currency: currPack.pricing.currency}} <small class=\"text-muted\">/ yr</small></h4>\n            <ul class=\"list-unstyled mt-3 mb-4\">\n                <li *ngFor=\"let detail of currPack.details\">{{detail}}</li>\n            </ul>\n            <button type=\"button\" class=\"btn btn-lg btn-warning btn-block btn-outline-primary\" *ngIf=\"!userSubsciption?.isTrial\" (click)=\"cancelSub()\">\n                <i class=\"icon ion-close\" style=\"font-size: 24px\"></i> Cancel Subscription\n            </button>\n            <button type=\"button\" class=\"btn btn-lg btn-primary\" *ngIf=\"userSubsciption?.isTrial\" (click)=\"purchaseTrial()\">\n                <i class=\"icon ion-ios-cart\" style=\"font-size: 24px\"></i> Purchase<br/><p class=\"text-muted small-btn-text\">(Your trial expires in {{trialExpires}} days</p> \n            </button>\n        </div>\n    </div>\n</div>\n<div class=\"pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center\">\n    <h1 class=\"display-4\" *ngIf=\"!auth.loggedIn()\">Our Packages</h1>\n    <p class=\"lead\" *ngIf=\"!auth.loggedIn()\">Select from the following packages tailored to suit the needs of customers at every level.</p>\n    <h1 class=\"display-4\" *ngIf=\"auth.customerLogin() && currPack\">Change Package</h1>\n    <h1 class=\"display-4\" *ngIf=\"auth.customerLogin()&&!currPack\">Choose Package</h1>\n    <p class=\"lead\" *ngIf=\"auth.customerLogin()\">Your selected package will be applicable from the moment of your purchase</p>\n</div>\n<div class=\"container\">\n    <div class=\"card-deck mb-3 text-center\">\n        <div class=\"card mb-4 box-shadow\" *ngFor=\"let pack of packList\">\n            <div class=\"card-header\">\n                <h4 class=\"my-0 font-weight-normal\">{{pack.name}}</h4>\n            </div>\n            <div class=\"card-body\">\n                <h2 class=\"card-title pricing-card-title\">{{pack.pricing.monthly.pay | currency: pack.pricing.currency}} <small class=\"text-muted\">/ mo</small></h2>\n                <h4 class=\"card-title pricing-card-title\">{{pack.pricing.annually.pay | currency: pack.pricing.currency}} <small class=\"text-muted\">/ yr</small></h4>\n                <ul class=\"list-unstyled mt-3 mb-4\">\n                    <li *ngFor=\"let detail of pack.details\">{{detail}}</li>\n                </ul>\n                <button type=\"button\" class=\"btn btn-lg btn-block btn-outline-primary\" (click)=\"handlePurchase(pack)\">\n                    <i class=\"icon ion-ios-cart\" style=\"font-size: 24px\"></i> {{buyBtnText}}\n                </button>\n                <button type=\"button\" class=\"btn btn-link\" *ngIf=\"pack.trialPeriod\" (click)=\"handleTryFree(pack)\">Try free for {{pack.trialPeriod}} days</button>\n            </div>\n        </div>\n    </div>\n</div>"
+
+/***/ }),
+
+/***/ "../../../../../src/app/select-pack/select-pack.component.scss":
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__("../../../../css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".container {\n  max-width: 960px; }\n\n.pricing-header {\n  max-width: 700px; }\n\n.card-deck .card {\n  min-width: 220px; }\n\n.border-top {\n  border-top: 1px solid #e5e5e5; }\n\n.border-bottom {\n  border-bottom: 1px solid #e5e5e5; }\n\n.box-shadow {\n  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05); }\n", ""]);
+
+// exports
+
+
+/*** EXPORTS FROM exports-loader ***/
+module.exports = module.exports.toString();
+
+/***/ }),
+
+/***/ "../../../../../src/app/select-pack/select-pack.component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SelectPackComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ngx_toastr__ = __webpack_require__("../../../../ngx-toastr/toastr.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_router__ = __webpack_require__("../../../router/esm5/router.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__shared_auth_service__ = __webpack_require__("../../../../../src/app/shared/auth.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__shared_package_service__ = __webpack_require__("../../../../../src/app/shared/package.service.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+
+
+
+var SelectPackComponent = (function () {
+    function SelectPackComponent(packSer, toastr, auth, router, route) {
+        this.packSer = packSer;
+        this.toastr = toastr;
+        this.auth = auth;
+        this.router = router;
+        this.route = route;
+        this.buyBtnText = 'Sign up';
+    }
+    SelectPackComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        if (this.auth.getCurrentUser()) {
+            this.buyBtnText = 'Purchase';
+            this.userSubscription = this.auth.getCurrentUser().subscription;
+        }
+        this.packSer.listPackages().subscribe(function (res) {
+            if (res.success) {
+                _this.packList = res.packages;
+                var currPackIndex = void 0;
+                if (_this.auth.getCurrentUser() && _this.auth.getCurrentUser().subscription)
+                    currPackIndex = _this.packList.findIndex(function (pack) { return pack._id == _this.auth.getCurrentUser().subscription.packageId; });
+                if (currPackIndex) {
+                    _this.currPack = _this.packList.splice(currPackIndex, 1);
+                    if (_this.userSubscription.isTrial) {
+                        _this.trialExpires = _this.currPack.trialPeriod - (Date.now() - _this.userSubscription.startDate) / 1000 / 86400;
+                    }
+                }
+            }
+            else {
+                _this.toastr.error(res.msg, 'Error');
+            }
+        });
+    };
+    SelectPackComponent.prototype.handleTryFree = function (pack) {
+        console.log('Try free: ', pack);
+        if (this.auth.loggedIn()) {
+            this.auth.changeSubscription(pack, true);
+        }
+        else {
+            this.router.navigate(['/register'], { queryParams: { pack: pack._id, trial: true } });
+        }
+    };
+    SelectPackComponent.prototype.handlePurchase = function (pack) {
+        console.log('Purchase pack: ', pack);
+        if (this.auth.loggedIn()) {
+            this.auth.changeSubscription(pack, false);
+        }
+        else {
+            this.router.navigate(['/register'], { queryParams: { pack: pack._id, trial: false } });
+        }
+    };
+    SelectPackComponent.prototype.purchaseTrial = function () {
+        console.log('Purchase trial: ', this.currPack);
+    };
+    SelectPackComponent.prototype.cancelSub = function () {
+        console.log('Cancel subsciption: ', this.currPack);
+    };
+    SelectPackComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
+            selector: 'app-select-pack',
+            template: __webpack_require__("../../../../../src/app/select-pack/select-pack.component.html"),
+            styles: [__webpack_require__("../../../../../src/app/select-pack/select-pack.component.scss")]
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__shared_package_service__["a" /* PackageService */],
+            __WEBPACK_IMPORTED_MODULE_1_ngx_toastr__["b" /* ToastrService */],
+            __WEBPACK_IMPORTED_MODULE_3__shared_auth_service__["a" /* AuthService */],
+            __WEBPACK_IMPORTED_MODULE_2__angular_router__["b" /* Router */],
+            __WEBPACK_IMPORTED_MODULE_2__angular_router__["a" /* ActivatedRoute */]])
+    ], SelectPackComponent);
+    return SelectPackComponent;
 }());
 
 
@@ -2217,12 +2641,13 @@ var AuthGuard = (function () {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AuthService; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_http__ = __webpack_require__("../../../http/esm5/http.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_angular2_jwt__ = __webpack_require__("../../../../angular2-jwt/angular2-jwt.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_angular2_jwt___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_angular2_jwt__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_ng_socket_io__ = __webpack_require__("../../../../ng-socket-io/dist/index.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_ng_socket_io___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_ng_socket_io__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__http_interceptor__ = __webpack_require__("../../../../../src/app/shared/http-interceptor.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__environments_environment__ = __webpack_require__("../../../../../src/environments/environment.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_Rx__ = __webpack_require__("../../../../rxjs/_esm5/Rx.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_angular2_jwt__ = __webpack_require__("../../../../angular2-jwt/angular2-jwt.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_angular2_jwt___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_angular2_jwt__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_ng_socket_io__ = __webpack_require__("../../../../ng-socket-io/dist/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_ng_socket_io___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_ng_socket_io__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__http_interceptor__ = __webpack_require__("../../../../../src/app/shared/http-interceptor.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__environments_environment__ = __webpack_require__("../../../../../src/environments/environment.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -2238,6 +2663,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 var AuthService = (function () {
     function AuthService(http, socket) {
         this.http = http;
@@ -2246,7 +2672,7 @@ var AuthService = (function () {
         this.authToken = localStorage.getItem('id_token') || null;
         this.currentUser = JSON.parse(localStorage.getItem('user')) || null;
         this.isScanned = this.currentUser ? this.currentUser.isScanned : null;
-        this.authUrl = __WEBPACK_IMPORTED_MODULE_5__environments_environment__["a" /* environment */].baseUrl + '/users/';
+        this.authUrl = __WEBPACK_IMPORTED_MODULE_6__environments_environment__["a" /* environment */].baseUrl + '/users/';
         this.headers.append('Content-type', 'application/json');
         this.headers.append('Authorization', this.getAuthToken());
     }
@@ -2279,6 +2705,18 @@ var AuthService = (function () {
     AuthService.prototype.getUserById = function (userId) {
         return this.http.post(this.authUrl + 'getUserById', { userId: userId }).map(function (res) { return res.json(); });
     };
+    AuthService.prototype.hasActiveSub = function () {
+        if (this.currentUser.subscription && this.currentUser.subscription.packageId) {
+            // return this.http.get(this.authUrl+'checkSubscription', {headers: this.headers})
+            //   .map(res => res.json());
+            return __WEBPACK_IMPORTED_MODULE_2_rxjs_Rx__["a" /* Observable */].of({ success: true, hasSub: true });
+        }
+        return __WEBPACK_IMPORTED_MODULE_2_rxjs_Rx__["a" /* Observable */].of({ success: true, hasSub: false });
+    };
+    AuthService.prototype.changeSubscription = function (packId, isTrial) {
+        return this.http.post(this.authUrl + '/changeSubscription', { packageId: packId, isTrial: isTrial }, { headers: this.headers })
+            .map(function (res) { return res.json(); });
+    };
     AuthService.prototype.scannedLogIn = function () {
         return this.isScanned;
     };
@@ -2286,10 +2724,13 @@ var AuthService = (function () {
         return JSON.parse(localStorage.getItem('user')).id;
     };
     AuthService.prototype.loggedIn = function () {
-        return Object(__WEBPACK_IMPORTED_MODULE_2_angular2_jwt__["tokenNotExpired"])('id_token');
+        return Object(__WEBPACK_IMPORTED_MODULE_3_angular2_jwt__["tokenNotExpired"])('id_token');
     };
     AuthService.prototype.adminLogIn = function () {
         return this.currentUser ? this.currentUser.isAdmin : false;
+    };
+    AuthService.prototype.customerLogin = function () {
+        return this.loggedIn() && !this.adminLogIn();
     };
     AuthService.prototype.generateQr = function (timestamp) {
         return this.http.post(this.authUrl + 'generate-qr', { timestamp: timestamp })
@@ -2335,7 +2776,7 @@ var AuthService = (function () {
     };
     AuthService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__http_interceptor__["a" /* HttpInterceptor */], __WEBPACK_IMPORTED_MODULE_3_ng_socket_io__["Socket"]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_5__http_interceptor__["a" /* HttpInterceptor */], __WEBPACK_IMPORTED_MODULE_4_ng_socket_io__["Socket"]])
     ], AuthService);
     return AuthService;
 }());
@@ -2621,6 +3062,10 @@ var ImageService = (function () {
     ImageService.prototype.listenSessionStop = function () {
         return this.socket.fromEvent('session-stopped');
     };
+    ImageService.prototype.updateMedia = function (imageId, update) {
+        return this.http.post(this.baseUrl + 'session/updateImage', { id: imageId, update: update }, { headers: this.headers })
+            .map(function (res) { return res.json(); });
+    };
     ImageService.prototype.updateDelay = function (imageId, delay) {
         return this.http.post(this.updateDelayUrl, { id: imageId, delay: delay }, { headers: this.headers }).map(function (res) { return res.json(); });
     };
@@ -2854,6 +3299,9 @@ var LoginGuard = (function () {
         if (!this.auth.loggedIn()) {
             return true;
         }
+        else if (!this.auth.hasActiveSub()) {
+            this.router.navigate(['/pricing']);
+        }
         else {
             if (this.auth.scannedLogIn()) {
                 this.router.navigate(['/session-qr']);
@@ -2877,6 +3325,110 @@ var LoginGuard = (function () {
 
 /***/ }),
 
+/***/ "../../../../../src/app/shared/pack.guard.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return PackGuard; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__auth_service__ = __webpack_require__("../../../../../src/app/shared/auth.service.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+var PackGuard = (function () {
+    function PackGuard(auth) {
+        this.auth = auth;
+    }
+    PackGuard.prototype.canActivate = function (next, state) {
+        return true;
+    };
+    PackGuard = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__auth_service__["a" /* AuthService */]])
+    ], PackGuard);
+    return PackGuard;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/app/shared/package.service.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return PackageService; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__http_interceptor__ = __webpack_require__("../../../../../src/app/shared/http-interceptor.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_http__ = __webpack_require__("../../../http/esm5/http.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__auth_service__ = __webpack_require__("../../../../../src/app/shared/auth.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__environments_environment__ = __webpack_require__("../../../../../src/environments/environment.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+
+
+
+var PackageService = (function () {
+    function PackageService(http, auth) {
+        this.http = http;
+        this.auth = auth;
+        this.baseUrl = __WEBPACK_IMPORTED_MODULE_4__environments_environment__["a" /* environment */].baseUrl + '/';
+        this.headers = new __WEBPACK_IMPORTED_MODULE_2__angular_http__["Headers"]();
+        this.headers.append('Authorization', this.auth.getAuthToken());
+    }
+    PackageService.prototype.getAllPackages = function () {
+        return this.http.get(this.baseUrl + 'package/list')
+            .map(function (res) { return res.json(); });
+    };
+    PackageService.prototype.listPackages = function () {
+        return this.http.get(this.baseUrl + 'package/user_list')
+            .map(function (res) { return res.json(); });
+    };
+    PackageService.prototype.removePackage = function (packId) {
+        return this.http.post(this.baseUrl + 'package/remove', { packageId: packId }, { headers: this.headers })
+            .map(function (res) { return res.json(); });
+    };
+    PackageService.prototype.addPackage = function (pack) {
+        return this.http.post(this.baseUrl + 'package/add', { newPackage: pack }, { headers: this.headers })
+            .map(function (res) { return res.json(); });
+    };
+    PackageService.prototype.getPackage = function (packId) {
+        return this.http.post(this.baseUrl + 'package/getById', { packageId: packId }, { headers: this.headers })
+            .map(function (res) { return res.json(); });
+    };
+    PackageService.prototype.updatePackage = function (packId, pack) {
+        console.log('updated package', pack);
+        return this.http.post(this.baseUrl + 'package/update', { packageId: packId, package: pack }, { headers: this.headers })
+            .map(function (res) { return res.json(); });
+    };
+    PackageService = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__http_interceptor__["a" /* HttpInterceptor */], __WEBPACK_IMPORTED_MODULE_3__auth_service__["a" /* AuthService */]])
+    ], PackageService);
+    return PackageService;
+}());
+
+
+
+/***/ }),
+
 /***/ "../../../../../src/app/slideshow/slideshow.component.html":
 /***/ (function(module, exports) {
 
@@ -2892,7 +3444,7 @@ exports = module.exports = __webpack_require__("../../../../css-loader/lib/css-b
 
 
 // module
-exports.push([module.i, "ul {\n  padding: 0;\n  margin: 20px auto; }\n\n.image-player {\n  position: relative;\n  width: 100%;\n  /* for IE 6 */ }\n  .image-player img {\n    position: relative;\n    width: 90vw;\n    height: auto;\n    max-height: 90vh; }\n\n.image-text {\n  position: absolute;\n  top: 50px;\n  left: 10px;\n  width: 100%; }\n\nvg-player video {\n  max-height: 100vh; }\n", ""]);
+exports.push([module.i, "ul {\n  padding: 0;\n  margin: 20px auto; }\n\n.image-player {\n  position: relative;\n  width: 100%;\n  /* for IE 6 */ }\n  .image-player img {\n    position: relative;\n    width: 90vw;\n    height: auto;\n    max-height: 90vh; }\n\n.image-text {\n  position: absolute; }\n\n.tl {\n  top: 50px;\n  left: 10px; }\n\n.bl {\n  bottom: 50px;\n  left: 10px; }\n\n.tr {\n  top: 50px;\n  right: 10px; }\n\n.br {\n  bottom: 50px;\n  right: 10px; }\n\nvg-player video {\n  max-height: 100vh; }\n", ""]);
 
 // exports
 
@@ -3013,6 +3565,10 @@ var SlideshowComponent = (function () {
             this.vPlayer = false;
             myImage.src = this.baseUrl + 'session/stream_files?file=' + this.visibleImages[this.currentIndex].imagename;
             this.imageTitle = this.visibleImages[this.currentIndex].imagetitle;
+            var titleAlign = this.visibleImages[this.currentIndex].titleAlign;
+            console.log('alignment: ', titleAlign);
+            window.document.querySelector('.image-text').classList.add(titleAlign);
+            window.document.querySelector('.image-text').setAttribute('style', 'font-size: ' + this.visibleImages[this.currentIndex].titleSize + 'px');
             setTimeout(function () {
                 _this.myAddListener();
             }, curImage.imagedelay * 1000 || this.imageSlideTime);
@@ -3028,9 +3584,12 @@ var SlideshowComponent = (function () {
         // console.log('nextItem');
         var myVideo = document.getElementsByTagName('video')[0];
         var myImage = document.getElementsByTagName('img')[0];
+        if (this.visibleImages[this.currentIndex].imagetype === 'image')
+            window.document.querySelector('.image-text').classList.remove(this.visibleImages[this.currentIndex].titleAlign);
         this.currentIndex = (this.currentIndex + 1) % this.visibleImages.length;
         if (this.visibleImages.length) {
             if (this.visibleImages[this.currentIndex].imagetype == 'image') {
+                window.document.querySelector('.image-text').classList.add(this.visibleImages[this.currentIndex].titleAlign);
                 var curImage = this.visibleImages[this.currentIndex];
                 this.vPlayer = false;
                 myImage.src = this.baseUrl + 'session/stream_files?file=' + this.visibleImages[this.currentIndex].imagename;
@@ -3080,7 +3639,7 @@ var SlideshowComponent = (function () {
 /***/ "../../../../../src/app/upload/upload.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container\">\n    <ngx-loading [show]=\"isLoading\"></ngx-loading>\n    <div class=\"row mt-3\">\n        <h4>Edit Session</h4>\n        <div class=\"card\">\n            <div class=\"card-body\">\n                <form (ngSubmit)=\"updateSession(f, editing)\" #f=\"ngForm\" novalidate>\n                    <div class=\"form-group\">\n                        <label for=\"name\">Session Name</label>\n                        <input type=\"text\" class=\"form-control\" id=\"name\" [(ngModel)]=\"currSession.sessionname\" name=\"name\" #name=\"ngModel\" [ngClass]=\"checkValid(name)\" required>\n                        <div class=\"invalid-feedback\" *ngIf=\"name.errors?.required && (name.touched || name.dirty)\">\n                            Session name is required\n                        </div>\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"catone\">Category</label>\n                        <select class=\"custom-select form-control\" [disabled]=\"!catones?.length\" [ngModel]=\"currSession.catone\" (ngModelChange)=\"catSelect(1, $event)\" id=\"catone\" name=\"catone\" #catone=\"ngModel\" [ngClass]=\"checkValid(catone)\" required>\n                            <option [value]=\"cat._id\" *ngFor=\"let cat of catones\">{{cat.categoryname}}</option>\n                        </select>\n                        <div class=\"invalid-feedback\" *ngIf=\"catone.errors?.required && (catone.touched || catone.dirty)\">\n                            Category is required\n                        </div>\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"subcat1\">Select Subcategory - I</label>\n                        <select class=\"custom-select form-control\" [disabled]=\"!cattwos?.length\" [ngModel]=\"currSession.cattwo\" (ngModelChange)=\"catSelect(2, $event)\" name=\"cattwo\" #cattwo=\"ngModel\" [ngClass]=\"checkValid(cattwo)\" required>\n                            <option [value]=\"cat._id\" *ngFor=\"let cat of cattwos\">{{cat.categoryname}}</option>\n                        </select>\n                        <div class=\"invalid-feedback\" *ngIf=\"cattwo.errors?.required && (cattwo.touched || cattwo.dirty)\">\n                            Sub-category I is required\n                        </div>\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"subcat1\">Select Subcategory - II</label>\n                        <select class=\"custom-select form-control\" [disabled]=\"!catthrees?.length\" [ngModel]=\"currSession.categoryId\" (ngModelChange)=\"catSelect(3, $event)\" name=\"catthree\" #catthree=\"ngModel\" [ngClass]=\"checkValid(catthree)\" required>\n                            <option [value]=\"cat._id\" *ngFor=\"let cat of catthrees\">{{cat.categoryname}}</option>\n                        </select>\n                        <div class=\"invalid-feedback\" *ngIf=\"catthree.errors?.required && (catthree.touched || catthree.dirty)\">\n                            Sub-category II is required\n                        </div>\n                    </div>\n                    <button type=\"submit\" [disabled]=\"f.invalid\" *ngIf=\"!editing\" class=\"btn btn-primary\"> <i class=\"icon ion-edit\"></i> Create</button>\n                    <button type=\"submit\" [disabled]=\"f.invalid\" *ngIf=\"editing\" class=\"btn btn-primary\"> <i class=\"icon ion-checkmark-round\"></i> Update</button>\n                    <button type=\"button\" *ngIf=\"editing\" class=\"btn btn-danger\" (click)=\"removeSession()\"> <i class=\"icon ion-trash-b\"></i> Delete</button>\n                </form>\n                <!-- <pre>{{f.form.value | json}}</pre> -->\n            </div>\n        </div>\n    </div>\n    <div class=\"row mt-3\">\n        <h4 *ngIf=\"sessionMedia.length\" class=\"my-3\">Uploaded Media</h4>\n        <div *ngIf=\"sessionMedia.length\" dnd-sortable-container [sortableData]=\"sessionMedia\">\n            <div class=\"card media-card my-2\" *ngFor=\"let media of sessionMedia; let i=index\" (onDropSuccess)=\"dragEnd(sessionMedia)\" dnd-sortable [sortableIndex]=\"i\">\n                <div class=\"card-body\">\n                    <img *ngIf=\"media.imagetype == 'image'\" [src]=\"getImage(media)\" class=\"col-6 session-img\" />\n                    <img src=\"/assets/img/video-icon.png\" class=\"session-img col-6\" alt=\"video-file\" *ngIf=\"media.imagetype=='video'\">\n                    <img src=\"/assets/img/audio-icon.png\" class=\"session-img col-6\" alt=\"video-file\" *ngIf=\"media.imagetype=='audio'\">\n                    <div class=\"col-6 float-right\">\n                        <h5 class=\"card-title\">{{media.imagetitle}}</h5>\n                        <div class=\"row justify-content-start\">\n                            <div class=\"col\" *ngIf=\"media?.imagetype==='image'\">\n                                <button class=\"btn btn-outline-primary\" (click)=\"editMediaInfoModal(media, i)\">\n                                    <i class=\"icon ion-edit\"></i>\n                                </button>\n                            </div>\n                            <div class=\"col\">\n                                <button class=\"btn btn-outline-danger\" (click)=\"removeImage(media, i)\"> <i class=\"icon ion-trash-b\"></i></button>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n        <h4 class=\"my-3\" *ngIf=\"currSession._id\">Upload Files</h4>\n        <form *ngIf=\"currSession._id\">\n            <div class=\"form-group\">\n                <label for=\"single\">Select your image:</label>\n                <input type=\"file\" class=\"form-control\" name=\"single\" ng2FileSelect [uploader]=\"uploader\" />\n            </div>\n        </form>\n        <table class=\"table table-bordered\" *ngIf=\"uploader.queue.length\">\n            <thead>\n                <tr>\n                    <th>Name</th>\n                    <th>Size</th>\n                    <th>Progress</th>\n                    <th>Status</th>\n                    <th>Actions</th>\n                </tr>\n            </thead>\n            <tbody>\n                <tr *ngFor=\"let item of uploader.queue\">\n                    <td>\n                        <input type=\"text\" class=\"form-control\" [(ngModel)]=\"item.file.name\" required>\n                    </td>\n                    <td nowrap>{{ item.file.size/1024/1024 | number:'.2' }} MB</td>\n                    <td>\n                        <p>\n                            <ngb-progressbar type=\"success\" [value]=\"item.progress\"></ngb-progressbar>\n                        </p>\n                    </td>\n                    <td class=\"text-center\">\n                        <span *ngIf=\"item.isSuccess\"><i class=\"icon ion-checkmark-round\"></i></span>\n                        <span *ngIf=\"item.isCancel\"><i class=\"icon ion-close\"></i></span>\n                        <span *ngIf=\"item.isError\"><i class=\"icon ion-close-circle\"></i></span>\n                    </td>\n                    <td nowrap>\n                        <button type=\"button\" class=\"btn btn-success btn-xs\" (click)=\"item.upload()\" [disabled]=\"item.isReady || item.isUploading || item.isSuccess\">\n                            <i class=\"icon ion-upload\"></i> Upload\n                        </button>\n                        <button type=\"button\" class=\"btn btn-warning btn-xs\" (click)=\"item.cancel()\" [disabled]=\"!item.isUploading\">\n                            <i class=\"icon ion-close-circled\"></i> Cancel\n                        </button>\n                        <button type=\"button\" class=\"btn btn-danger btn-xs\" (click)=\"item.remove()\">\n                            <i class=\"icon ion-trash-b\"></i> Remove\n                        </button>\n                    </td>\n                </tr>\n            </tbody>\n        </table>\n        <div *ngIf=\"uploader.queue.length\">\n            <div>\n                Upload progress:\n                <p>\n                    <ngb-progressbar type=\"success\" [value]=\"uploader.progress\"></ngb-progressbar>\n                </p>\n            </div>\n            <button type=\"button\" class=\"btn btn-success btn-s\" (click)=\"uploader.uploadAll()\" [disabled]=\"!uploader.getNotUploadedItems().length\">\n                <i class=\"icon ion-upload\"></i> Upload all\n            </button>\n            <button type=\"button\" class=\"btn btn-warning btn-s\" (click)=\"uploader.cancelAll()\" [disabled]=\"!uploader.isUploading\">\n                <i class=\"icon ion-android-cancel\"></i> Cancel all\n            </button>\n            <button type=\"button\" class=\"btn btn-danger btn-s\" (click)=\"uploader.clearQueue()\" [disabled]=\"!uploader.queue.length\">\n                <i class=\"icon ion-trash-b\"></i> Remove all\n            </button>\n        </div>\n    </div>\n</div>"
+module.exports = "<div class=\"container\">\n    <ngx-loading [show]=\"isLoading\"></ngx-loading>\n    <h4 class=\"my-3\">Edit Session</h4>\n    <div class=\"row\">\n        <div class=\"card\">\n            <div class=\"card-body\">\n                <form (ngSubmit)=\"updateSession(f, editing)\" #f=\"ngForm\" novalidate>\n                    <div class=\"form-group\">\n                        <label for=\"name\">Session Name</label>\n                        <input type=\"text\" class=\"form-control\" id=\"name\" [(ngModel)]=\"currSession.sessionname\" name=\"name\" #name=\"ngModel\" [ngClass]=\"checkValid(name)\" required>\n                        <div class=\"invalid-feedback\" *ngIf=\"name.errors?.required && (name.touched || name.dirty)\">\n                            Session name is required\n                        </div>\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"catone\">Category</label>\n                        <select class=\"custom-select form-control\" [disabled]=\"!catones?.length\" [ngModel]=\"currSession.catone\" (ngModelChange)=\"catSelect(1, $event)\" id=\"catone\" name=\"catone\" #catone=\"ngModel\" [ngClass]=\"checkValid(catone)\" required>\n                            <option [value]=\"cat._id\" *ngFor=\"let cat of catones\">{{cat.categoryname}}</option>\n                        </select>\n                        <div class=\"invalid-feedback\" *ngIf=\"catone.errors?.required && (catone.touched || catone.dirty)\">\n                            Category is required\n                        </div>\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"subcat1\">Select Subcategory - I</label>\n                        <select class=\"custom-select form-control\" [disabled]=\"!cattwos?.length\" [ngModel]=\"currSession.cattwo\" (ngModelChange)=\"catSelect(2, $event)\" name=\"cattwo\" #cattwo=\"ngModel\" [ngClass]=\"checkValid(cattwo)\" required>\n                            <option [value]=\"cat._id\" *ngFor=\"let cat of cattwos\">{{cat.categoryname}}</option>\n                        </select>\n                        <div class=\"invalid-feedback\" *ngIf=\"cattwo.errors?.required && (cattwo.touched || cattwo.dirty)\">\n                            Sub-category I is required\n                        </div>\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"subcat1\">Select Subcategory - II</label>\n                        <select class=\"custom-select form-control\" [disabled]=\"!catthrees?.length\" [ngModel]=\"currSession.categoryId\" (ngModelChange)=\"catSelect(3, $event)\" name=\"catthree\" #catthree=\"ngModel\" [ngClass]=\"checkValid(catthree)\" required>\n                            <option [value]=\"cat._id\" *ngFor=\"let cat of catthrees\">{{cat.categoryname}}</option>\n                        </select>\n                        <div class=\"invalid-feedback\" *ngIf=\"catthree.errors?.required && (catthree.touched || catthree.dirty)\">\n                            Sub-category II is required\n                        </div>\n                    </div>\n                    <button type=\"submit\" [disabled]=\"f.invalid\" *ngIf=\"!editing\" class=\"btn btn-primary\"> <i class=\"icon ion-edit\"></i> Create</button>\n                    <button type=\"submit\" [disabled]=\"f.invalid\" *ngIf=\"editing\" class=\"btn btn-primary\"> <i class=\"icon ion-checkmark-round\"></i> Update</button>\n                    <button type=\"button\" *ngIf=\"editing\" class=\"btn btn-danger\" (click)=\"removeSession()\"> <i class=\"icon ion-trash-b\"></i> Delete</button>\n                </form>\n                <!-- <pre>{{f.form.value | json}}</pre> -->\n            </div>\n        </div>\n    </div>\n    <h4 *ngIf=\"sessionMedia.length\" class=\"my-3\">Uploaded Media</h4>\n    <div class=\"mt-3\">\n        <div *ngIf=\"sessionMedia.length\" dnd-sortable-container [sortableData]=\"sessionMedia\">\n            <div class=\"card media-card my-2\" *ngFor=\"let media of sessionMedia; let i=index\" (onDropSuccess)=\"dragEnd(sessionMedia)\" dnd-sortable [sortableIndex]=\"i\">\n                <div class=\"card-body\">\n                    <img *ngIf=\"media.imagetype == 'image'\" [src]=\"getImage(media)\" class=\"img-fluid session-img float-left\" />\n                    <img src=\"/assets/img/video-icon.png\" class=\"session-img img-fluid float-left\" alt=\"video-file\" *ngIf=\"media.imagetype=='video'\">\n                    <img src=\"/assets/img/audio-icon.png\" class=\"session-img img-fluid float-left\" alt=\"video-file\" *ngIf=\"media.imagetype=='audio'\">\n                    <div class=\"float-center\">\n                        <h5 class=\"card-title text-center\">{{media.imagetitle}}</h5>\n                        <div class=\"card-text text-center\" *ngIf=\"media.imagetype === 'image'\">Delay: {{media.imagedelay}}</div>\n                        <div class=\"card-text text-center\" *ngIf=\"media.imagetype==='image'\">\n                            Title font size: {{media.titleSize}}\n                        </div>\n                        <div class=\"card-text text-center\" *ngIf=\"media.imagetype==='image'\">\n                            Title font alignment: {{media.titleAlign}}\n                        </div>\n                        <div class=\"row justify-content-start\">\n                            <div class=\"col text-center mb-1\" *ngIf=\"media?.imagetype==='image'\">\n                                <button class=\"btn btn-outline-primary\" (click)=\"editMediaInfoModal(media, i)\">\n                                    <i class=\"icon ion-edit\"></i>\n                                </button>\n                            </div>\n                            <div class=\"col text-center mb-1\">\n                                <button class=\"btn btn-outline-danger\" (click)=\"removeImage(media, i)\"> <i class=\"icon ion-trash-b\"></i></button>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n    <h4 class=\"my-3\" *ngIf=\"currSession._id\">Upload Files</h4>\n    <div class=\"row mx-0\">\n        <form *ngIf=\"currSession._id\">\n            <div class=\"form-group\">\n                <label for=\"single\">Select your image:</label>\n                <input type=\"file\" class=\"form-control\" name=\"single\" ng2FileSelect [uploader]=\"uploader\" />\n            </div>\n        </form>\n        <table class=\"table table-bordered table-responsive-md\" *ngIf=\"uploader.queue.length\">\n            <thead>\n                <tr>\n                    <th>Name</th>\n                    <th>Size</th>\n                    <th>Progress</th>\n                    <th>Status</th>\n                    <th>Actions</th>\n                </tr>\n            </thead>\n            <tbody>\n                <tr *ngFor=\"let item of uploader.queue\">\n                    <td>\n                        <input type=\"text\" class=\"form-control\" [(ngModel)]=\"item.file.name\" required>\n                    </td>\n                    <td nowrap>{{ item.file.size/1024/1024 | number:'.2' }} MB</td>\n                    <td>\n                        <p>\n                            <ngb-progressbar type=\"success\" [value]=\"item.progress\"></ngb-progressbar>\n                        </p>\n                    </td>\n                    <td class=\"text-center\">\n                        <span *ngIf=\"item.isSuccess\"><i class=\"icon ion-checkmark-round\"></i></span>\n                        <span *ngIf=\"item.isCancel\"><i class=\"icon ion-close\"></i></span>\n                        <span *ngIf=\"item.isError\"><i class=\"icon ion-close-circle\"></i></span>\n                    </td>\n                    <td nowrap>\n                        <button type=\"button\" class=\"btn btn-success btn-xs\" (click)=\"item.upload()\" [disabled]=\"item.isReady || item.isUploading || item.isSuccess\">\n                            <i class=\"icon ion-upload\"></i> Upload\n                        </button>\n                        <button type=\"button\" class=\"btn btn-warning btn-xs\" (click)=\"item.cancel()\" [disabled]=\"!item.isUploading\">\n                            <i class=\"icon ion-close-circled\"></i> Cancel\n                        </button>\n                        <button type=\"button\" class=\"btn btn-danger btn-xs\" (click)=\"item.remove()\">\n                            <i class=\"icon ion-trash-b\"></i> Remove\n                        </button>\n                    </td>\n                </tr>\n            </tbody>\n        </table>\n        <div *ngIf=\"uploader.queue.length\">\n            <div>\n                Upload progress:\n                <p>\n                    <ngb-progressbar type=\"success\" [value]=\"uploader.progress\"></ngb-progressbar>\n                </p>\n            </div>\n            <button type=\"button\" class=\"btn btn-success btn-s\" (click)=\"uploader.uploadAll()\" [disabled]=\"!uploader.getNotUploadedItems().length\">\n                <i class=\"icon ion-upload\"></i> Upload all\n            </button>\n            <button type=\"button\" class=\"btn btn-warning btn-s\" (click)=\"uploader.cancelAll()\" [disabled]=\"!uploader.isUploading\">\n                <i class=\"icon ion-android-cancel\"></i> Cancel all\n            </button>\n            <button type=\"button\" class=\"btn btn-danger btn-s\" (click)=\"uploader.clearQueue()\" [disabled]=\"!uploader.queue.length\">\n                <i class=\"icon ion-trash-b\"></i> Remove all\n            </button>\n        </div>\n    </div>\n</div>"
 
 /***/ }),
 
@@ -3092,7 +3651,7 @@ exports = module.exports = __webpack_require__("../../../../css-loader/lib/css-b
 
 
 // module
-exports.push([module.i, "h4:not(.col), div:not(.col), table:not(.col) {\n  width: 100%; }\n\n.icon.thumbnail {\n  font-size: 8rem; }\n\ndiv.col-6 {\n  width: 50%; }\n\nimg.session-img {\n  max-width: 30%;\n  margin: auto; }\n", ""]);
+exports.push([module.i, ".icon.thumbnail {\n  font-size: 5rem; }\n\n.session-img {\n  height: 150px; }\n", ""]);
 
 // exports
 
@@ -3280,12 +3839,27 @@ var UploadComponent = (function () {
     UploadComponent.prototype.editMediaInfoModal = function (file, index) {
         var _this = this;
         console.log('edit meidainfo modal');
-        this.showDelayPopup(file.imagetitle, file.imagedelay).subscribe(function (data) {
+        this.showDelayPopup(file).subscribe(function (data) {
+            if (data) {
+                _this.imageService.updateMedia(file._id, { titleAlign: data.titleAlign, titleSize: data.titleSize })
+                    .subscribe(function (res) {
+                    if (res.success) {
+                        _this.toastr.success('Media updated successfully!', 'Success');
+                        var mediaFile = _this.sessionMedia.find(function (media) { return media._id === file._id; });
+                        mediaFile.titleAlign = data.titleAlign;
+                        mediaFile.titleSize = data.titleSize;
+                    }
+                    else {
+                        _this.toastr.error(res.msg, 'Error');
+                    }
+                });
+            }
             if (data && data.delay) {
                 _this.imageService.updateDelay(file._id, data.delay).subscribe(function (res) {
                     if (res.success) {
                         //success
                         _this.toastr.success('Delay Updated', 'Success');
+                        _this.sessionMedia.find(function (media) { return media._id === file._id; }).imagedelay = data.delay;
                     }
                     else {
                         //error
@@ -3340,8 +3914,22 @@ var UploadComponent = (function () {
         this.uploader.onSuccessItem = function (item, response, status, headers) {
             _this.sessionMedia.push(JSON.parse(response).file);
             if (item.file.type.indexOf('image/') !== -1) {
-                var delaySub = _this.showDelayPopup(item.file.name).subscribe(function (data) {
+                var delaySub = _this.showDelayPopup(JSON.parse(response).file).subscribe(function (data) {
                     console.log(data);
+                    if (data) {
+                        _this.imageService.updateMedia(JSON.parse(response).file._id, { titleAlign: data.titleAlign, titleSize: data.titleSize })
+                            .subscribe(function (res) {
+                            if (res.success) {
+                                _this.toastr.success('Media updated successfull', 'Success');
+                                var updateFile = _this.sessionMedia.find(function (media) { return media._id === JSON.parse(response).file._id; });
+                                updateFile.titleAlign = data.titleAlign,
+                                    updateFile.titleSize = data.titleSize;
+                            }
+                            else {
+                                _this.toastr.error(res.msg, 'Error');
+                            }
+                        });
+                    }
                     if (data && data.delay) {
                         _this.imageService.updateDelay(JSON.parse(response).file._id, data.delay).subscribe(function (res) {
                             if (res.success) {
@@ -3426,12 +4014,14 @@ var UploadComponent = (function () {
         }
     };
     ;
-    UploadComponent.prototype.showDelayPopup = function (filename, delay) {
+    UploadComponent.prototype.showDelayPopup = function (file) {
         var disposable = this.dialogService.addDialog(__WEBPACK_IMPORTED_MODULE_6__popup_popup_component__["a" /* PopupComponent */], {
             title: 'Enter title and delay for image',
-            message: 'Enter Delay for image: ' + filename,
-            imgTitle: filename,
-            delay: delay
+            message: 'Enter Delay for image: ' + file.imagetitle,
+            imgTitle: file.imagetitle,
+            delay: file.imagedelay,
+            titleSize: file.titleSize,
+            titleAlign: file.titleAlign
         });
         return disposable;
     };
