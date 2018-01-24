@@ -19,7 +19,8 @@ router.post('/register', (req, res, next) => {
     name: req.body.name,
     email: req.body.email,
     username: req.body.username,
-    password: req.body.password
+    password: req.body.password,
+    subscription: req.body.subscription
   });
   User.addUser(newUser, (err, user) => {
     if(err) {
