@@ -2953,6 +2953,10 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
+video-thumb@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/video-thumb/-/video-thumb-0.0.3.tgz#18c6d2f304483b5b555b3759cd4388f6e8a08d08"
+
 vuvuzela@1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/vuvuzela/-/vuvuzela-1.0.2.tgz#143942f2c7a6fb48be89ea79c72b37b4b6222c8d"

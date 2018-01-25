@@ -3,6 +3,8 @@ const config = require('../config/database');
 const fs = require('fs');
 const path = require('path');
 
+const thumbler = require('video-thumb');
+
 // Session Schema
 const ImageSchema = mongoose.Schema({
   imagename: {
@@ -12,6 +14,10 @@ const ImageSchema = mongoose.Schema({
   imagetitle: {
     type: String,
     required: true
+  },
+  imagethumb: {
+    type: String,
+    required: false
   },
   userId: {
     type: String,
@@ -49,6 +55,11 @@ const ImageSchema = mongoose.Schema({
 const Img = module.exports = mongoose.model('images', ImageSchema);
 
 module.exports.addImage = (image, callback) => {
+  if(image.imagetype === 'video') {
+    thumbler.extract(path.resolve(__dirname, '../uploads/'+image.imagename), path.resolve(__dirname, '../uploads/'+image.imagethumb), '00:00:00', '250x150', (err) => {
+      if(err) console.log(err);
+    })
+  }
   image.save(callback);
 }
 
@@ -63,7 +74,7 @@ module.exports.getImagesBySessionId = (sessionId, callback) => {
 module.exports.removeImageById = (id, callback) => {
   Img.findById(id, (err, file) => {
     if(err) return callback(err);
-    let filepath = path.resolve(__dirname, './uploads/'+file.imagename);
+    let filepath = path.resolve(__dirname, '../uploads/'+file.imagename);
     fs.unlink(filepath, err => {
       if(err) console.log(err);
       Img.remove({'_id': id}, callback);

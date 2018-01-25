@@ -84,6 +84,10 @@ router.post('/upload', passport.authenticate('jwt', {session: false}), (req, res
       userId: req.user.id
     })
 
+    if(filetype[0] == 'video') {
+      newImage.imagethumb = newImage.imagename+'-thumb.png';
+    }
+
     Img.addImage(newImage, (err, file) => {
       if(err) return res.json({success: false, msg: 'Error in adding media file', error: err})
       res.json({success: true, msg: 'Media uploaded successfullly', file: file})
