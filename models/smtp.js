@@ -26,6 +26,15 @@ const SmtpSchema = mongoose.Schema({
     type: String,
     require: false
   },
+  tls: {
+    type: Object,
+    required: false
+  },
+  secure: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
   mailerId: {
     type: String,
     required: true,

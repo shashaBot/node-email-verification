@@ -45,7 +45,9 @@ router.post('/register', (req, res, next) => {
               },
               host: creds.host,
               port: creds.port,
-              service: creds.service
+              service: creds.service,
+              tls: creds.tls,
+              secure: creds.tls
             }    
             var transporter = nodemailer.createTransport(smtpConfig);
             var mailOptions = { from: creds.mailerId || 'no-reply@email-verify-app.com', to: user.email, subject: 'Please verify your email', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \n' + req.headers.origin + '\/login\/' + email_verify_token.token + '.\n' };
@@ -163,7 +165,9 @@ function sendResetLink (user, req, res) {
         },
         host: creds.host,
         port: creds.port,
-        service: creds.service
+        service: creds.service,
+        tls: creds.tls,
+        secure: creds.secure
       }
       var transporter = nodemailer.createTransport(smtpConfig);
       var mailOptions = { from: creds.mailerId || 'password-reset@teqnihome-app.com', to: user.email, subject: 'Password reset requested', text: 'Hello,\n\n' + 'A password reset request was made for the account associate with this email. Please follow the link to reset your password for Teqnihome Gallery app.\n'+ req.headers.origin + '\/reset_password\/' + forgot_pass_token.token + '.\n' };
@@ -246,8 +250,8 @@ router.post('/authenticate', (req, res, next) => {
             isVerified: user.isVerified,
             isAdmin: user.isAdmin,
             _id: user.id,
-            subscription: user.subscription
-
+            subscription: user.subscription,
+            storageConsumed: user.storageConsumed
           };
           const token = jwt.sign(signInUser, config.secret, {
             expiresIn: 604800 // 1 week
@@ -262,7 +266,8 @@ router.post('/authenticate', (req, res, next) => {
               email: user.email,
               isVerified: user.isVerified,
               isAdmin: user.isAdmin,
-              subscription: user.subscription
+              subscription: user.subscription,
+              storageConsumed: user.storageConsumed
             }
           });
         } else {

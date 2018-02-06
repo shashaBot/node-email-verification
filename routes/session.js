@@ -12,6 +12,7 @@ const config = require('../config/database');
 const Session = require('../models/session');
 const SessionToken = require('../models/sessionToken');
 const Img = require('../models/image');
+const User = require('../models/user');
 require('dotenv').config();
 
 const multer = require('multer');
@@ -73,11 +74,13 @@ router.post('/upload', passport.authenticate('jwt', {session: false}), (req, res
       return res.json({success: false, msg: 'Error in uploading file!'});
     }
     let filetype = req.file.mimetype.split('/');
+    console.log('file object: ', req.file);
 
     let newImage = new Img({
       imagename: req.file.filename,
       imagetitle: req.file.originalname,
       imagetype: filetype[0],
+      size: req.file.size,
       imagedelay: req.body.imagedelay,
       sessionId: req.body.sessionId,
       username: req.user.username,
@@ -87,11 +90,25 @@ router.post('/upload', passport.authenticate('jwt', {session: false}), (req, res
     if(filetype[0] == 'video') {
       newImage.imagethumb = newImage.imagename+'-thumb.png';
     }
-
-    Img.addImage(newImage, (err, file) => {
-      if(err) return res.json({success: false, msg: 'Error in adding media file', error: err})
-      res.json({success: true, msg: 'Media uploaded successfullly', file: file})
-    });
+    User.checkStorage(req.user.id, newImage.size, (err, isAllowed) => {
+      console.log('if file upload allowed: ', isAllowed);
+      if(isAllowed) {
+        Img.addImage(newImage, (err, file) => {
+          console.log('file: ', file);
+          if(err) return res.json({success: false, msg: 'Error in adding media file', error: err})
+          User.updateUserStorage(req.user.id, req.file.size, (err, updated) => {
+            if(err){ 
+              console.log(err); 
+              return res.json({success: false, msg: 'Error in updating user storage'})
+            }
+            res.json({success: true, msg: 'Media uploaded successfullly', file: file})
+          })
+        });        
+      } else {
+        //pop message to upgrade
+        res.json({success: false, msg: 'File can\'t be uploaded. Kindly upgrade your package to upload more media.'});
+      }
+    })
   });
 });
 
@@ -100,7 +117,6 @@ router.post('/remove', passport.authenticate('jwt', {session: false}), (req, res
   //if it belongs to session - remove file from session files array
   let session = req.body.session;
   let file = req.body.file;
-  let id = req.body.fileId;
   if(session){
     authOwner(req, res, (err) => {
       Session.removeSession(session, (err) => {
@@ -113,10 +129,16 @@ router.post('/remove', passport.authenticate('jwt', {session: false}), (req, res
       });
     });
   }
-  if(id || file) {
-    Img.removeImageById(id || file._id, err => {
+  if(file) {
+    Img.removeImageById(file._id, err => {
       if(err) res.json({success: false, msg: 'Error in removing file!', error: err});
-      res.json({success: true});
+      User.updateUserStorage(req.user.id, 0-Number(file.size), (err, updated) => {
+        if(err) {
+          console.log(err);
+          return res.json({success: false, msg: 'Error in updating user storage'})
+        }
+        res.json({success: true});
+      });
     })
   }
 });
@@ -134,7 +156,7 @@ router.post('/updateIndex', passport.authenticate('jwt', {session: false}), (req
 router.post('/updateImage', passport.authenticate('jwt', {session: false}), (req, res) => {
   Img.updateMedia(req.body.id, req.body.update, (err, image) => {
     if(err) return res.json({success: false})
-    res.json({success: true})
+    res.json({success: true, file: image})
   })
 })
 

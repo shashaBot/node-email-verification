@@ -11,7 +11,8 @@ const rp = require('request-promise');
 // const fileUpload = require('express-fileupload');
 const multer = require('multer');
 const Smtp = require('./models/smtp');
-
+const PaypalConfig = require('./models/paypalConfig');
+const Package = require('./models/package');
 const nodemailer = require('nodemailer');
 
 require('dotenv').config();
@@ -167,28 +168,37 @@ app.get('/validate_captcha', (req, res) => {
 
 app.post('/admin/storemailer', passport.authenticate('jwt', {session: false}), (req, res) => {
   //store credentials to db.
-  console.log('store mailing: ', req.body)
-  let newSmtp = new Smtp({
+  let newSmtp = {
     auth: {
       user: req.body.smtpUser,
       pass: req.body.smtpPass
     },
     mailerId: req.body.smtpMailer
-  })
+  }
   if(req.body.smtpService) {
     newSmtp.service = req.body.smtpService;    
   } else {
     newSmtp.host = req.body.smtpHost
     newSmtp.port = req.body.smtpPort
+    newSmtp.tls = {
+      rejectUnauthorized: false
+    }
+    if(newSmtp.port == 465) {
+      newSmtp.secure = true
+    }
   }
+
+  console.log('smtp: ', newSmtp);
 
   let transporter = nodemailer.createTransport(newSmtp);
 
   transporter.verify((err, success) => {
     if(err) {
+      console.log(err);
       return res.json({success: false, msg: 'Your SMTP details are not configured properly. Please check and update again!'})
     }
-    Smtp.updateMailer(newSmtp, (err) => {
+    let newSmtpModel = new Smtp(newSmtp);
+    Smtp.updateMailer(newSmtpModel, (err) => {
       if(err) {
         console.log(err);
         return res.json({success: false, msg: 'Error in saving SMTP details!'});
@@ -204,6 +214,25 @@ app.get('/admin/getmailer', passport.authenticate('jwt', {session:false}), (req,
     if(err) return res.json({success: false, msg: 'Server error! Couldn\'t fetch SMTP'})
     if(!smtp) return res.json({success: false, msg: 'No SMTP info found. Please provide SMTP information'});
     res.json({success: true, mailerId: smtp.mailerId, service: smtp.service, host: smtp.host, port: smtp.port, user: smtp.auth.user});
+  })
+})
+
+app.post('/admin/store_paypal_config', passport.authenticate('jwt', {session: false}), (req, res) => {
+  let paypalConfig = new PaypalConfig(req.body.paypalConfig);
+  PaypalConfig.saveConfig(paypalConfig, (err, saved) => {
+    if(err) {
+      console.log(err);
+      return res.json({success: false, msg: 'Error in saving paypal details'});
+    }
+    Package.configurePaypal(req.body.paypalConfig);
+    res.json({success: true})
+  });
+})
+
+app.get('/admin/get_paypal_config', passport.authenticate('jwt',{session: false}), (req, res) => {
+  PaypalConfig.getConfig((err, config) => {
+    if(err) return res.json({success: false, msg: 'Error in getting paypal config details!'})
+    res.json({success: true, config: config})
   })
 })
 

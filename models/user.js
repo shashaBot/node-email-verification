@@ -2,11 +2,13 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const config = require('../config/database');
 
+const Package = require('./package');
+
 // User Schema
 const UserSchema =  mongoose.Schema({
   name: {
     type: String,
-    // required: true
+    required: true
   },
   username: {
     type: String,
@@ -14,7 +16,7 @@ const UserSchema =  mongoose.Schema({
   },
   email: {
     type: String,
-    // required: true
+    required: true
   },
   password: {
     type: String,
@@ -36,6 +38,11 @@ const UserSchema =  mongoose.Schema({
   passwordResetExpires: {
     type: Date
   },
+  storageConsumed: {
+    type: Number,
+    required: true,
+    default: 0
+  },
   subscription: {
     type: Object,
     required: false,
@@ -43,13 +50,8 @@ const UserSchema =  mongoose.Schema({
       type: String,
       required: true
     },
-    isTrial: {
-      type: Boolean,
-      required: true,
-      default: false
-    },
-    startDate: {
-      type: Date,
+    billingAgreementId: {
+      type: String,
       required: true
     }
   }
@@ -109,12 +111,47 @@ module.exports.comparePassword = function(candidatePassword, hash, callback) {
   });
 }
 
+module.exports.updateUserStorage = (userId, size, callback) => {
+  User.findById(userId, (err, user) => {
+    if(err) return callback(err);
+    console.log(size);
+    console.log(typeof size);
+    user.storageConsumed += size;
+    console.log(user.storageConsumed);
+    user.save(callback);
+  })
+}
 
-module.exports.changeSubscription = (packId, isTrial, userId, callback) => {
+module.exports.checkStorage = (userId, size, callback) => {
+  User.findById(userId, (err, user) => {
+    if(err) return callback(err);
+    Package.findById(user.subscription.packageId, (err, package) => {
+      let allowedStorage = package.storage.amount;
+      if(package.storage.unit == 'Mb') 
+        allowedStorage = package.storage.amount * 1024 * 1024;
+      else if(package.storage.unit == 'Gb') {
+        allowedStorage = package.storage.amount * 1024 * 1024 * 1024;
+      }
+      console.log('allowed storage: ', allowedStorage);
+      console.log('storage consumed', user.storageConsumed+size);
+      if((user.storageConsumed + size) <= allowedStorage) {
+        callback(null, true);
+      } else {
+        callback(null, false);
+      }
+    })
+  })
+}
+
+module.exports.changeSubscription = (userId, packId, billingAgreementId, callback) => {
   let sub = {
     packageId: packId,
-    isTrial: isTrial,
-    startDate: Date.now()
+    billingAgreementId: billingAgreementId
   }
-  User.findByIdAndUpdate(userId, {subscription: sub}, callback);
+  console.log('updating user', sub);
+  User.findByIdAndUpdate(userId, {$set: {subscription: sub}}, callback);
+}
+
+module.exports.cancelSubscription = (userId, packId, callback) => {
+  User.findByIdAndUpdate(userId, {subscription: null}, callback);
 }

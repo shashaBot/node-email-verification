@@ -25,6 +25,7 @@
     "nodemailer": "^4.2.0",
     "passport": "*",
     "passport-jwt": "*",
+    "paypal-rest-sdk": "^1.8.1",
     "request-promise": "^4.2.2",
     "send": "*",
     "socketio": "^1.0.0",

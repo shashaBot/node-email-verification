@@ -15,6 +15,10 @@ const ImageSchema = mongoose.Schema({
     type: String,
     required: true
   },
+  size: {
+    type: Number,
+    required: true
+  },
   imagethumb: {
     type: String,
     required: false
@@ -58,9 +62,12 @@ module.exports.addImage = (image, callback) => {
   if(image.imagetype === 'video') {
     thumbler.extract(path.resolve(__dirname, '../uploads/'+image.imagename), path.resolve(__dirname, '../uploads/'+image.imagethumb), '00:00:00', '250x150', (err) => {
       if(err) console.log(err);
+      console.log('thumb success');
+      image.save(callback);
     })
+  } else {
+    image.save(callback);
   }
-  image.save(callback);
 }
 
 module.exports.getImageById = (id, callback) => {
@@ -74,6 +81,7 @@ module.exports.getImagesBySessionId = (sessionId, callback) => {
 module.exports.removeImageById = (id, callback) => {
   Img.findById(id, (err, file) => {
     if(err) return callback(err);
+    if(!file) return callback(new Error('File not found'));
     let filepath = path.resolve(__dirname, '../uploads/'+file.imagename);
     fs.unlink(filepath, err => {
       if(err) console.log(err);
@@ -111,5 +119,6 @@ module.exports.updateDelay = (imageId, delay, callback) => {
 }
 
 module.exports.updateMedia = (imageId, update, callback) => {
-  Img.findByIdAndUpdate(imageId, update, callback);
+  console.log(update);
+  Img.findByIdAndUpdate(imageId, update, {new: true}, callback);
 }
