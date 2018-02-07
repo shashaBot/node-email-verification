@@ -141,7 +141,7 @@ var AdminLoginComponent = (function () {
 /***/ "../../../../../src/app/admin/admin.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container\">\n    <ngx-loading [show]=\"isLoading\"></ngx-loading>\n    <div class=\"row mt-3\">\n        <ngb-tabset (tabChange)=\"changeAdminTab($event)\">\n            <ngb-tab title=\"Edit SMTP Details\" id=\"edit_smtp\">\n                <ng-template ngbTabContent>\n                    <div class=\"card\">\n                        <div class=\"card-body\">\n                            <form class=\"form\" (ngSubmit)=\"storeMailingCredentials()\">\n                                <div class=\"form-group\">\n                                    <label for=\"mailerId\">Mailing address:</label>\n                                    <input type=\"text\" class=\"form-control\" placeholder=\"no-reply@app-mail-service.com\" name=\"mailerId\" [(ngModel)]=\"smtpMailer\" id=\"mailerId\">\n                                </div>\n                                <div class=\"radio\">\n                                    <label>\n                                        <input type=\"radio\" name=\"smtp_opt\" (change)=\"selectSmtpType(1)\" [checked]=\"smtpType===1\">Use a well known service</label>\n                                    <label>\n                                        <input type=\"radio\" name=\"smtp_opt\" (change)=\"selectSmtpType(2)\" [checked]=\"smtpType===2\">I'll provide host and port for custom SMTP</label>\n                                </div>\n                                <div *ngIf=\"smtpType\">\n                                    <div class=\"form-group\" *ngIf=\"smtpType===1\">\n                                        <label for=\"service\">Service Name (see list of <a href=\"https://nodemailer.com/smtp/well-known/\" target=\"_blank\">supported services</a>)</label>\n                                        <input type=\"text\" class=\"form-control\" placeholder=\"eg. SendGrid, Gmail, Hotmail\" [(ngModel)]=\"smtpService\" name=\"service\" id=\"service\">\n                                    </div>\n                                    <div class=\"form-group\" *ngIf=\"smtpType === 2\">\n                                        <label for=\"host\">SMTP Host:</label>\n                                        <input type=\"text\" class=\"form-control\" placeholder=\"mail.my-smtp.com\" [(ngModel)]=\"smtpHost\" name=\"host\" id=\"host\">\n                                    </div>\n                                    <div class=\"form-group\" *ngIf=\"smtpType === 2\">\n                                        <label for=\"pwd\">SMTP Port:</label>\n                                        <input type=\"text\" class=\"form-control\" placeholder=\"2442\" [(ngModel)]=\"smtpPort\" name=\"port\" id=\"port\">\n                                    </div>\n                                    <div class=\"form-group\">\n                                        <label for=\"username\">SMTP Username:</label>\n                                        <input type=\"text\" class=\"form-control\" placeholder=\"user_name\" [(ngModel)]=\"smtpUser\" name=\"username\" id=\"username\">\n                                    </div>\n                                    <div class=\"form-group\">\n                                        <label for=\"pwd\">SMTP Password:</label>\n                                        <input type=\"password\" class=\"form-control\" placeholder=\"*******\" [(ngModel)]=\"smtpPass\" name=\"pwd\" id=\"pwd\">\n                                    </div>\n                                </div>\n                                <button type=\"submit\" class=\"btn btn-default\" [disabled]=\"!smtpPass || !smtpUser || !smtpMailer\">Update</button>\n                            </form>\n                        </div>\n                    </div>\n                </ng-template>\n            </ngb-tab>\n            <ngb-tab title=\"Manage Categories\" id=\"manage_categories\">\n                <ng-template ngbTabContent>\n                    <div class=\"row mx-0 mt-3\">\n                        <nav aria-label=\"breadcrumb\">\n                            <ol class=\"breadcrumb\">\n                                <li class=\"breadcrumb-item clickable\" [class.active]=\"!pathCategories.length\" (click)=\"goToRootCats()\" [attr.aria-current]=\"{'page': !pathCategories.length}\">\n                                    Root Categories\n                                </li>\n                                <li class=\"breadcrumb-item\" *ngFor=\"let pathCat of pathCategories; let i=index\" aria-current=\"page\" [class.active]=\"pathCategories.length -1 == i\" (click)=\"getSubCats(pathCat)\" [attr.aria-current]=\"{'page': pathCategories.length-1 == i}\">\n                                    {{pathCat.categoryname}}\n                                </li>\n                            </ol>\n                        </nav>\n                    </div>\n                    <div class=\"row mx-0 mt-3\">\n                        <div class=\"col col-12 col-xs-12 col-md-12 mb-3\">\n                            <div class=\"card\">\n                                <div class=\"card-body\">\n                                    <div class=\"card-text\">\n                                        <form class=\"form-inline\" (ngSubmit)=\"createNewCategory()\">\n                                            <div class=\"form-group\">\n                                                <label for=\"categoryname\" class=\" mr-3\">Add {{categoryType}}:</label>\n                                                <input type=\"text\" class=\"form-control mr-2\" [(ngModel)]=\"newCategoryName\" id=\"categoryname\" name=\"categoryname\">\n                                            </div>\n                                            <button type=\"submit\" class=\"btn btn-primary mb-2\" [disabled]=\"!newCategoryName\"><i class=\"icon ion-plus\"></i> Create</button>\n                                        </form>\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                        <div class=\"col col-md-4 col-xs-12\" *ngFor=\"let cat of categories; let i=index\">\n                            <div class=\"card\">\n                                <div class=\"card-body\">\n                                    <h5 class=\"card-title text-center\" *ngIf=\"!editing[cat._id]\">{{cat.categoryname}}</h5>\n                                    <input class=\"form-control\" *ngIf=\"editing[cat._id]\" [(ngModel)]=\"newCatName[cat._id]\">\n                                    <div class=\"row justify-content-space-evenly\">\n                                        <div class=\"text-center\">\n                                            <button class=\"btn btn-primary\" (click)=\"startEdit(cat)\" *ngIf=\"!editing[cat._id]\"><i class=\"icon ion-edit\"></i></button>\n                                            <button class=\"btn btn-warning\" *ngIf=\"editing[cat._id]\" (click)=\"renameCategory(cat._id, i)\">Save</button>\n                                        </div>\n                                        <div class=\" text-center\">\n                                            <button class=\"btn btn-outline-primary\" (click)=\"getSubCats(cat)\"> <i class=\"icon ion-eye\"></i></button>\n                                        </div>\n                                        <div class=\"text-center\">\n                                            <button class=\"btn btn-danger\" (click)=\"removeCategory(cat, i)\">\n                                                <i class=\"icon ion-trash-b\"></i>\n                                            </button>\n                                        </div>\n                                    </div>\n                                </div>\n                                <div class=\"card-footer text-muted\">\n                                    {{cat.childcategories?.length || 'Zero'}} subcategories\n                                </div>\n                            </div>\n                        </div>\n                        <div class=\"col col-xs-12\" *ngIf=\"!categories?.length\">\n                            <div class=\"card\">\n                                <div class=\"card-title text-center\">\n                                    <h5>No categories found</h5>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </ng-template>\n            </ngb-tab>\n            <ngb-tab title=\"Packages\" id=\"user_packages\">\n                <ng-template ngbTabContent>\n                    <div class=\"row justify-content-start mx-0 mt-3\">\n                        <div class=\"col col-md-4 col-xs-12\" *ngFor=\"let pack of packList; let i=index\">\n                            <div class=\"card mb-2\">\n                                <div class=\"card-body\">\n                                    <h5 class=\"card-title text-center\">{{pack.name}}</h5>\n                                    <hr>\n                                    <h6 class=\"text-center text-muted\">\n                                        {{pack.storage.amount}} {{pack.storage.unit}}\n                                    </h6>\n                                    <h6 class=\"text-center\">\n                                        Monthly: {{pack.pricing.monthly.pay | currency: pack.pricing.currency}}\n                                    </h6>\n                                    <h6 class=\"text-center\">\n                                        Annually: {{pack.pricing.annually.pay | currency: pack.pricing.currency}}\n                                    </h6>\n                                    <ul>\n                                        <li *ngFor=\"let detail of pack.details\">{{detail}}</li>\n                                    </ul>\n                                    <div class=\"row justify-content-start\">\n                                        <div class=\"col text-center\">\n                                            <a class=\"btn btn-warning\" [routerLink]=\"['/edit-package', pack._id]\">\n                                                <i class=\"icon ion-edit\"></i>\n                                            </a>\n                                        </div>\n                                        <div class=\"col text-center\">\n                                            <button class=\"btn btn-outline-danger\" (click)=\"removePackage(pack, i)\">\n                                                <i class=\"icon ion-trash-b\"></i>\n                                            </button>\n                                        </div>                                        \n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                        <div class=\"col col-xs-12\" *ngIf=\"!packList?.length\">\n                            <div class=\"card\">\n                                <div class=\"card-title text-muted text-center py-3\">\n                                    No packages found\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </ng-template>\n            </ngb-tab>\n        </ngb-tabset>\n    </div>\n</div>"
+module.exports = "<div class=\"container\">\n    <ngx-loading [show]=\"isLoading\"></ngx-loading>\n    <div class=\"row mt-3\">\n        <ngb-tabset (tabChange)=\"changeAdminTab($event)\">\n            <ngb-tab title=\"Edit SMTP Details\" id=\"edit_smtp\">\n                <ng-template ngbTabContent>\n                    <div class=\"card\">\n                        <div class=\"card-body\">\n                            <form class=\"form\" (ngSubmit)=\"storeMailingCredentials()\">\n                                <div class=\"form-group\">\n                                    <label for=\"mailerId\">Mailing address:</label>\n                                    <input type=\"text\" class=\"form-control\" placeholder=\"no-reply@app-mail-service.com\" name=\"mailerId\" [(ngModel)]=\"smtpMailer\" id=\"mailerId\">\n                                </div>\n                                <div class=\"radio\">\n                                    <label>\n                                        <input type=\"radio\" name=\"smtp_opt\" (change)=\"selectSmtpType(1)\" [checked]=\"smtpType===1\">Use a well known service</label>\n                                    <label>\n                                        <input type=\"radio\" name=\"smtp_opt\" (change)=\"selectSmtpType(2)\" [checked]=\"smtpType===2\">I'll provide host and port for custom SMTP</label>\n                                </div>\n                                <div *ngIf=\"smtpType\">\n                                    <div class=\"form-group\" *ngIf=\"smtpType===1\">\n                                        <label for=\"service\">Service Name (see list of <a href=\"https://nodemailer.com/smtp/well-known/\" target=\"_blank\">supported services</a>)</label>\n                                        <input type=\"text\" class=\"form-control\" placeholder=\"eg. SendGrid, Gmail, Hotmail\" [(ngModel)]=\"smtpService\" name=\"service\" id=\"service\">\n                                    </div>\n                                    <div class=\"form-group\" *ngIf=\"smtpType === 2\">\n                                        <label for=\"host\">SMTP Host:</label>\n                                        <input type=\"text\" class=\"form-control\" placeholder=\"mail.my-smtp.com\" [(ngModel)]=\"smtpHost\" name=\"host\" id=\"host\">\n                                    </div>\n                                    <div class=\"form-group\" *ngIf=\"smtpType === 2\">\n                                        <label for=\"pwd\">SMTP Port:</label>\n                                        <input type=\"text\" class=\"form-control\" placeholder=\"2442\" [(ngModel)]=\"smtpPort\" name=\"port\" id=\"port\">\n                                    </div>\n                                    <div class=\"form-group\">\n                                        <label for=\"username\">SMTP Username:</label>\n                                        <input type=\"text\" class=\"form-control\" placeholder=\"user_name\" [(ngModel)]=\"smtpUser\" name=\"username\" id=\"username\">\n                                    </div>\n                                    <div class=\"form-group\">\n                                        <label for=\"pwd\">SMTP Password:</label>\n                                        <input type=\"password\" class=\"form-control\" placeholder=\"*******\" [(ngModel)]=\"smtpPass\" name=\"pwd\" id=\"pwd\">\n                                    </div>\n                                </div>\n                                <button type=\"submit\" class=\"btn btn-default\" [disabled]=\"!smtpPass || !smtpUser || !smtpMailer\">Update</button>\n                            </form>\n                        </div>\n                    </div>\n                </ng-template>\n            </ngb-tab>\n            <ngb-tab title=\"Manage Categories\" id=\"manage_categories\">\n                <ng-template ngbTabContent>\n                    <div class=\"row mx-0 mt-3\">\n                        <nav aria-label=\"breadcrumb\">\n                            <ol class=\"breadcrumb\">\n                                <li class=\"breadcrumb-item clickable\" [class.active]=\"!pathCategories.length\" (click)=\"goToRootCats()\" [attr.aria-current]=\"{'page': !pathCategories.length}\">\n                                    Root Categories\n                                </li>\n                                <li class=\"breadcrumb-item\" *ngFor=\"let pathCat of pathCategories; let i=index\" aria-current=\"page\" [class.active]=\"pathCategories.length -1 == i\" (click)=\"getSubCats(pathCat)\" [attr.aria-current]=\"{'page': pathCategories.length-1 == i}\">\n                                    {{pathCat.categoryname}}\n                                </li>\n                            </ol>\n                        </nav>\n                    </div>\n                    <div class=\"row mx-0 mt-3\">\n                        <div class=\"col col-12 col-xs-12 col-md-12 mb-3\">\n                            <div class=\"card\">\n                                <div class=\"card-body\">\n                                    <div class=\"card-text\">\n                                        <form class=\"form-inline\" (ngSubmit)=\"createNewCategory()\">\n                                            <div class=\"form-group\">\n                                                <label for=\"categoryname\" class=\" mr-3\">Add {{categoryType}}:</label>\n                                                <input type=\"text\" class=\"form-control mr-2\" [(ngModel)]=\"newCategoryName\" id=\"categoryname\" name=\"categoryname\">\n                                            </div>\n                                            <button type=\"submit\" class=\"btn btn-primary mb-2\" [disabled]=\"!newCategoryName\"><i class=\"icon ion-plus\"></i> Create</button>\n                                        </form>\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                        <div class=\"col col-md-4 col-xs-12\" *ngFor=\"let cat of categories; let i=index\">\n                            <div class=\"card\">\n                                <div class=\"card-body\">\n                                    <h5 class=\"card-title text-center\" *ngIf=\"!editing[cat._id]\">{{cat.categoryname}}</h5>\n                                    <input class=\"form-control\" *ngIf=\"editing[cat._id]\" [(ngModel)]=\"newCatName[cat._id]\">\n                                    <div class=\"row justify-content-space-evenly\">\n                                        <div class=\"text-center\">\n                                            <button class=\"btn btn-primary\" (click)=\"startEdit(cat)\" *ngIf=\"!editing[cat._id]\"><i class=\"icon ion-edit\"></i></button>\n                                            <button class=\"btn btn-warning\" *ngIf=\"editing[cat._id]\" (click)=\"renameCategory(cat._id, i)\">Save</button>\n                                        </div>\n                                        <div class=\" text-center\">\n                                            <button class=\"btn btn-outline-primary\" (click)=\"getSubCats(cat)\"> <i class=\"icon ion-eye\"></i></button>\n                                        </div>\n                                        <div class=\"text-center\">\n                                            <button class=\"btn btn-danger\" (click)=\"removeCategory(cat, i)\">\n                                                <i class=\"icon ion-trash-b\"></i>\n                                            </button>\n                                        </div>\n                                    </div>\n                                </div>\n                                <div class=\"card-footer text-muted\">\n                                    {{cat.childcategories?.length || 'Zero'}} subcategories\n                                </div>\n                            </div>\n                        </div>\n                        <div class=\"col col-xs-12\" *ngIf=\"!categories?.length\">\n                            <div class=\"card\">\n                                <div class=\"card-title text-center\">\n                                    <h5>No categories found</h5>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </ng-template>\n            </ngb-tab>\n            <ngb-tab title=\"Packages\" id=\"user_packages\">\n                <ng-template ngbTabContent>\n                    <div class=\"row justify-content-start mx-0 mt-3\">\n                        <div class=\"col col-md-4 col-xs-12\" *ngFor=\"let pack of packList; let i=index\">\n                            <div class=\"card mb-2\">\n                                <div class=\"card-body\">\n                                    <h5 class=\"card-title text-center\">\n                                        {{pack.name}}<br>\n                                        <small class=\"text-muted\">{{pack.description}}</small>\n                                    </h5>\n                                    <hr>\n                                    <h6 class=\"text-center text-muted\">\n                                        {{pack.storage.amount}} {{pack.storage.unit}}\n                                    </h6>\n                                    <h6 class=\"text-center\" *ngFor=\"let pay of payment_definitions\">\n                                        <span *ngIf=\"pay.frequency =='MONTH'\">Monthly:</span>\n                                        <span *ngIf=\"pay.frequency=='YEAR'\">Yearly:</span>{{pay.amount.value | currency: pay.amount.currency}}\n                                    </h6>\n                                    <div class=\"row justify-content-start\">\n                                        <div class=\"col text-center\">\n                                            <a class=\"btn btn-warning\" [routerLink]=\"['/edit-package', pack._id]\">\n                                                <i class=\"icon ion-edit\"></i>\n                                            </a>\n                                        </div>\n                                        <div class=\"col text-center\">\n                                            <button class=\"btn btn-outline-danger\" (click)=\"removePackage(pack, i)\">\n                                                <i class=\"icon ion-trash-b\"></i>\n                                            </button>\n                                        </div>                                        \n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                        <div class=\"col col-xs-12\" *ngIf=\"!packList?.length\">\n                            <div class=\"card\">\n                                <div class=\"card-title text-muted text-center py-3\">\n                                    No packages found\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </ng-template>\n            </ngb-tab>\n            <ngb-tab title=\"Paypal Config\" id=\"paypal_config\">\n                <ng-template ngbTabContent>\n                    <h3 class=\"my-3\">Change paypal Config</h3>\n                    <div class=\"row mb-3\">\n                        <div class=\"card paypal-card\">\n                            <div class=\"card-body\">\n                                <form [formGroup]=\"paypalConfig\" novalidate (ngSubmit)=\"savePaypalConfig()\">\n                                    <div class=\"form-group mb-2\">\n                                        <label for=\"mode\">Mode</label>\n                                        <select id=\"mode\" formControlName=\"mode\" class=\"form-control custom-select\">\n                                            <option value=\"sandbox\">Sandbox (for testing)</option>\n                                            <option value=\"live\">Live (for production)</option>\n                                        </select>\n                                    </div>\n                                    <div class=\"form-group\">\n                                        <label for=\"client_id\">Client ID</label>\n                                        <input type=\"text\" formControlName=\"client_id\" class=\"form-control\">\n                                    </div>\n                                    <div class=\"form-group\">\n                                        <label for=\"client_secret\">Client Secret</label>\n                                        <input type=\"text\" formControlName=\"client_secret\" class=\"form-control\">\n                                    </div>\n                                    <button class=\"btn btn-success\" type=\"submit\" [disabled]=\"paypalConfig.invalid\">Update</button>\n                                </form>\n                            </div>\n                        </div>\n                    </div>\n                </ng-template>\n            </ngb-tab>\n        </ngb-tabset>\n    </div>\n</div>"
 
 /***/ }),
 
@@ -169,13 +169,14 @@ module.exports = module.exports.toString();
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AdminComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__shared_category_service__ = __webpack_require__("../../../../../src/app/shared/category.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__shared_auth_service__ = __webpack_require__("../../../../../src/app/shared/auth.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__shared_package_service__ = __webpack_require__("../../../../../src/app/shared/package.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_ngx_toastr__ = __webpack_require__("../../../../ngx-toastr/toastr.es5.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_ng2_bootstrap_modal__ = __webpack_require__("../../../../ng2-bootstrap-modal/index.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_ng2_bootstrap_modal___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_ng2_bootstrap_modal__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__confirm_popup_confirm_popup_component__ = __webpack_require__("../../../../../src/app/confirm-popup/confirm-popup.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__shared_category_service__ = __webpack_require__("../../../../../src/app/shared/category.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__shared_auth_service__ = __webpack_require__("../../../../../src/app/shared/auth.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__shared_package_service__ = __webpack_require__("../../../../../src/app/shared/package.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_ngx_toastr__ = __webpack_require__("../../../../ngx-toastr/toastr.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_ng2_bootstrap_modal__ = __webpack_require__("../../../../ng2-bootstrap-modal/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_ng2_bootstrap_modal___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_ng2_bootstrap_modal__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__confirm_popup_confirm_popup_component__ = __webpack_require__("../../../../../src/app/confirm-popup/confirm-popup.component.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -192,14 +193,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 var AdminComponent = (function () {
-    function AdminComponent(categoryService, toastr, auth, dialogService, packSer) {
+    function AdminComponent(categoryService, toastr, auth, dialogService, packSer, fb) {
         var _this = this;
         this.categoryService = categoryService;
         this.toastr = toastr;
         this.auth = auth;
         this.dialogService = dialogService;
         this.packSer = packSer;
+        this.fb = fb;
         this.categories = [];
         this.rootCategories = [];
         this.subCategories = [];
@@ -209,6 +212,14 @@ var AdminComponent = (function () {
         this.editing = {};
         this.newCatName = {};
         this.categoryType = 'Root Category';
+        this.paypal_mode = new __WEBPACK_IMPORTED_MODULE_1__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_1__angular_forms__["k" /* Validators */].required);
+        this.paypal_client_id = new __WEBPACK_IMPORTED_MODULE_1__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_1__angular_forms__["k" /* Validators */].required);
+        this.paypal_client_secret = new __WEBPACK_IMPORTED_MODULE_1__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_1__angular_forms__["k" /* Validators */].required);
+        this.paypalConfig = this.fb.group({
+            mode: this.paypal_mode,
+            client_id: this.paypal_client_id,
+            client_secret: this.paypal_client_secret
+        });
         this.isLoading = true;
         this.categoryService.getRootCategory()
             .subscribe(function (data) {
@@ -441,7 +452,7 @@ var AdminComponent = (function () {
         });
     };
     AdminComponent.prototype.showConfirm = function (title, message) {
-        var popup = this.dialogService.addDialog(__WEBPACK_IMPORTED_MODULE_6__confirm_popup_confirm_popup_component__["a" /* ConfirmPopupComponent */], {
+        var popup = this.dialogService.addDialog(__WEBPACK_IMPORTED_MODULE_7__confirm_popup_confirm_popup_component__["a" /* ConfirmPopupComponent */], {
             title: title,
             message: message
         });
@@ -484,6 +495,18 @@ var AdminComponent = (function () {
             _this.isLoading = false;
         });
     };
+    AdminComponent.prototype.savePaypalConfig = function () {
+        var _this = this;
+        this.categoryService.savePaypalConfig(this.paypalConfig.value).subscribe(function (res) {
+            if (res.success) {
+                _this.toastr.success('Paypal Config updated', 'Success');
+                _this.paypalConfig.reset();
+            }
+            else {
+                _this.toastr.error(res.msg, 'Error');
+            }
+        });
+    };
     AdminComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
             moduleId: module.i,
@@ -491,11 +514,12 @@ var AdminComponent = (function () {
             template: __webpack_require__("../../../../../src/app/admin/admin.component.html"),
             styles: [__webpack_require__("../../../../../src/app/admin/admin.component.scss")]
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__shared_category_service__["a" /* CategoryService */],
-            __WEBPACK_IMPORTED_MODULE_4_ngx_toastr__["b" /* ToastrService */],
-            __WEBPACK_IMPORTED_MODULE_2__shared_auth_service__["a" /* AuthService */],
-            __WEBPACK_IMPORTED_MODULE_5_ng2_bootstrap_modal__["DialogService"],
-            __WEBPACK_IMPORTED_MODULE_3__shared_package_service__["a" /* PackageService */]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2__shared_category_service__["a" /* CategoryService */],
+            __WEBPACK_IMPORTED_MODULE_5_ngx_toastr__["b" /* ToastrService */],
+            __WEBPACK_IMPORTED_MODULE_3__shared_auth_service__["a" /* AuthService */],
+            __WEBPACK_IMPORTED_MODULE_6_ng2_bootstrap_modal__["DialogService"],
+            __WEBPACK_IMPORTED_MODULE_4__shared_package_service__["a" /* PackageService */],
+            __WEBPACK_IMPORTED_MODULE_1__angular_forms__["b" /* FormBuilder */]])
     ], AdminComponent);
     return AdminComponent;
 }());
@@ -675,7 +699,7 @@ var ioConfig = { url: __WEBPACK_IMPORTED_MODULE_46__environments_environment__["
 var ROUTES = [
     {
         path: '',
-        redirectTo: 'login',
+        redirectTo: 'pricing',
         pathMatch: 'full'
     },
     {
@@ -693,7 +717,8 @@ var ROUTES = [
     },
     {
         path: 'register',
-        component: __WEBPACK_IMPORTED_MODULE_35__register_register_component__["a" /* RegisterComponent */]
+        component: __WEBPACK_IMPORTED_MODULE_35__register_register_component__["a" /* RegisterComponent */],
+        canActivate: [__WEBPACK_IMPORTED_MODULE_24__shared_login_guard__["a" /* LoginGuard */]]
     },
     {
         path: 'forgot_password',
@@ -802,7 +827,9 @@ var AppModule = (function () {
                 }),
                 __WEBPACK_IMPORTED_MODULE_15_ng2_bootstrap_modal__["BootstrapModalModule"].forRoot({ container: document.body }),
                 __WEBPACK_IMPORTED_MODULE_14_ng_socket_io__["SocketIoModule"].forRoot(ioConfig),
-                __WEBPACK_IMPORTED_MODULE_17_ngx_loading__["a" /* LoadingModule */]
+                __WEBPACK_IMPORTED_MODULE_17_ngx_loading__["a" /* LoadingModule */].forRoot({
+                    fullScreenBackdrop: true
+                })
             ],
             entryComponents: [
                 __WEBPACK_IMPORTED_MODULE_36__popup_popup_component__["a" /* PopupComponent */],
@@ -1321,7 +1348,7 @@ var GalleryComponent = (function () {
 /***/ "../../../../../src/app/header/header.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<nav class=\"navbar fixed-top navbar-expand-lg navbar-dark bg-dark\">\n    <div class=\"container\">\n        <a class=\"navbar-brand\" href=\"#\">{{title}}</a>\n        <button class=\"navbar-toggler\" type=\"button\" data-toggle=\"collapse\" data-target=\"#navbar_main\" aria-controls=\"navbar_main\" aria-expanded=\"false\" [attr.aria-expanded]=\"!isCollapsed\" aria-label=\"Toggle navigation\" (click)=\"isCollapsed=!isCollapsed\">\n            <span class=\"navbar-toggler-icon\"></span>\n        </button>\n        <div class=\"collapse navbar-collapse\" id=\"navbar_main\" [ngbCollapse]=\"isCollapsed\">\n            <ul class=\"navbar-nav mr-auto\" *ngIf=\"auth.customerLogin()\">\n                <li class=\"nav-item\" *ngIf=\"!auth.scannedLogIn()\">\n                    <a class=\"nav-link\" routerLink=\"/gallery\">Gallery <span class=\"sr-only\">(current)</span></a>\n                </li>\n                <li class=\"nav-item\" *ngIf=\"!auth.scannedLogIn()\">\n                    <a class=\"nav-link\" routerLink=\"/create\">Create</a>\n                </li>\n                <li class=\"nav-item\" *ngIf=\"!auth.scannedLogIn()\">\n                    <a class=\"nav-link\" routerLink=\"/pricing\">Change Package</a>\n                </li>\n                <li class=\"nav-item\">\n                    <a class=\"nav-link\" routerLink=\"/session-qr\">Session QRs</a>\n                </li>\n            </ul>\n            <ul class=\"navbar-nav mr-auto\" *ngIf=\"!auth.loggedIn()\">\n                <li class=\"nav-item\">\n                    <a class=\"nav-link\" routerLink=\"/login\">Login</a>\n                </li>\n                <li class=\"nav-item\">\n                    <a class=\"nav-link\" routerLink=\"/pricing\">Pricing</a>\n                </li>\n                <li class=\"nav-item\"><a class=\"nav-link\" routerLink=\"/qr-login\">QR Login</a></li>\n            </ul>\n            <ul class=\"navbar-nav mr-auto\" *ngIf=\"auth.loggedIn() && auth.adminLogIn()\">\n                <li class=\"nav-item\"><a class=\"nav-link\" routerLink=\"/admin\">Admin</a></li>\n                <li class=\"nav-item\"><a href=\"\" class=\"nav-link\" routerLink=\"/add-package\">Add package</a></li>\n            </ul>\n            <ul class=\"navbar-nav ml-auto\" *ngIf=\"auth.loggedIn()\">\n                <li class=\"nav-item\">\n                    <button class=\"btn btn-link nav-link\" (click)=\"onLogout()\">Logout</button>\n                </li>\n            </ul>\n        </div>\n    </div>\n</nav>"
+module.exports = "<nav class=\"navbar fixed-top navbar-expand-lg navbar-dark bg-dark\">\n    <div class=\"container\">\n        <a class=\"navbar-brand\" href=\"#\">{{title}}</a>\n        <button class=\"navbar-toggler\" type=\"button\" data-toggle=\"collapse\" data-target=\"#navbar_main\" aria-controls=\"navbar_main\" aria-expanded=\"false\" [attr.aria-expanded]=\"!isCollapsed\" aria-label=\"Toggle navigation\" (click)=\"isCollapsed=!isCollapsed\">\n            <span class=\"navbar-toggler-icon\"></span>\n        </button>\n        <div class=\"collapse navbar-collapse\" id=\"navbar_main\" [ngbCollapse]=\"isCollapsed\">\n            <ul class=\"navbar-nav mr-auto\" *ngIf=\"auth.customerLogin()\">\n                <li class=\"nav-item\" *ngIf=\"!auth.scannedLogIn() && auth.hasSub()\">\n                    <a class=\"nav-link\" routerLink=\"/gallery\">Gallery <span class=\"sr-only\">(current)</span></a>\n                </li>\n                <li class=\"nav-item\" *ngIf=\"!auth.scannedLogIn() && auth.hasSub()\">\n                    <a class=\"nav-link\" routerLink=\"/create\">Create</a>\n                </li>\n                <li class=\"nav-item\" *ngIf=\"!auth.scannedLogIn()\">\n                    <a class=\"nav-link\" routerLink=\"/pricing\">Change Package</a>\n                </li>\n                <li class=\"nav-item\" *ngIf=\"auth.hasSub()\">\n                    <a class=\"nav-link\" routerLink=\"/session-qr\">Session QRs</a>\n                </li>\n            </ul>\n            <ul class=\"navbar-nav mr-auto\" *ngIf=\"!auth.loggedIn()\">\n                <li class=\"nav-item\">\n                    <a class=\"nav-link\" routerLink=\"/pricing\">Home</a>\n                </li>\n                <li class=\"nav-item\">\n                    <a class=\"nav-link\" routerLink=\"/login\">Login</a>\n                </li>\n                <li class=\"nav-item\"><a class=\"nav-link\" routerLink=\"/qr-login\">QR Login</a></li>\n            </ul>\n            <ul class=\"navbar-nav mr-auto\" *ngIf=\"auth.loggedIn() && auth.adminLogIn()\">\n                <li class=\"nav-item\"><a class=\"nav-link\" routerLink=\"/admin\">Admin</a></li>\n                <li class=\"nav-item\"><a href=\"\" class=\"nav-link\" routerLink=\"/add-package\">Add package</a></li>\n            </ul>\n            <ul class=\"navbar-nav ml-auto\" *ngIf=\"auth.loggedIn()\">\n                <li class=\"nav-item\">\n                    <button class=\"btn btn-link nav-link\" (click)=\"onLogout()\">Logout</button>\n                </li>\n            </ul>\n        </div>\n    </div>\n</nav>"
 
 /***/ }),
 
@@ -1367,7 +1394,7 @@ var HeaderComponent = (function () {
     function HeaderComponent(auth, router) {
         this.auth = auth;
         this.router = router;
-        this.title = 'Angular Gallery App';
+        this.title = 'Cloud Gallery';
         this.isCollapsed = true;
     }
     HeaderComponent.prototype.ngOnInit = function () {
@@ -1569,6 +1596,19 @@ var LoginComponent = (function () {
             if (data.success) {
                 console.log(data);
                 _this.authService.storeUserData(data.user, data.token);
+                _this.authService.getAgreement().subscribe(function (res) {
+                    if (res.success) {
+                        if (res.agreement) {
+                            _this.auth.checkTrial(res.agreement);
+                        }
+                        else {
+                            _this.toastr.error('You have no current active subscription. Please choose a package to start using the app.');
+                        }
+                    }
+                    else {
+                        _this.toastr.error(res.msg, 'Error');
+                    }
+                });
                 _this.authService.hasActiveSub().subscribe(function (res) {
                     _this.isLoading = false;
                     if (res.success) {
@@ -1625,7 +1665,7 @@ var LoginComponent = (function () {
 /***/ "../../../../../src/app/package/package.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<main role=\"main\">\n    <div class=\"container\">\n        <ngx-loading [show]=\"isLoading\"></ngx-loading>\n        <h4 *ngIf=\"packEdit\" class=\"mt-3 mx-0\">Edit Package</h4>\n        <h4 *ngIf=\"!packEdit\" class=\"mt-3 mx-0\">Add Package</h4>\n        <div class=\"row mt-3 mx-0\">\n            <div class=\"card package-card\">\n                <div class=\"card-body\">\n                    <form (ngSubmit)=\"submitPackForm()\" [formGroup]=\"packForm\" novalidate>\n                        <div class=\"form-group\">\n                            <label for=\"name\">Package Name</label>\n                            <input type=\"text\" class=\"form-control\" id=\"name\" formControlName=\"name\" [ngClass]=\"checkValid(name)\">\n                            <div class=\"invalid-feedback\" *ngIf=\"name.errors?.required && (name.touched || name.dirty)\">\n                                Package name is required\n                            </div>\n                        </div>\n                        <div class=\"form-group\" formGroupName=\"pricing\">\n                            <div class=\"form-group pb-3\">\n                                <label for=\"currency\">Currency</label>\n                                <select formControlName=\"currency\" id=\"currency\" class=\"custom-select form-control\">\n                                    <option [value]=\"currency\" *ngFor=\"let currency of currencies\">{{currency}}</option>\n                                </select>\n                                <div class=\"invalid-feedback\" *ngIf=\"monthly_pricing.errors?.required && (monthly_pricing.touched || monthly_pricing.dirty)\">\n                                    Currency is required\n                                </div>                                \n                            </div>\n\n                            <div class=\"form-group\" formGroupName=\"monthly\">\n                                <label for=\"monthly_pricing\">Pricing (monthly)</label>\n                                <input type=\"number\" formControlName=\"pay\" class=\"form-control\" id=\"monthly_pricing\" [ngClass]=\"checkValid(monthly_pricing)\" (change)=\"floatify(monthly_pricing)\">\n\n                                <div class=\"invalid-feedback\" *ngIf=\"monthly_pricing.errors?.required && (monthly_pricing.touched || monthly_pricing.dirty)\">\n                                    Pricing is required\n                                </div>\n\n                            </div>\n                            <div class=\"form-group\" formGroupName=\"annually\">\n                                <label for=\"yearly_pricing\">Pricing (Yearly)</label>\n                                <input type=\"number\" formControlName=\"pay\" class=\"form-control\" id=\"montly_pricing\" [ngClass]=\"checkValid(yearly_pricing)\" (change)=\"floatify(yearly_pricing)\">              \n                            </div>\n                        </div>\n                        <div class=\"form-group\" formGroupName=\"storage\">\n                            <div class=\"form-group\">\n                                <label for=\"amount\">Storage Amount: </label>\n\n                                <input type=\"number\" class=\"form-control\" id=\"amount\" formControlName=\"amount\" [ngClass]=\"checkValid(storage_amount)\">\n                                <div class=\"invalid-feedback\" *ngIf=\"storage_amount.errors?.required && (storage_amount.touched || storage_amount.dirty)\">\n                                    Storage amount is required\n                                </div>\n                            </div>\n                            <div class=\"form-group pb-3\">\n                                <label for=\"unit\">Storage Unit:</label>\n                                <select formControlName=\"unit\" class=\"custom-select form-control\" [ngClass]=\"checkValid(storage_unit)\" id=\"unit\">\n                                    <option [value]=\"unit\" *ngFor=\"let unit of storage_units_list\">{{unit}}</option>\n                                </select>\n                                <div class=\"invalid-feedback\" *ngIf=\"storage_unit.errors?.required && (storage_unit.touched || storage_unit.dirty)\">\n                                    Storage unit is required\n                                </div>                         \n                            </div>\n                        </div>\n                        <div class=\"form-group\">\n                            <label for=\"trialPeriod\">\n                                Trial period (in days): \n                            </label>\n                            <input type=\"number\" formControlName=\"trialPeriod\" id=\"trialPeriod\" class=\"form-control\" [ngClass]=\"checkValid(trialPeriod)\">\n\n                            <div class=\"invalid-feedback\" *ngIf=\"trialPeriod.errors?.required && (trialPeriod.touched || trialPeriod.dirty)\">\n                                Trial period is required\n                            </div>\n                        </div>\n                        <button class=\"btn btn-primary\" *ngIf=\"!packEdit\">\n                            <i class=\"icon ion-plus\"></i>\n                            Add package\n                        </button>\n                        <button class=\"btn btn-success\" *ngIf=\"packEdit\">\n                            <i class=\"icon ion-checkmark-round\"></i>\n                            Update\n                        </button>\n                    </form>\n                </div>\n            </div>\n        </div>\n    </div>    \n</main>\n"
+module.exports = "<main role=\"main\">\n    <div class=\"container\">\n        <ngx-loading [show]=\"isLoading\"></ngx-loading>\n        <h4 *ngIf=\"packEdit\" class=\"mt-3 mx-0\">Edit Package</h4>\n        <h4 *ngIf=\"!packEdit\" class=\"mt-3 mx-0\">Add Package</h4>\n        <div class=\"row mt-3 mx-0\">\n            <div class=\"card package-card\">\n                <div class=\"card-body\">\n                    <form (ngSubmit)=\"submitPackForm()\" [formGroup]=\"packForm\" novalidate>\n                        <div class=\"form-group\">\n                            <label for=\"name\">Package Name</label>\n                            <input type=\"text\" class=\"form-control\" id=\"name\" formControlName=\"name\" [ngClass]=\"checkValid(name)\">\n                            <div class=\"invalid-feedback\" *ngIf=\"name.errors?.required && (name.touched || name.dirty)\">\n                                Package name is required\n                            </div>\n                        </div>\n                        <div class=\"form-group\">\n                            <label for=\"description\">Package Description</label>\n                            <input type=\"text\" class=\"form-control\" id=\"description\" formControlName=\"description\" [ngClass]=\"checkValid(description)\">\n                            <div class=\"invalid-feedback\" *ngIf=\"description.errors?.required && (description.touched || description.dirty)\">\n                                Package description is required\n                            </div>\n                        </div>                        \n                        <div class=\"form-group\" formArrayName=\"payment_definitions\">\n                            <div *ngFor=\"let pay of packForm.controls.payment_definitions.controls; let i=index\" class=\"card mb-3\">\n                                <div class=\"form-group\" [formGroupName]=\"i\" class=\"card-body\">\n                                    <h5>{{pay.value.name}}</h5>\n                                    <div class=\"form-group\" formGroupName=\"amount\" *ngIf=\"pay.value.type !=='TRIAL'\">\n                                        <div class=\"form-group pb-3\">\n                                            <label for=\"currency\">Currency</label>\n                                            <select formControlName=\"currency\" id=\"currency\" class=\"custom-select form-control\">\n                                                <option [value]=\"currency\" *ngFor=\"let currency of currencies\">{{currency}}</option>\n                                            </select>\n                                            <div class=\"invalid-feedback\" *ngIf=\"pay.controls.amount.controls.currency.errors?.required && (pay.controls.amount.controls.currency.touched || pay.controls.amount.controls.currency.dirty)\">\n                                                Currency is required\n                                            </div>    \n                                        </div>\n                                        <div class=\"form-group\">\n                                            <label for=\"value\">\n                                                Payment Amount\n                                            </label>\n                                            <input type=\"number\" class=\"form-control\" formControlName=\"value\">\n                                            <div class=\"invalid-feedback\" *ngIf=\"pay.controls.amount.controls.value.errors?.required && (pay.controls.amount.controls.value.touched || pay.controls.amount.controls.value.dirty)\">\n                                                Payment amount is required\n                                            </div>\n                                        </div>\n                                    </div>\n                                    <div class=\"form-group\" *ngIf=\"pay.value.type=='TRIAL'\">\n                                        <input type=\"text\" class=\"form-control\" [value]=\"trialDays\" (input)=\"setTrialPeriod($event, pay)\" placeholder=\"Enter no of days for trial\">\n                                    </div>   \n                                </div>\n                            </div>\n                            <button class=\"btn btn-outline-success\" *ngIf=\"!hasTrial\" (click)=\"addTrialPeriod()\">Offer a trial period</button>\n                        </div>\n                        <div class=\"form-group\" formGroupName=\"storage\">\n                            <div class=\"form-group\">\n                                <label for=\"amount\">Storage Amount: </label>\n\n                                <input type=\"number\" class=\"form-control\" id=\"amount\" formControlName=\"amount\" [ngClass]=\"checkValid(storage_amount)\">\n                                <div class=\"invalid-feedback\" *ngIf=\"storage_amount.errors?.required && (storage_amount.touched || storage_amount.dirty)\">\n                                    Storage amount is required\n                                </div>\n                            </div>\n                            <div class=\"form-group pb-3\">\n                                <label for=\"unit\">Storage Unit:</label>\n                                <select formControlName=\"unit\" class=\"custom-select form-control\" [ngClass]=\"checkValid(storage_unit)\" id=\"unit\">\n                                    <option [value]=\"unit\" *ngFor=\"let unit of storage_units_list\">{{unit}}</option>\n                                </select>\n                                <div class=\"invalid-feedback\" *ngIf=\"storage_unit.errors?.required && (storage_unit.touched || storage_unit.dirty)\">\n                                    Storage unit is required\n                                </div>                         \n                            </div>\n                        </div>\n                        <button class=\"btn btn-primary\" *ngIf=\"!packEdit\">\n                            <i class=\"icon ion-plus\"></i>\n                            Add package\n                        </button>\n                        <button class=\"btn btn-success\" *ngIf=\"packEdit\">\n                            <i class=\"icon ion-checkmark-round\"></i>\n                            Update\n                        </button>\n                    </form>\n                </div>\n            </div>\n        </div>\n    </div>    \n</main>\n"
 
 /***/ }),
 
@@ -1680,19 +1720,17 @@ var PackageComponent = (function () {
         this.fb = fb;
         this.isLoading = false;
         this.packEdit = false;
+        this.trialDays = null;
+        this.hasTrial = false;
         this.name = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required);
-        this.monthly_pricing = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required);
-        this.yearly_pricing = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null);
-        this.currency = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required);
-        this.details = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null);
         this.storage_amount = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required);
         this.storage_unit = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required);
-        this.trialPeriod = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](15);
+        this.description = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required);
     }
     PackageComponent.prototype.ngOnInit = function () {
         var _this = this;
         this.currencies = ['USD', 'CAD', 'GBP', 'INR', 'EUR', 'YEN'];
-        this.storage_units_list = ['Mb', 'Gb', 'MB', 'GB'];
+        this.storage_units_list = ['Mb', 'Gb'];
         this.route.params.subscribe(function (params) {
             if (params['id']) {
                 _this.initEditPack(params['id']);
@@ -1700,21 +1738,52 @@ var PackageComponent = (function () {
         });
         this.packForm = this.fb.group({
             name: this.name,
-            pricing: this.fb.group({
-                monthly: this.fb.group({
-                    pay: this.monthly_pricing,
-                }),
-                annually: this.fb.group({
-                    pay: this.yearly_pricing,
-                }),
-                currency: this.currency
-            }),
+            description: this.description,
+            type: ['INFINITE', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required],
+            payment_definitions: this.fb.array([this.init_payment_def()]),
             storage: this.fb.group({
                 amount: this.storage_amount,
                 unit: this.storage_unit
+            })
+        });
+    };
+    PackageComponent.prototype.init_payment_def = function () {
+        return this.fb.group({
+            name: ['Monthly plan', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required],
+            type: ['REGULAR', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required],
+            frequency: ['MONTH', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required],
+            amount: this.fb.group({
+                value: ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required],
+                currency: ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required]
             }),
-            details: this.details,
-            trialPeriod: this.trialPeriod
+            cycles: [null],
+            frequency_interval: [1, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required]
+        });
+    };
+    PackageComponent.prototype.addTrialPeriod = function () {
+        this.hasTrial = true;
+        var control = this.packForm.controls['payment_definitions'];
+        control.push(this.fb.group({
+            name: ['Trial plan', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required],
+            type: ['TRIAL', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required],
+            frequency: ['DAY', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required],
+            amount: this.fb.group({
+                value: ['0', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required],
+                currency: ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required]
+            }),
+            cycles: [null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required],
+            frequency_interval: ['1', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required]
+        }));
+    };
+    PackageComponent.prototype.removeTrial = function () {
+        this.hasTrial = false;
+        var control = this.packForm.controls['payment_definitions'];
+        control.removeAt(1);
+    };
+    PackageComponent.prototype.setTrialPeriod = function (e, payment) {
+        payment.patchValue({
+            frequency_interval: e.target.value,
+            cycles: e.target.value
         });
     };
     PackageComponent.prototype.initEditPack = function (packId) {
@@ -1735,23 +1804,39 @@ var PackageComponent = (function () {
         });
     };
     PackageComponent.prototype.setFormValues = function (pack) {
+        if (pack.payment_definitions.length > 1) {
+            this.addTrialPeriod();
+            this.trialDays = pack.payment_definitions[1].cycles;
+        }
         this.packForm.setValue({
             name: pack.name,
-            pricing: pack.pricing,
+            description: pack.description,
+            payment_definitions: pack.payment_definitions,
+            type: pack.type,
             storage: pack.storage,
-            details: pack.details,
-            trialPeriod: pack.trialPeriod
         }, {
             emitEvent: false
         });
     };
     PackageComponent.prototype.submitPackForm = function () {
         var _this = this;
+        if (this.hasTrial) {
+            var payment = this.packForm.controls.payment_definitions;
+            for (var i = 0; i < payment.controls.length; i++) {
+                if (i > 0) {
+                    var pay = payment.controls[i].controls.amount.controls.currency;
+                    var regularPay = payment.controls[0].value.amount.currency;
+                    pay.setValue(regularPay);
+                }
+            }
+        }
         if (this.packForm.invalid) {
             // show errors
             Object.keys(this.packForm.controls).forEach(function (field) {
                 var control = _this.packForm.get(field);
-                console.log(control);
+                if (control.invalid) {
+                    console.log(control);
+                }
                 control.markAsTouched({ onlySelf: true });
             });
             return;
@@ -1766,7 +1851,7 @@ var PackageComponent = (function () {
     PackageComponent.prototype.updatePackage = function () {
         var _this = this;
         this.isLoading = true;
-        this.packSer.updatePackage(this.currPack._id, this.packForm.value).subscribe(function (res) {
+        this.packSer.updatePackage(this.currPack._id, this.currPack.paypal_id, this.packForm.value).subscribe(function (res) {
             _this.isLoading = false;
             if (res.success) {
                 _this.currPack = res.package;
@@ -1786,6 +1871,7 @@ var PackageComponent = (function () {
             _this.isLoading = false;
             if (res.success) {
                 _this.packForm.reset();
+                _this.removeTrial();
                 _this.toastr.success('New package added!', 'Success');
                 _this.currPack = null;
             }
@@ -1991,7 +2077,12 @@ var QrLoginComponent = (function () {
                     if (res.success) {
                         _this.auth.storeUserData(res.user, data.authToken, true);
                         _this.toastr.success('Login successful!', 'Success');
-                        _this.router.navigate(['session-qr']);
+                        if (_this.auth.hasSub()) {
+                            _this.router.navigate(['session-qr']);
+                        }
+                        else {
+                            _this.router.navigate(['/pricing']);
+                        }
                     }
                     else {
                         _this.toastr.error(res.msg, 'Error');
@@ -2295,7 +2386,7 @@ var ResetPasswordComponent = (function () {
 /***/ "../../../../../src/app/select-pack/select-pack.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"pricing-header px-3 pt-md-5 pb-md-4 mx-auto text-center\" *ngIf=\"auth.customerLogin() && currPack\">\n    <h1 class=\"display-4\">Current Package</h1>\n</div>\n<pre>{{currPack | json}}</pre>\n<div class=\"container\" *ngIf=\"auth.customerLogin() && currPack\">\n    <div class=\"card mb-4 box-shadow\">\n        <div class=\"card-header\">\n            <h4 class=\"my-0 font-weight-normal\">{{currPack.name}}</h4>\n        </div>\n        <div class=\"card-body\">\n            <h2 class=\"card-title pricing-card-title\">{{currPack.pricing.monthly.pay | currency: currPack.pricing.currency}} <small class=\"text-muted\">/ mo</small></h2>\n            <h4 class=\"card-title pricing-card-title\">{{currPack.pricing.annually.pay | currency: currPack.pricing.currency}} <small class=\"text-muted\">/ yr</small></h4>\n            <ul class=\"list-unstyled mt-3 mb-4\">\n                <li *ngFor=\"let detail of currPack.details\">{{detail}}</li>\n            </ul>\n            <button type=\"button\" class=\"btn btn-lg btn-warning btn-block btn-outline-primary\" *ngIf=\"!userSubsciption?.isTrial\" (click)=\"cancelSub()\">\n                <i class=\"icon ion-close\" style=\"font-size: 24px\"></i> Cancel Subscription\n            </button>\n            <button type=\"button\" class=\"btn btn-lg btn-primary\" *ngIf=\"userSubsciption?.isTrial\" (click)=\"purchaseTrial()\">\n                <i class=\"icon ion-ios-cart\" style=\"font-size: 24px\"></i> Purchase<br/><p class=\"text-muted small-btn-text\">(Your trial expires in {{trialExpires}} days</p> \n            </button>\n        </div>\n    </div>\n</div>\n<div class=\"pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center\">\n    <h1 class=\"display-4\" *ngIf=\"!auth.loggedIn()\">Our Packages</h1>\n    <p class=\"lead\" *ngIf=\"!auth.loggedIn()\">Select from the following packages tailored to suit the needs of customers at every level.</p>\n    <h1 class=\"display-4\" *ngIf=\"auth.customerLogin() && currPack\">Change Package</h1>\n    <h1 class=\"display-4\" *ngIf=\"auth.customerLogin()&&!currPack\">Choose Package</h1>\n    <p class=\"lead\" *ngIf=\"auth.customerLogin()\">Your selected package will be applicable from the moment of your purchase</p>\n</div>\n<div class=\"container\">\n    <div class=\"card-deck mb-3 text-center\">\n        <div class=\"card mb-4 box-shadow\" *ngFor=\"let pack of packList\">\n            <div class=\"card-header\">\n                <h4 class=\"my-0 font-weight-normal\">{{pack.name}}</h4>\n            </div>\n            <div class=\"card-body\">\n                <h2 class=\"card-title pricing-card-title\">{{pack.pricing.monthly.pay | currency: pack.pricing.currency}} <small class=\"text-muted\">/ mo</small></h2>\n                <h4 class=\"card-title pricing-card-title\">{{pack.pricing.annually.pay | currency: pack.pricing.currency}} <small class=\"text-muted\">/ yr</small></h4>\n                <ul class=\"list-unstyled mt-3 mb-4\">\n                    <li *ngFor=\"let detail of pack.details\">{{detail}}</li>\n                </ul>\n                <button type=\"button\" class=\"btn btn-lg btn-block btn-outline-primary\" (click)=\"handlePurchase(pack)\">\n                    <i class=\"icon ion-ios-cart\" style=\"font-size: 24px\"></i> {{buyBtnText}}\n                </button>\n                <button type=\"button\" class=\"btn btn-link\" *ngIf=\"pack.trialPeriod\" (click)=\"handleTryFree(pack)\">Try free for {{pack.trialPeriod}} days</button>\n            </div>\n        </div>\n    </div>\n</div>"
+module.exports = "<ngx-loading [show]=\"isLoading\"></ngx-loading>\n\n<div class=\"pricing-header px-3 pt-md-5 pb-md-4 mx-auto text-center\" *ngIf=\"auth.customerLogin() && currPack\">\n    <h1 class=\"display-4\">Current Package</h1>\n</div>\n<div class=\"container\" *ngIf=\"auth.customerLogin() && currPack\">\n    <div class=\"card mb-4 box-shadow\">\n        <div class=\"card-header\">\n            <h4 class=\"my-0 font-weight-normal text-center\">{{currPack.name}}</h4>\n        </div>\n        <div class=\"card-body\">\n            <div *ngFor=\"let pay of currPack.payment_definitions\">\n                <h2 class=\"card-title pricing-card-title text-center\" *ngIf=\"pay.frequency==='MONTH'\">{{pay.amount.value | currency: pay.amount.currency}} <small class=\"text-muted\">/ mo</small></h2>\n                <h2 class=\"card-title pricing-card-title\" *ngIf=\"pay.frequency==='YEAR'\">{{pay.amount.value | currency: pay.amount.currency}} <small class=\"text-muted\">/ yr</small></h2>\n            </div>\n            <h4 class=\"card-title pricing-card-title text-center\">\n                {{(storageConsumed/1024/1024).toFixed(2)}} Mb <small class=\"text-muted\"> / {{currPack.storage.amount}} {{currPack.storage.unit}} </small>\n            </h4>\n            <button type=\"button\" class=\"btn btn-lg btn-warning btn-block btn-outline-danger\" (click)=\"cancelSub()\">\n                <i class=\"icon ion-close\" style=\"font-size: 24px\"></i> Cancel Subscription\n            </button>\n        </div>\n    </div>\n</div>\n<div class=\"pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center\">\n    <h1 class=\"display-4\" *ngIf=\"!auth.loggedIn()\">Our Packages</h1>\n    <p class=\"lead\" *ngIf=\"!auth.loggedIn()\">Select from the following packages tailored to suit the needs of customers at every level.</p>\n    <a class=\"btn btn-success\" *ngIf=\"!auth.loggedIn()\" routerLink=\"/register\">Get started</a>\n    <h1 class=\"display-4\" *ngIf=\"auth.customerLogin() && currPack\">Change Package</h1>\n    <h1 class=\"display-4\" *ngIf=\"auth.customerLogin()&&!currPack\">Choose Package</h1>\n    <p class=\"lead\" *ngIf=\"auth.customerLogin()\">Your selected package will be applicable from the moment of your purchase</p>\n</div>\n<div class=\"container\" *ngIf=\"packList?.length\">\n    <div class=\"card-deck mb-3 text-center\" >\n        <div class=\"card mb-4 box-shadow\" *ngFor=\"let pack of packList\">\n            <div class=\"card-header\">\n                <h4 class=\"my-0 font-weight-normal\">{{pack.name}}</h4>\n            </div>\n            <div class=\"card-body\">\n                <div *ngFor=\"let pay of pack.payment_definitions\">\n                    <h2 class=\"card-title pricing-card-title\" *ngIf=\"pay.frequency==='MONTH'\">{{ pay.amount.value | currency: pay.amount.currency}} <small class=\"text-muted\">/ mo</small></h2>\n                    <h2 class=\"card-title pricing-card-title\" *ngIf=\"pay.frequency==='YEAR'\">{{pay.amount.value | currency: pay.amount.currency}} <small class=\"text-muted\">/ yr</small></h2>\n                    <h5 *ngIf=\"pay.type === 'TRIAL'\">\n                        Trial days: {{pay.cycles}}\n                    </h5>\n                </div>\n                <h4 class=\"card-title pricing-card-title text-center\">\n                    {{pack.storage.amount}} {{pack.storage.unit}}\n                </h4>                \n                <button class=\"btn btn-lg btn-block btn-outline-primary\" *ngIf=\"auth.customerLogin()\" (click)=\"handlePurchase(pack)\">\n                    <i class=\"icon ion-ios-cart\" style=\"font-size: 24px\"></i> {{buyBtnText}}\n                </button>\n            </div>\n        </div>\n    </div>\n</div>"
 
 /***/ }),
 
@@ -2307,7 +2398,7 @@ exports = module.exports = __webpack_require__("../../../../css-loader/lib/css-b
 
 
 // module
-exports.push([module.i, ".container {\n  max-width: 960px; }\n\n.pricing-header {\n  max-width: 700px; }\n\n.card-deck .card {\n  min-width: 220px; }\n\n.border-top {\n  border-top: 1px solid #e5e5e5; }\n\n.border-bottom {\n  border-bottom: 1px solid #e5e5e5; }\n\n.box-shadow {\n  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05); }\n", ""]);
+exports.push([module.i, ".container {\n  max-width: 960px; }\n\n.pricing-header {\n  max-width: 700px; }\n\n.card-deck .card {\n  min-width: 220px; }\n\n.pricing-header .btn {\n  padding: .75rem 1.5rem;\n  font-size: 1.5rem; }\n\n.border-top {\n  border-top: 1px solid #e5e5e5; }\n\n.border-bottom {\n  border-bottom: 1px solid #e5e5e5; }\n\n.box-shadow {\n  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05); }\n", ""]);
 
 // exports
 
@@ -2348,24 +2439,50 @@ var SelectPackComponent = (function () {
         this.auth = auth;
         this.router = router;
         this.route = route;
-        this.buyBtnText = 'Sign up';
+        // public didPaypalScriptLoad: boolean = false;
+        // public loading: boolean = true;
+        this.isLoading = false;
+        this.buyBtnText = 'Purchase';
     }
     SelectPackComponent.prototype.ngOnInit = function () {
         var _this = this;
-        if (this.auth.getCurrentUser()) {
-            this.buyBtnText = 'Purchase';
-            this.userSubscription = this.auth.getCurrentUser().subscription;
-        }
+        this.route.queryParamMap.subscribe(function (params) {
+            if (params.get('paypal_approve') && params.get('token')) {
+                _this.isLoading = true;
+                _this.packSer.executeAgreement(params.get('token'), params.get('pack_id')).subscribe(function (res) {
+                    _this.isLoading = false;
+                    if (res.success) {
+                        _this.toastr.success('Subscription is activated!', 'Success');
+                        _this.auth.updateSubscription(res.userSubscription);
+                        if (_this.currPack)
+                            _this.packList.push(_this.currPack);
+                        var subIndex = -1;
+                        subIndex = _this.packList.findIndex(function (pack) { return pack._id === params.get('pack_id'); });
+                        if (subIndex !== -1) {
+                            _this.currPack = _this.packList.splice(subIndex, 1)[0];
+                        }
+                        _this.router.navigate(['/pricing'], { queryParams: {} });
+                    }
+                    else {
+                        _this.toastr.error(res.msg, 'Error');
+                    }
+                }, function (error) {
+                    _this.isLoading = false;
+                });
+            }
+        });
         this.packSer.listPackages().subscribe(function (res) {
             if (res.success) {
                 _this.packList = res.packages;
-                var currPackIndex = void 0;
-                if (_this.auth.getCurrentUser() && _this.auth.getCurrentUser().subscription)
-                    currPackIndex = _this.packList.findIndex(function (pack) { return pack._id == _this.auth.getCurrentUser().subscription.packageId; });
-                if (currPackIndex) {
-                    _this.currPack = _this.packList.splice(currPackIndex, 1);
-                    if (_this.userSubscription.isTrial) {
-                        _this.trialExpires = _this.currPack.trialPeriod - (Date.now() - _this.userSubscription.startDate) / 1000 / 86400;
+                var currPackIndex = -1;
+                if (_this.auth.loggedIn()) {
+                    _this.storageConsumed = _this.auth.getCurrentUser().storageConsumed;
+                    var sub_1 = _this.auth.getCurrentUser().subscription;
+                    if (sub_1)
+                        currPackIndex = _this.packList.findIndex(function (pack) { return pack._id === sub_1.packageId; });
+                    console.log(currPackIndex);
+                    if (currPackIndex != -1) {
+                        _this.currPack = _this.packList.splice(currPackIndex, 1)[0];
                     }
                 }
             }
@@ -2374,29 +2491,47 @@ var SelectPackComponent = (function () {
             }
         });
     };
-    SelectPackComponent.prototype.handleTryFree = function (pack) {
-        console.log('Try free: ', pack);
-        if (this.auth.loggedIn()) {
-            this.auth.changeSubscription(pack, true);
-        }
-        else {
-            this.router.navigate(['/register'], { queryParams: { pack: pack._id, trial: true } });
-        }
-    };
     SelectPackComponent.prototype.handlePurchase = function (pack) {
+        var _this = this;
         console.log('Purchase pack: ', pack);
         if (this.auth.loggedIn()) {
-            this.auth.changeSubscription(pack, false);
+            console.log('here');
+            this.isLoading = true;
+            this.packSer.createAgreement(pack).subscribe(function (res) {
+                _this.isLoading = false;
+                if (res.success) {
+                    if (res.redirect) {
+                        window.location.href = res.redirect;
+                    }
+                }
+                else {
+                    _this.toastr.error(res.msg, 'Error');
+                }
+            }, function (error) {
+                _this.isLoading = false;
+            });
         }
         else {
             this.router.navigate(['/register'], { queryParams: { pack: pack._id, trial: false } });
         }
     };
-    SelectPackComponent.prototype.purchaseTrial = function () {
-        console.log('Purchase trial: ', this.currPack);
-    };
     SelectPackComponent.prototype.cancelSub = function () {
+        var _this = this;
         console.log('Cancel subsciption: ', this.currPack);
+        this.isLoading = true;
+        this.packSer.cancelSubscription(this.currPack).subscribe(function (res) {
+            _this.isLoading = false;
+            if (res.success) {
+                _this.packList.unshift(_this.currPack);
+                _this.currPack = null;
+                _this.auth.updateSubscription(null);
+            }
+            else {
+                _this.toastr.error(res.msg, 'Error');
+            }
+        }, function (error) {
+            _this.isLoading = false;
+        });
     };
     SelectPackComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
@@ -2647,7 +2782,8 @@ var AuthGuard = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_ng_socket_io__ = __webpack_require__("../../../../ng-socket-io/dist/index.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_ng_socket_io___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_ng_socket_io__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__http_interceptor__ = __webpack_require__("../../../../../src/app/shared/http-interceptor.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__environments_environment__ = __webpack_require__("../../../../../src/environments/environment.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_ngx_toastr__ = __webpack_require__("../../../../ngx-toastr/toastr.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__environments_environment__ = __webpack_require__("../../../../../src/environments/environment.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -2664,25 +2800,39 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 var AuthService = (function () {
-    function AuthService(http, socket) {
+    function AuthService(http, socket, toastr) {
+        var _this = this;
         this.http = http;
         this.socket = socket;
+        this.toastr = toastr;
         this.headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["Headers"]();
         this.authToken = localStorage.getItem('id_token') || null;
         this.currentUser = JSON.parse(localStorage.getItem('user')) || null;
         this.isScanned = this.currentUser ? this.currentUser.isScanned : null;
-        this.authUrl = __WEBPACK_IMPORTED_MODULE_6__environments_environment__["a" /* environment */].baseUrl + '/users/';
+        this.authUrl = __WEBPACK_IMPORTED_MODULE_7__environments_environment__["a" /* environment */].baseUrl + '/users/';
+        this.baseUrl = __WEBPACK_IMPORTED_MODULE_7__environments_environment__["a" /* environment */].baseUrl + '/';
+        this.userAgreement = null;
         this.headers.append('Content-type', 'application/json');
-        this.headers.append('Authorization', this.getAuthToken());
+        if (this.getAuthToken()) {
+            this.headers.append('Authorization', this.getAuthToken());
+            this.getAgreement().subscribe(function (res) {
+                if (res.success) {
+                    if (res.agreement) {
+                        _this.checkTrial(res.agreement);
+                    }
+                }
+            });
+        }
     }
     AuthService.prototype.authenticateUser = function (creds) {
         return this.http.post(this.authUrl + 'authenticate', creds, { headers: this.headers })
-            .map(function (res) { return res.json(); }, function (err) { return console.log(err); });
+            .map(function (res) { return res.json(); });
     };
     AuthService.prototype.registerUser = function (credentials) {
         return this.http.post(this.authUrl + 'register', credentials, { headers: this.headers })
-            .map(function (res) { return res.json(); }, function (err) { return console.log(err); });
+            .map(function (res) { return res.json(); });
     };
     AuthService.prototype.validateUsername = function (username) {
         return this.http.post(this.authUrl + 'check_username', { username: username })
@@ -2695,6 +2845,23 @@ var AuthService = (function () {
         this.currentUser = user;
         this.isScanned = isScanned ? true : false;
         console.log(this.currentUser);
+        this.headers.append('Authorization', token);
+    };
+    AuthService.prototype.checkTrial = function (agreement) {
+        this.userAgreement = agreement;
+        console.log(agreement);
+        var trialDays = agreement.agreement_details.cycles_remaining;
+        var completed = agreement.agreement_details.cycles_completed;
+        var plan = agreement.plan;
+        var trialpay = plan.payment_definitions.find(function (pay) { return pay.type.toUpperCase() === 'TRIAL'; });
+        console.log('trial pay', trialpay);
+        console.log('trialdays: ', trialDays);
+        if (trialDays && plan.payment_definitions.length > 1 && trialpay && completed < trialpay.cycles) {
+            this.toastr.warning('Your trial ends in ' + trialDays + ' days. The subscription will be automatically initiated once trial ends.');
+        }
+    };
+    AuthService.prototype.produceAgreement = function () {
+        return this.userAgreement;
     };
     AuthService.prototype.getCurrentUser = function () {
         return JSON.parse(localStorage.getItem('user'));
@@ -2705,17 +2872,41 @@ var AuthService = (function () {
     AuthService.prototype.getUserById = function (userId) {
         return this.http.post(this.authUrl + 'getUserById', { userId: userId }).map(function (res) { return res.json(); });
     };
-    AuthService.prototype.hasActiveSub = function () {
+    AuthService.prototype.getAgreement = function () {
+        var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["Headers"]();
+        headers.append('Authorization', this.getAuthToken());
         if (this.currentUser.subscription && this.currentUser.subscription.packageId) {
-            // return this.http.get(this.authUrl+'checkSubscription', {headers: this.headers})
-            //   .map(res => res.json());
-            return __WEBPACK_IMPORTED_MODULE_2_rxjs_Rx__["a" /* Observable */].of({ success: true, hasSub: true });
+            return this.http.post(this.baseUrl + 'package/get_agreement', { agreementId: this.currentUser.subscription.billingAgreementId }, { headers: headers })
+                .map(function (res) { return res.json(); });
         }
-        return __WEBPACK_IMPORTED_MODULE_2_rxjs_Rx__["a" /* Observable */].of({ success: true, hasSub: false });
+        else {
+            return __WEBPACK_IMPORTED_MODULE_2_rxjs_Rx__["a" /* Observable */].of({ success: true, agreement: null });
+        }
+    };
+    AuthService.prototype.hasActiveSub = function () {
+        return __WEBPACK_IMPORTED_MODULE_2_rxjs_Rx__["a" /* Observable */].of({ success: true, hasSub: this.userAgreement ? (this.userAgreement.state == 'Active') : false });
+    };
+    AuthService.prototype.hasSub = function () {
+        return this.userAgreement ? this.userAgreement.state == 'Active' : false;
     };
     AuthService.prototype.changeSubscription = function (packId, isTrial) {
         return this.http.post(this.authUrl + '/changeSubscription', { packageId: packId, isTrial: isTrial }, { headers: this.headers })
             .map(function (res) { return res.json(); });
+    };
+    AuthService.prototype.updateSubscription = function (sub) {
+        var _this = this;
+        this.currentUser.subscription = sub;
+        if (!sub) {
+            this.userAgreement = null;
+        }
+        else {
+            this.getAgreement().subscribe(function (res) {
+                if (res.success && res.agreement) {
+                    _this.checkTrial(res.agreement);
+                }
+            });
+        }
+        localStorage.setItem('user', JSON.stringify(this.currentUser));
     };
     AuthService.prototype.scannedLogIn = function () {
         return this.isScanned;
@@ -2732,21 +2923,21 @@ var AuthService = (function () {
     AuthService.prototype.customerLogin = function () {
         return this.loggedIn() && !this.adminLogIn();
     };
+    AuthService.prototype.updateStorage = function (size, opt) {
+        if (opt.add) {
+            this.currentUser.storageConsumed += size;
+        }
+        else {
+            this.currentUser.storageConsumed -= size;
+        }
+        localStorage.setItem('user', JSON.stringify(this.currentUser));
+    };
     AuthService.prototype.generateQr = function (timestamp) {
         return this.http.post(this.authUrl + 'generate-qr', { timestamp: timestamp })
             .map(function (res) { return res.json(); }, function (err) {
             console.log(err);
         });
     };
-    // checkQr(tokenId) {
-    //   return this.http.post(this.authUrl + 'check-qr', {tokenId: tokenId})
-    //       .map(
-    //         res => res.json(),
-    //         err => {
-    //           console.log(err);
-    //         }
-    //       );
-    // }
     AuthService.prototype.checkQr = function (tokenId) {
         return this.socket.fromEvent('user-login');
     };
@@ -2776,7 +2967,7 @@ var AuthService = (function () {
     };
     AuthService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_5__http_interceptor__["a" /* HttpInterceptor */], __WEBPACK_IMPORTED_MODULE_4_ng_socket_io__["Socket"]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_5__http_interceptor__["a" /* HttpInterceptor */], __WEBPACK_IMPORTED_MODULE_4_ng_socket_io__["Socket"], __WEBPACK_IMPORTED_MODULE_6_ngx_toastr__["b" /* ToastrService */]])
     ], AuthService);
     return AuthService;
 }());
@@ -2858,7 +3049,11 @@ var CategoryService = (function () {
     };
     CategoryService.prototype.storeMailing = function (credentials) {
         return this.http.post(this.baseUrl + 'admin/storemailer', credentials, { headers: this.headers })
-            .map(function (res) { return res.json(); }, function (err) { return console.log(err); });
+            .map(function (res) { return res.json(); });
+    };
+    CategoryService.prototype.savePaypalConfig = function (config) {
+        return this.http.post(this.baseUrl + 'admin/store_paypal_config', { paypalConfig: config }, { headers: this.headers })
+            .map(function (res) { return res.json(); });
     };
     CategoryService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
@@ -2867,11 +3062,6 @@ var CategoryService = (function () {
     return CategoryService;
 }());
 
-// const IMAGES = [
-//   { "id": 1, "caption": "Grassland Deer", "url": "assets/img/deer.jpg" },
-//   { "id": 2, "caption": "A lonely Road", "url": "assets/img/road.jpg" },
-//   { "id": 3, "caption": "Mountain Top", "url": "assets/img/mountain.jpg" },
-// ];
 
 
 /***/ }),
@@ -3010,8 +3200,8 @@ var ImageService = (function () {
         return this.http.post(this.galleryUrl, { sessionId: sessionId }, { headers: this.headers })
             .map(function (res) { return res.json(); });
     };
-    ImageService.prototype.removeImage = function (id) {
-        return this.http.post(this.removeImageUrl, { fileId: id }, { headers: this.headers })
+    ImageService.prototype.removeImage = function (file) {
+        return this.http.post(this.removeImageUrl, { file: file }, { headers: this.headers })
             .map(function (res) { return res.json(); });
     };
     ImageService.prototype.updateImage = function (id, index) {
@@ -3299,18 +3489,18 @@ var LoginGuard = (function () {
         if (!this.auth.loggedIn()) {
             return true;
         }
-        else if (!this.auth.hasActiveSub()) {
-            this.router.navigate(['/pricing']);
+        else if (this.auth.produceAgreement().state !== 'Active') {
+            this.router.navigate(['/pricing'], { queryParamsHandling: 'preserve' });
         }
         else {
             if (this.auth.scannedLogIn()) {
-                this.router.navigate(['/session-qr']);
+                this.router.navigate(['/session-qr'], { queryParamsHandling: 'preserve' });
             }
             else if (this.auth.adminLogIn()) {
-                this.router.navigate(['/admin']);
+                this.router.navigate(['/admin'], { queryParamsHandling: 'preserve' });
             }
             else {
-                this.router.navigate(['/gallery']);
+                this.router.navigate(['/gallery'], { queryParamsHandling: 'preserve' });
             }
         }
     };
@@ -3413,9 +3603,21 @@ var PackageService = (function () {
         return this.http.post(this.baseUrl + 'package/getById', { packageId: packId }, { headers: this.headers })
             .map(function (res) { return res.json(); });
     };
-    PackageService.prototype.updatePackage = function (packId, pack) {
+    PackageService.prototype.updatePackage = function (packId, paypalBillingId, pack) {
         console.log('updated package', pack);
-        return this.http.post(this.baseUrl + 'package/update', { packageId: packId, package: pack }, { headers: this.headers })
+        return this.http.post(this.baseUrl + 'package/update', { packageId: packId, billingPlanId: paypalBillingId, package: pack }, { headers: this.headers })
+            .map(function (res) { return res.json(); });
+    };
+    PackageService.prototype.createAgreement = function (pack) {
+        return this.http.post(this.baseUrl + 'package/create_agreement', { package: pack }, { headers: this.headers })
+            .map(function (res) { return res.json(); });
+    };
+    PackageService.prototype.executeAgreement = function (token, packId) {
+        return this.http.post(this.baseUrl + 'package/execute_agreement', { token: token, packageId: packId }, { headers: this.headers })
+            .map(function (res) { return res.json(); });
+    };
+    PackageService.prototype.cancelSubscription = function (pack) {
+        return this.http.post(this.baseUrl + 'package/cancel_sub', { package: pack }, { headers: this.headers })
             .map(function (res) { return res.json(); });
     };
     PackageService = __decorate([
@@ -3672,14 +3874,15 @@ module.exports = module.exports.toString();
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ng2_file_upload___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_ng2_file_upload__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__shared_image_service__ = __webpack_require__("../../../../../src/app/shared/image.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__shared_category_service__ = __webpack_require__("../../../../../src/app/shared/category.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__angular_router__ = __webpack_require__("../../../router/esm5/router.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_ng2_bootstrap_modal__ = __webpack_require__("../../../../ng2-bootstrap-modal/index.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_ng2_bootstrap_modal___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_ng2_bootstrap_modal__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__popup_popup_component__ = __webpack_require__("../../../../../src/app/popup/popup.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__confirm_popup_confirm_popup_component__ = __webpack_require__("../../../../../src/app/confirm-popup/confirm-popup.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__environments_environment__ = __webpack_require__("../../../../../src/environments/environment.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_ngx_toastr__ = __webpack_require__("../../../../ngx-toastr/toastr.es5.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__shared_auth_service__ = __webpack_require__("../../../../../src/app/shared/auth.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__angular_router__ = __webpack_require__("../../../router/esm5/router.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_ng2_bootstrap_modal__ = __webpack_require__("../../../../ng2-bootstrap-modal/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_ng2_bootstrap_modal___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_ng2_bootstrap_modal__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__popup_popup_component__ = __webpack_require__("../../../../../src/app/popup/popup.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__confirm_popup_confirm_popup_component__ = __webpack_require__("../../../../../src/app/confirm-popup/confirm-popup.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__environments_environment__ = __webpack_require__("../../../../../src/environments/environment.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_ngx_toastr__ = __webpack_require__("../../../../ngx-toastr/toastr.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -3689,6 +3892,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+
 
 
 
@@ -3717,18 +3921,19 @@ var Session = (function () {
 }());
 
 var UploadComponent = (function () {
-    function UploadComponent(imageService, route, router, categoryService, dialogService, toastr) {
+    function UploadComponent(imageService, route, router, categoryService, dialogService, toastr, auth) {
         this.imageService = imageService;
         this.route = route;
         this.router = router;
         this.categoryService = categoryService;
         this.dialogService = dialogService;
         this.toastr = toastr;
+        this.auth = auth;
         // baseUrl: string = 'http://localhost:8080/';
         // baseUrl: string = 'https://ionic-node-auth.herokuapp.com/';
         this.editing = false;
         this.sessionMedia = [];
-        this.baseUrl = __WEBPACK_IMPORTED_MODULE_8__environments_environment__["a" /* environment */].baseUrl;
+        this.baseUrl = __WEBPACK_IMPORTED_MODULE_9__environments_environment__["a" /* environment */].baseUrl;
         this.uploadUrl = this.baseUrl + '/session/upload';
         this.currSession = new Session();
         this.isLoading = false;
@@ -3912,7 +4117,13 @@ var UploadComponent = (function () {
             }
         };
         this.uploader.onSuccessItem = function (item, response, status, headers) {
+            var res = JSON.parse(response);
+            if (!res.success) {
+                _this.toastr.error(res.msg, 'Error');
+                return;
+            }
             _this.sessionMedia.push(JSON.parse(response).file);
+            _this.auth.updateStorage(JSON.parse(response).file.size, { add: true });
             if (item.file.type.indexOf('image/') !== -1) {
                 var delaySub = _this.showDelayPopup(JSON.parse(response).file).subscribe(function (data) {
                     console.log(data);
@@ -3983,10 +4194,10 @@ var UploadComponent = (function () {
     };
     UploadComponent.prototype.removeImage = function (image, index) {
         var _this = this;
-        var id = image._id;
-        this.imageService.removeImage(id)
+        this.imageService.removeImage(image)
             .subscribe(function (data) {
             if (data.success) {
+                _this.auth.updateStorage(image.size, { remove: true });
                 _this.sessionMedia.splice(index, 1);
                 _this.toastr.success('Media file removed', 'Success');
             }
@@ -4015,7 +4226,7 @@ var UploadComponent = (function () {
     };
     ;
     UploadComponent.prototype.showDelayPopup = function (file) {
-        var disposable = this.dialogService.addDialog(__WEBPACK_IMPORTED_MODULE_6__popup_popup_component__["a" /* PopupComponent */], {
+        var disposable = this.dialogService.addDialog(__WEBPACK_IMPORTED_MODULE_7__popup_popup_component__["a" /* PopupComponent */], {
             title: 'Enter title and delay for image',
             message: 'Enter Delay for image: ' + file.imagetitle,
             imgTitle: file.imagetitle,
@@ -4026,7 +4237,7 @@ var UploadComponent = (function () {
         return disposable;
     };
     UploadComponent.prototype.showConfirm = function (title, message) {
-        var popup = this.dialogService.addDialog(__WEBPACK_IMPORTED_MODULE_7__confirm_popup_confirm_popup_component__["a" /* ConfirmPopupComponent */], {
+        var popup = this.dialogService.addDialog(__WEBPACK_IMPORTED_MODULE_8__confirm_popup_confirm_popup_component__["a" /* ConfirmPopupComponent */], {
             title: title,
             message: message
         });
@@ -4081,7 +4292,7 @@ var UploadComponent = (function () {
     };
     __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["ViewChild"])('f'),
-        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_10__angular_forms__["i" /* NgForm */])
+        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_11__angular_forms__["i" /* NgForm */])
     ], UploadComponent.prototype, "sessionForm", void 0);
     UploadComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
@@ -4090,11 +4301,12 @@ var UploadComponent = (function () {
             styles: [__webpack_require__("../../../../../src/app/upload/upload.component.scss")]
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2__shared_image_service__["a" /* ImageService */],
-            __WEBPACK_IMPORTED_MODULE_4__angular_router__["a" /* ActivatedRoute */],
-            __WEBPACK_IMPORTED_MODULE_4__angular_router__["b" /* Router */],
+            __WEBPACK_IMPORTED_MODULE_5__angular_router__["a" /* ActivatedRoute */],
+            __WEBPACK_IMPORTED_MODULE_5__angular_router__["b" /* Router */],
             __WEBPACK_IMPORTED_MODULE_3__shared_category_service__["a" /* CategoryService */],
-            __WEBPACK_IMPORTED_MODULE_5_ng2_bootstrap_modal__["DialogService"],
-            __WEBPACK_IMPORTED_MODULE_9_ngx_toastr__["b" /* ToastrService */]])
+            __WEBPACK_IMPORTED_MODULE_6_ng2_bootstrap_modal__["DialogService"],
+            __WEBPACK_IMPORTED_MODULE_10_ngx_toastr__["b" /* ToastrService */],
+            __WEBPACK_IMPORTED_MODULE_4__shared_auth_service__["a" /* AuthService */]])
     ], UploadComponent);
     return UploadComponent;
 }());
