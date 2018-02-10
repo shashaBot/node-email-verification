@@ -50,7 +50,7 @@ router.post('/register', (req, res, next) => {
               secure: creds.tls
             }    
             var transporter = nodemailer.createTransport(smtpConfig);
-            var mailOptions = { from: creds.mailerId || 'no-reply@email-verify-app.com', to: user.email, subject: 'Please verify your email', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \n' + req.headers.origin + '\/login\/' + email_verify_token.token + '.\n' };
+            var mailOptions = { from: creds.mailerId || 'no-reply@email-verify-app.com', to: user.email, subject: 'Please verify your email', text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \n' + process.env.DOMAIN + '\/login\/' + email_verify_token.token + '.\n' };
             transporter.sendMail(mailOptions, function (err) {
               if (err) { return res.json({success: false, msg: err.message }); }
               res.json({success: true, msg:'A verification email has been sent to ' + user.email + '.'});
