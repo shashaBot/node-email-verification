@@ -46,6 +46,14 @@ router.post('/add', passport.authenticate('jwt', {session: false}), checkAdmin()
 router.post('/remove', passport.authenticate('jwt', {session: false}), checkAdmin(), (req, res) => {
 	Package.removePackage(req.body.packageId, (err, removed) => {
 		if(err) return res.json({success: false, msg: 'Error in removing package!'});
+		User.find({'subscription.packageId': removed._id}, (err, users) => {
+			if(err) console.log(err);
+			console.log('users with package: ', users);
+			users.forEach((user, index) => {
+				user.subscription = null;
+				user.save();
+			})
+		})
 		return res.json({success: true, removedPackage: removed});
 	})
 })

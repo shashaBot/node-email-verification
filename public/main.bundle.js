@@ -2210,13 +2210,6 @@ var RegisterComponent = (function () {
         });
     }
     RegisterComponent.prototype.ngOnInit = function () {
-        var _this = this;
-        this.route.queryParamMap.subscribe(function (params) {
-            _this.userSubscription = {
-                packageId: params.get('pack'),
-                isTrial: params.get('trial')
-            };
-        });
     };
     RegisterComponent.prototype.onRegister = function () {
         var _this = this;
@@ -2227,7 +2220,7 @@ var RegisterComponent = (function () {
             email: this.registerForm.value.email,
             password: this.registerForm.value.password,
             name: this.registerForm.value.name,
-            subscription: this.userSubscription
+            subscription: null
         };
         this.isLoading = true;
         this.authService.registerUser(credentials)
@@ -3665,7 +3658,7 @@ var PackageService = (function () {
 /***/ "../../../../../src/app/slideshow/slideshow.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"\">\n\t<div class=\"player-div\">\n\t\t<vg-player (onPlayerReady)=\"onPlayerReady($event)\">\n\t\t\t<video [hidden]=\"!vPlayer\" [vgMedia]=\"media\" autoplay (ended)=\"myAddListener()\" #media id=\"singleVideo\" preload=\"auto\" controls crossorigin=\"use-credentials\">\n\t\t\t\t<source src=\"\" type=\"video/mp4\">\n\t\t\t</video>\n\t\t</vg-player>\n\t\t<div *ngIf=\"api?.fsAPI?.isFullscreen\" [hidden]=\"vPlayer\" class=\"image-player\">\n\t\t\t<img style=\"min-height:100%;min-width:100%;\" crossorigin=\"use-credentials\">\n\t\t\t<h2 class=\"image-text\" [ngStyle]=\"{'color': titleColor, 'font-size': titleSize+'px', 'font-family': titleFont}\">{{imageTitle}}</h2>\n\t\t</div>\n\t\t<div *ngIf=\"!api?.fsAPI?.isFullscreen\" [hidden]=\"vPlayer\" class=\"image-player-2\">\n\t\t\t<img style=\"min-height:100%;min-width:100%;\" crossorigin=\"use-credentials\">\n\t\t\t<h2 class=\"image-text\" [ngStyle]=\"{'color': titleColor, 'font-size': titleSize+'px', 'font-family': titleFont}\">{{imageTitle}}</h2>\n\t\t</div>\t\t\n\t\t<button *ngIf=\"visibleImages.length != 0\" type=\"button\" class=\"btn btn-danger btn-big btn-warning\" id=\"stop-btn\" (click)=\"stopPlayer()\">\n\t\t\t<span class=\"glyphicon glyphicon-stop\"></span> Stop\n\t\t</button>\n\t</div>\n</div>\n"
+module.exports = "<div class=\"\">\n\t<div class=\"\">\n\t\t<vg-player (onPlayerReady)=\"onPlayerReady($event)\">\n\t\t\t<video [hidden]=\"!vPlayer\" [vgMedia]=\"media\" autoplay (ended)=\"myAddListener()\" #media id=\"singleVideo\" preload=\"auto\" controls crossorigin=\"use-credentials\">\n\t\t\t\t<source src=\"\" type=\"video/mp4\">\n\t\t\t</video>\n\t\t\t<div [hidden]=\"vPlayer\" class=\"image-player\">\n\t\t\t\t<img style=\"min-height:100%;min-width:100%;\" crossorigin=\"use-credentials\">\n\t\t\t\t<h2 class=\"image-text\">{{imageTitle}}</h2>\n\t\t\t</div>\n\t\t</vg-player>\n\t\t<button *ngIf=\"visibleImages.length != 0\" type=\"button\" class=\"btn btn-danger btn-big btn-warning\" id=\"stop-btn\" (click)=\"stopPlayer()\">\n\t\t\t<span class=\"glyphicon glyphicon-stop\"></span> Stop\n\t\t</button>\n\t</div>\n</div>\n"
 
 /***/ }),
 
@@ -3677,7 +3670,7 @@ exports = module.exports = __webpack_require__("../../../../css-loader/lib/css-b
 
 
 // module
-exports.push([module.i, "ul {\n  padding: 0;\n  margin: 20px auto; }\n\n.player-div {\n  background-color: black; }\n\n.image-player img {\n  min-width: 100%;\n  min-height: 100%;\n  max-width: 100%;\n  max-height: 100%; }\n\n.image-player-2 img {\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  width: auto;\n  max-width: 100%;\n  max-height: 100%;\n  -webkit-transform: translate3d(-50%, -50%, 0);\n          transform: translate3d(-50%, -50%, 0); }\n\n.image-text {\n  position: absolute; }\n\n.top-left-justified {\n  top: 50px;\n  left: 10px; }\n\n.top-right-justified {\n  top: 50px;\n  right: 10px; }\n\n.top-center-justified {\n  top: 50px;\n  left: 50%;\n  -webkit-transform: translateX(-50%);\n          transform: translateX(-50%); }\n\n.bottom-left-justified {\n  bottom: 50px;\n  left: 10px; }\n\n.bottom-right-justified {\n  bottom: 50px;\n  right: 10px; }\n\n.bottom-center-justified {\n  bottom: 50px;\n  left: 50%;\n  -webkit-transform: translateX(-50%);\n          transform: translateX(-50%); }\n\nvg-player video {\n  max-height: 100vh; }\n\nbutton#stop-btn {\n  position: absolute;\n  right: 10px;\n  top: 15px;\n  height: 3rem;\n  opacity: 0.6; }\n  button#stop-btn:hover {\n    opacity: 1; }\n", ""]);
+exports.push([module.i, "ul {\n  padding: 0;\n  margin: 20px auto; }\n\n.image-player {\n  position: relative;\n  width: 100%;\n  /* for IE 6 */ }\n  .image-player img {\n    position: relative;\n    width: 100vw;\n    height: auto;\n    max-height: 100vh; }\n\nvideo::-webkit-media-controls-fullscreen-button {\n  display: none; }\n\n.image-text {\n  position: absolute; }\n\n.top-left-justified {\n  top: 50px;\n  left: 10px; }\n\n.top-right-justified {\n  top: 50px;\n  right: 10px; }\n\n.top-center-justified {\n  top: 50px;\n  left: 50%;\n  -webkit-transform: translateX(-50%);\n          transform: translateX(-50%); }\n\n.bottom-left-justified {\n  bottom: 50px;\n  left: 10px; }\n\n.bottom-right-justified {\n  bottom: 50px;\n  right: 10px; }\n\n.bottom-center-justified {\n  bottom: 50px;\n  left: 50%;\n  -webkit-transform: translateX(-50%);\n          transform: translateX(-50%); }\n\nvg-player video {\n  max-height: 100vh; }\n\nbutton#stop-btn {\n  position: absolute;\n  right: 10px;\n  top: 15px;\n  height: 3rem;\n  opacity: 0.6; }\n  button#stop-btn:hover {\n    opacity: 1; }\n", ""]);
 
 // exports
 
