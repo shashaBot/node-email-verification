@@ -247,6 +247,12 @@ router.post('/getSession', passport.authenticate('jwt', {session: false}), (req,
   })
 })
 
+router.get('/getColorsFonts', passport.authenticate('jwt', {session: false}), (req, res) => {
+  Img.getColors(data => {
+    res.json({success: true, colors: data.colors, fonts: data.fonts, align: data.align})
+  })
+})
+
 router.post('/view', passport.authenticate('jwt', {session: false}), (req, res, next) => {
   Img.getImagesBySessionId(req.body.sessionId, (err, files) => {
     if(err) return res.json({success: false, msg: 'Error in fetching files!', error: err})

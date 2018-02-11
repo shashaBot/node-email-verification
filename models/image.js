@@ -48,10 +48,23 @@ const ImageSchema = mongoose.Schema({
   },
   titleAlign: {
     type: String,
-    default: 'tl'
+    enum: ['top-left-justified', 'top-center-justified', 'top-right-justified', 'bottom-left-justified', 'bottom-center-justified', 'bottom-right-justified'],
+    default: 'top-left-justified',
+    required: true
   },
   titleSize: {
     type: String,
+    required: false
+  },
+  titleColor: {
+    type: String,
+    enum: ['red', 'blue', 'black', 'white'],
+    default: 'black',
+    required: true
+  },
+  titleFont: {
+    type: String,
+    enum: ['Arial', 'Helvetica', 'Times New Roman', 'Times', 'Courier New', 'Courier', 'Verdana', 'Georgia', 'Palatino', 'Garamond', 'Bookman'],
     required: false
   }
 });
@@ -121,4 +134,13 @@ module.exports.updateDelay = (imageId, delay, callback) => {
 module.exports.updateMedia = (imageId, update, callback) => {
   console.log(update);
   Img.findByIdAndUpdate(imageId, update, {new: true}, callback);
+}
+
+module.exports.getColors = (callback) => {
+  let colors = Img.schema.path('titleColor').enumValues;
+  let fonts = Img.schema.path('titleFont').enumValues;
+  let align = Img.schema.path('titleAlign').enumValues;
+  console.log(Img.schema.path('titleColor').enumValues);
+  console.log(Img.schema.path('titleFont').enumValues);
+  callback({colors: colors, fonts: fonts, align: align});
 }

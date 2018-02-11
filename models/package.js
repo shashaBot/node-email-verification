@@ -161,7 +161,8 @@ module.exports.updatePackage = (packageId, billingPlanId, updates, callback) => 
   paypal.billingPlan.update(billingPlanId, billingPlanUpdateAttributes, (error, response) => {
     if(error) {
       console.log(error);
-      return callback(error);
+      console.log(error.response.details);
+      // return callback(error);
     }
     Package.findByIdAndUpdate(packageId, updates, callback);
   })

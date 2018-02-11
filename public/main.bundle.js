@@ -1492,7 +1492,7 @@ var ImageComponent = (function () {
 /***/ "../../../../../src/app/login/login.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container\">\n\n  <form class=\"form-signin\" (ngSubmit)=\"onLogin()\" [formGroup]=\"logIn\">\n    <h2 class=\"form-signin-heading\">Please sign in</h2>\n    <label for=\"username\" class=\"sr-only\">Username</label>\n    <input type=\"text\" id=\"username\" formControlName=\"username\" class=\"form-control\" placeholder=\"Username\" [ngClass]=\"checkValid(username)\">\n    <div class=\"invalid-feedback\" *ngIf=\"username.errors?.required && (username.touched || username.dirty)\">Username is required</div>\n    <label for=\"password\" class=\"sr-only\">Password</label>\n    <input type=\"password\" id=\"password\" formControlName=\"password\" class=\"form-control\" placeholder=\"Password\" [ngClass]=\"checkValid(password)\" >\n    <div class=\"invalid-feedback\" *ngIf=\"password.errors?.required && (password.touched || password.dirty)\">Password is required</div>\n    <a class=\"btn btn-link\" routerLink=\"/forgot_password\">Forgot Password?</a>\n    <div class=\"captcha-div\" ionCaptcha [key]=\"captchaKey\" formControlName=\"captcha\"></div>\n    <button class=\"btn btn-lg btn-primary btn-block\" type=\"submit\" [disabled]=\"!logIn.valid && !isLoading\">Sign in</button>\n    <button class=\"btn btn-outline-primary btn-block\" routerLink=\"/register\">Create an account</button>\n  </form>\n\n</div>\n"
+module.exports = "<ngx-loading [show]=\"isLoading\"></ngx-loading>\n<div class=\"container\">\n  <form class=\"form-signin\" (ngSubmit)=\"onLogin()\" [formGroup]=\"logIn\">\n    <h2 class=\"form-signin-heading\">Please sign in</h2>\n    <label for=\"username\" class=\"sr-only\">Username</label>\n    <input type=\"text\" id=\"username\" formControlName=\"username\" class=\"form-control\" placeholder=\"Username\" [ngClass]=\"checkValid(username)\">\n    <div class=\"invalid-feedback\" *ngIf=\"username.errors?.required && (username.touched || username.dirty)\">Username is required</div>\n    <label for=\"password\" class=\"sr-only\">Password</label>\n    <input type=\"password\" id=\"password\" formControlName=\"password\" class=\"form-control\" placeholder=\"Password\" [ngClass]=\"checkValid(password)\" >\n    <div class=\"invalid-feedback\" *ngIf=\"password.errors?.required && (password.touched || password.dirty)\">Password is required</div>\n    <a class=\"btn btn-link\" routerLink=\"/forgot_password\">Forgot Password?</a>\n    <div class=\"captcha-div\" ionCaptcha [key]=\"captchaKey\" formControlName=\"captcha\"></div>\n    <button class=\"btn btn-lg btn-primary btn-block\" type=\"submit\" [disabled]=\"!logIn.valid && !isLoading\">Sign in</button>\n    <button class=\"btn btn-outline-primary btn-block\" routerLink=\"/register\">Create an account</button>\n  </form>\n</div>\n"
 
 /***/ }),
 
@@ -1592,41 +1592,35 @@ var LoginComponent = (function () {
         this.isLoading = true;
         this.authService.authenticateUser(credentials)
             .subscribe(function (data) {
-            // this.isLoading = false;
             if (data.success) {
                 console.log(data);
                 _this.authService.storeUserData(data.user, data.token);
                 _this.authService.getAgreement().subscribe(function (res) {
+                    _this.isLoading = false;
                     if (res.success) {
                         if (res.agreement) {
                             _this.auth.checkTrial(res.agreement);
+                            if (_this.auth.hasSub(res.agreement)) {
+                                _this.router.navigate(['/gallery']);
+                            }
+                            else {
+                                _this.router.navigate(['/pricing']);
+                            }
                         }
                         else {
+                            _this.router.navigate(['/pricing']);
                             _this.toastr.error('You have no current active subscription. Please choose a package to start using the app.');
                         }
                     }
                     else {
                         _this.toastr.error(res.msg, 'Error');
                     }
-                });
-                _this.authService.hasActiveSub().subscribe(function (res) {
-                    _this.isLoading = false;
-                    if (res.success) {
-                        if (res.hasSub) {
-                            _this.router.navigate(['/gallery']);
-                        }
-                        else {
-                            _this.router.navigate(['/pricing']);
-                        }
-                    }
-                    else {
-                        _this.toastr.error('', 'Error');
-                    }
                 }, function (error) {
                     _this.isLoading = false;
                 });
             }
             else {
+                _this.isLoading = false;
                 console.log(data);
                 // show error toast
                 _this.toastr.error(data.msg, 'Error');
@@ -1966,20 +1960,30 @@ var PopupComponent = (function (_super) {
     function PopupComponent(dialogService) {
         return _super.call(this, dialogService) || this;
     }
+    PopupComponent.prototype.ngOnInit = function () {
+        document.getElementsByTagName('body')[0].classList.add('modal-open');
+    };
     PopupComponent.prototype.confirm = function () {
         this.result = {
             delay: this.delay,
             title: this.imgTitle,
             titleSize: this.titleSize,
-            titleAlign: this.titleAlign
+            titleAlign: this.titleAlign,
+            titleFont: this.titleFont,
+            titleColor: this.titleColor
         };
+        document.getElementsByTagName('body')[0].classList.remove('modal-open');
+        this.close();
+    };
+    PopupComponent.prototype.modalClose = function () {
+        document.getElementsByTagName('body')[0].classList.remove('modal-open');
         this.close();
     };
     PopupComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
             selector: 'popup',
             styles: [__webpack_require__("../../../../../src/app/popup/popup.component.scss")],
-            template: "<div class=\"modal-dialog\">\n                <div class=\"modal-content\">\n                   <div class=\"modal-header\">\n                      <h4 class=\"modal-title\">{{title || 'Confirm'}}</h4>\n                      <button type=\"button\" class=\"close\" (click)=\"close()\" data-dismiss=\"modal\" aria-label=\"Close\">\n                        <span aria-hidden=\"true\">&times;</span>\n                      </button>                     \n                   </div>\n                   <div class=\"modal-body\">\n                     <p>{{message || 'Edit title and delay for'+filename}}</p>\n                     <input class=\"form-control\" placeholder=\"Delay (in seconds)\" type=\"number\" [(ngModel)]=\"delay\"/>\n                     <br>\n                     <input class=\"form-control\" placeholder=\"Title\" type=\"text\" [(ngModel)]=\"imgTitle\"/>\n                     <br>\n                     <label>Title font size</label>\n                      <select class=\"custom-select form-control mb-2\" placeholder=\"Title font size\" [(ngModel)]=\"titleSize\">\n                        <option value=\"16\">16px</option>\n                        <option value=\"18\">18px</option>\n                        <option value=\"20\">20px</option>\n                        <option value=\"24\">24px</option>\n                        <option value=\"28\">28px</option>\n                      </select>\n                      <label>Title font alignment</label>\n                      <select class=\"form-control mb-2 custom-select\" [(ngModel)]=\"titleAlign\">\n                         <option value=\"tl\">Top left</option>\n                         <option value=\"bl\">Bottom left</option>\n                         <option value=\"tr\">Top Right</option>\n                         <option value=\"br\">Bottom Right</option>\n                      </select>\n                   </div>\n                   <div class=\"modal-footer\">\n                     <button type=\"button\" class=\"btn btn-primary\" (click)=\"confirm()\">OK</button>\n                     <button type=\"button\" class=\"btn btn-default\" (click)=\"close()\" >Cancel</button>\n                   </div>\n                 </div>\n              </div>"
+            template: "<div class=\"modal-dialog\">\n                <div class=\"modal-content\">\n                   <div class=\"modal-header\">\n                      <h4 class=\"modal-title\">{{title || 'Confirm'}}</h4>\n                      <button type=\"button\" class=\"close\" (click)=\"close()\" data-dismiss=\"modal\" aria-label=\"Close\">\n                        <span aria-hidden=\"true\">&times;</span>\n                      </button>                     \n                   </div>\n                   <div class=\"modal-body\">\n                     <p>{{message || 'Edit title and delay for'+filename}}</p>\n                     <input class=\"form-control\" placeholder=\"Delay (in seconds)\" type=\"number\" [(ngModel)]=\"delay\"/>\n                     <br>\n                     <input class=\"form-control\" placeholder=\"Title\" type=\"text\" [(ngModel)]=\"imgTitle\"/>\n                     <br>\n                     <label>Title font size</label>\n                      <select class=\"custom-select form-control mb-2\" placeholder=\"Title font size\" [(ngModel)]=\"titleSize\">\n                        <option value=\"16\">16px</option>\n                        <option value=\"18\">18px</option>\n                        <option value=\"20\">20px</option>\n                        <option value=\"24\">24px</option>\n                        <option value=\"28\">28px</option>\n                      </select>\n                      <label>Title font alignment</label>\n                      <select class=\"form-control mb-2 custom-select\" [(ngModel)]=\"titleAlign\">\n                         <option *ngFor=\"let align of alignValues\" [value]=\"align\">{{align}}</option>\n                      </select>\n                      <label>Title font name</label>\n                      <select class=\"form-control mb-2 custom-select\" [(ngModel)]=\"titleFont\">\n                        <option *ngFor=\"let f of fonts\" [value]=\"f\" [ngStyle]=\"{'font-family': f}\">{{f}}</option>\n                      </select>\n                      <label>Title font colour</label>\n                       <select class=\"form-control mb-2 custom-select\" [(ngModel)]=\"titleColor\">\n                         <option *ngFor=\"let c of colors\" [value]=\"c\" [ngStyle]=\"{'color': c}\">{{c}}</option>\n                       </select>\n                   </div>\n                   <div class=\"modal-footer\">\n                     <button type=\"button\" class=\"btn btn-primary\" (click)=\"confirm()\">OK</button>\n                     <button type=\"button\" class=\"btn btn-default\" (click)=\"modalClose()\" >Cancel</button>\n                   </div>\n                 </div>\n              </div>"
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ng2_bootstrap_modal__["DialogService"]])
     ], PopupComponent);
@@ -2077,12 +2081,26 @@ var QrLoginComponent = (function () {
                     if (res.success) {
                         _this.auth.storeUserData(res.user, data.authToken, true);
                         _this.toastr.success('Login successful!', 'Success');
-                        if (_this.auth.hasSub()) {
-                            _this.router.navigate(['session-qr']);
-                        }
-                        else {
-                            _this.router.navigate(['/pricing']);
-                        }
+                        _this.auth.getAgreement().subscribe(function (res) {
+                            if (res.success) {
+                                if (res.agreement) {
+                                    _this.auth.checkTrial(res.agreement);
+                                    if (_this.auth.hasSub(res.agreement)) {
+                                        _this.router.navigate(['/session-qr']);
+                                    }
+                                    else {
+                                        _this.router.navigate(['/pricing']);
+                                    }
+                                }
+                                else {
+                                    _this.router.navigate(['/pricing']);
+                                    _this.toastr.error('You have no current active subscription. Please choose a package to start using the app.');
+                                }
+                            }
+                            else {
+                                _this.toastr.error(res.msg, 'Error');
+                            }
+                        });
                     }
                     else {
                         _this.toastr.error(res.msg, 'Error');
@@ -2111,7 +2129,7 @@ var QrLoginComponent = (function () {
 /***/ "../../../../../src/app/register/register.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container\">\n    <form class=\"form-signin\" (ngSubmit)=\"onRegister()\" [formGroup]=\"registerForm\">\n        <h2 class=\"form-signin-heading\">Create an account</h2>\n        \n        <label for=\"name\" class=\"sr-only\">Name</label>\n        <input type=\"text\" id=\"name\" formControlName=\"name\" class=\"form-control\" placeholder=\"Name\" required  [ngClass]=\"checkValid(name)\">\n        <div class=\"invalid-feedback\" *ngIf=\"name.errors?.required && (name.touched || name.dirty)\">\n            Name is required\n        </div>\n        \n        <label for=\"username\" class=\"sr-only\">Username</label>\n        <input type=\"text\" id=\"username\" formControlName=\"username\" class=\"form-control\" placeholder=\"Username\" required  [ngClass]=\"checkValid(username)\">\n        <div class=\"invalid-feedback\" *ngIf=\"username.errors?.required && (username.touched || username.dirty)\">Username is required</div>\n        <div class=\"invalid-feedback\" *ngIf=\"!username.errors?.required && username.errors?.usernameInUse && (username.touched || username.dirty)\">Username is not available</div>\n\n        <label for=\"email\" class=\"sr-only\" >Email</label>\n        <input type=\"email\" id=\"email\" formControlName=\"email\" class=\"form-control\" placeholder=\"Email\" required  [ngClass]=\"checkValid(email)\">\n        <div class=\"invalid-feedback\" *ngIf=\"email.errors?.required && (email.touched || email.dirty)\">Email is required</div>\n        <div class=\"invalid-feedback\" *ngIf=\"!email.errors?.required && email.errors?.email && (email.touched || email.dirty)\">Provide a valid email address</div>\n        \n        <label for=\"password\" class=\"sr-only\">Password</label>\n        <input type=\"password\" id=\"password\" formControlName=\"password\" class=\"form-control\" placeholder=\"Password\" required [ngClass]=\"checkValid(password)\">\n        <div class=\"invalid-feedback\" *ngIf=\"password.errors?.required && (password.touched || password.dirty)\">Password is required</div>\n        <div class=\"invalid-feedback\" *ngIf=\"password.errors?.pattern && !password.errors?.minLength && (password.touched || password.dirty)\">Must contain one lowercase, one uppercase, one numeral and a special character. Min length: 8 characters</div>\n        <div class=\"invalid-feedback\" *ngIf=\"password.errors?.minLength && (password.touched || password.dirty)\">Password must be at least 8 characters long</div>\n        \n        <input type=\"password\" class=\"form-control\" id=\"confirm_pass\" formControlName=\"confirmPass\" [ngClass]=\"checkValid(confirmPass)\" placeholder=\"Confirm password\">\n        <div class=\"invalid-feedback\" *ngIf=\"confirmPass.errors?.required && (confirmPass.touched || confirmPass.dirty)\">Please re enter your password</div>\n\n        <div class=\"invalid-feedback\" *ngIf=\"confirmPass.errors?.MatchPassword && (confirmPass.touched || confirmPass.dirty)\">\n            Passwords don't match\n        </div>\n\n        <div class=\"captcha-div\" ionCaptcha [key]=\"captchaKey\" formControlName=\"captcha\"></div>\n        \n        <button class=\"btn btn-lg btn-primary btn-block\" type=\"submit\" [disabled]=\"!registerForm.valid\">Register</button>\n    </form>\n</div>"
+module.exports = "<ngx-loading [show]=\"isLoading\"></ngx-loading>\n<div class=\"container\">\n    <form class=\"form-signin\" (ngSubmit)=\"onRegister()\" [formGroup]=\"registerForm\">\n        <h2 class=\"form-signin-heading\">Create an account</h2>\n        \n        <label for=\"name\" class=\"sr-only\">Name</label>\n        <input type=\"text\" id=\"name\" formControlName=\"name\" class=\"form-control\" placeholder=\"Name\" required  [ngClass]=\"checkValid(name)\">\n        <div class=\"invalid-feedback\" *ngIf=\"name.errors?.required && (name.touched || name.dirty)\">\n            Name is required\n        </div>\n        \n        <label for=\"username\" class=\"sr-only\">Username</label>\n        <input type=\"text\" id=\"username\" formControlName=\"username\" class=\"form-control\" placeholder=\"Username\" required  [ngClass]=\"checkValid(username)\">\n        <div class=\"invalid-feedback\" *ngIf=\"username.errors?.required && (username.touched || username.dirty)\">Username is required</div>\n        <div class=\"invalid-feedback\" *ngIf=\"!username.errors?.required && username.errors?.usernameInUse && (username.touched || username.dirty)\">Username is not available</div>\n\n        <label for=\"email\" class=\"sr-only\" >Email</label>\n        <input type=\"email\" id=\"email\" formControlName=\"email\" class=\"form-control\" placeholder=\"Email\" required  [ngClass]=\"checkValid(email)\">\n        <div class=\"invalid-feedback\" *ngIf=\"email.errors?.required && (email.touched || email.dirty)\">Email is required</div>\n        <div class=\"invalid-feedback\" *ngIf=\"!email.errors?.required && email.errors?.email && (email.touched || email.dirty)\">Provide a valid email address</div>\n        \n        <label for=\"password\" class=\"sr-only\">Password</label>\n        <input type=\"password\" id=\"password\" formControlName=\"password\" class=\"form-control\" placeholder=\"Password\" required [ngClass]=\"checkValid(password)\">\n        <div class=\"invalid-feedback\" *ngIf=\"password.errors?.required && (password.touched || password.dirty)\">Password is required</div>\n        <div class=\"invalid-feedback\" *ngIf=\"password.errors?.pattern && !password.errors?.minLength && (password.touched || password.dirty)\">Must contain one lowercase, one uppercase, one numeral and a special character. Min length: 8 characters</div>\n        <div class=\"invalid-feedback\" *ngIf=\"password.errors?.minLength && (password.touched || password.dirty)\">Password must be at least 8 characters long</div>\n        \n        <input type=\"password\" class=\"form-control\" id=\"confirm_pass\" formControlName=\"confirmPass\" [ngClass]=\"checkValid(confirmPass)\" placeholder=\"Confirm password\">\n        <div class=\"invalid-feedback\" *ngIf=\"confirmPass.errors?.required && (confirmPass.touched || confirmPass.dirty)\">Please re enter your password</div>\n\n        <div class=\"invalid-feedback\" *ngIf=\"confirmPass.errors?.MatchPassword && (confirmPass.touched || confirmPass.dirty)\">\n            Passwords don't match\n        </div>\n\n        <div class=\"captcha-div\" ionCaptcha [key]=\"captchaKey\" formControlName=\"captcha\"></div>\n        \n        <button class=\"btn btn-lg btn-primary btn-block\" type=\"submit\" [disabled]=\"!registerForm.valid\">Register</button>\n    </form>\n</div>"
 
 /***/ }),
 
@@ -2172,6 +2190,7 @@ var RegisterComponent = (function () {
         this.fb = fb;
         this.route = route;
         this.captchaKey = __WEBPACK_IMPORTED_MODULE_7__environments_environment__["a" /* environment */].captchaKey;
+        this.isLoading = false;
         var strongPassRegex = new RegExp("^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8,}$");
         this.username = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required, usernameValidator.checkUsername.bind(usernameValidator));
         this.password = new __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* FormControl */](null, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].required, __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].pattern(strongPassRegex), __WEBPACK_IMPORTED_MODULE_2__angular_forms__["k" /* Validators */].minLength(8)]));
@@ -2210,8 +2229,10 @@ var RegisterComponent = (function () {
             name: this.registerForm.value.name,
             subscription: this.userSubscription
         };
+        this.isLoading = true;
         this.authService.registerUser(credentials)
             .subscribe(function (data) {
+            _this.isLoading = false;
             if (data.success) {
                 _this.toastr.success(data.msg, 'Success');
                 _this.router.navigate(['login']);
@@ -2219,6 +2240,8 @@ var RegisterComponent = (function () {
             else {
                 _this.toastr.error(data.msg, 'Error');
             }
+        }, function (error) {
+            _this.isLoading = false;
         });
     };
     RegisterComponent.prototype.checkValid = function (control) {
@@ -2886,7 +2909,9 @@ var AuthService = (function () {
     AuthService.prototype.hasActiveSub = function () {
         return __WEBPACK_IMPORTED_MODULE_2_rxjs_Rx__["a" /* Observable */].of({ success: true, hasSub: this.userAgreement ? (this.userAgreement.state == 'Active') : false });
     };
-    AuthService.prototype.hasSub = function () {
+    AuthService.prototype.hasSub = function (agreement) {
+        if (agreement)
+            this.userAgreement = agreement;
         return this.userAgreement ? this.userAgreement.state == 'Active' : false;
     };
     AuthService.prototype.changeSubscription = function (packId, isTrial) {
@@ -2963,6 +2988,7 @@ var AuthService = (function () {
     AuthService.prototype.logout = function () {
         this.authToken = null;
         this.currentUser = null;
+        this.headers.delete('Authorization');
         localStorage.clear();
     };
     AuthService = __decorate([
@@ -3235,7 +3261,12 @@ var ImageService = (function () {
             .map(function (res) { return res.json(); });
     };
     ImageService.prototype.removeSession = function (session) {
-        return this.http.post(this.baseUrl + 'session/remove', { session: session }, { headers: this.headers }).map(function (res) { return res.json(); });
+        return this.http.post(this.baseUrl + 'session/remove', { session: session }, { headers: this.headers })
+            .map(function (res) { return res.json(); });
+    };
+    ImageService.prototype.getColorsFonts = function () {
+        return this.http.get(this.baseUrl + 'session/getColorsFonts', { headers: this.headers })
+            .map(function (res) { return res.json(); });
     };
     ImageService.prototype.createQrCodes = function () {
         return this.http.get(this.generateQrUrl, { headers: this.headers }).map(function (res) { return res.json(); });
@@ -3634,7 +3665,7 @@ var PackageService = (function () {
 /***/ "../../../../../src/app/slideshow/slideshow.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"\">\n\t<div class=\"\">\n\t\t<vg-player (onPlayerReady)=\"onPlayerReady($event)\">\n\t\t\t<video [hidden]=\"!vPlayer\" [vgMedia]=\"media\" autoplay (ended)=\"myAddListener()\" #media id=\"singleVideo\" preload=\"auto\" controls crossorigin=\"use-credentials\">\n\t\t\t\t<source src=\"\" type=\"video/mp4\">\n\t\t\t</video>\n\t\t\t<div [hidden]=\"vPlayer\" class=\"image-player\">\n\t\t\t\t<img style=\"min-height:100%;min-width:100%;\" crossorigin=\"use-credentials\">\n\t\t\t\t<h2 class=\"image-text\">{{imageTitle}}</h2>\n\t\t\t</div>\n\t\t</vg-player>\n\t\t<button *ngIf=\"visibleImages.length != 0\" type=\"button\" class=\"btn btn-danger btn-big btn-warning\" (click)=\"stopPlayer()\">\n\t\t\t<span class=\"glyphicon glyphicon-stop\"></span> Stop\n\t\t</button>\n\t</div>\n</div>\n"
+module.exports = "<div class=\"\">\n\t<div class=\"player-div\">\n\t\t<vg-player (onPlayerReady)=\"onPlayerReady($event)\">\n\t\t\t<video [hidden]=\"!vPlayer\" [vgMedia]=\"media\" autoplay (ended)=\"myAddListener()\" #media id=\"singleVideo\" preload=\"auto\" controls crossorigin=\"use-credentials\">\n\t\t\t\t<source src=\"\" type=\"video/mp4\">\n\t\t\t</video>\n\t\t</vg-player>\n\t\t<div *ngIf=\"api?.fsAPI?.isFullscreen\" [hidden]=\"vPlayer\" class=\"image-player\">\n\t\t\t<img style=\"min-height:100%;min-width:100%;\" crossorigin=\"use-credentials\">\n\t\t\t<h2 class=\"image-text\" [ngStyle]=\"{'color': titleColor, 'font-size': titleSize+'px', 'font-family': titleFont}\">{{imageTitle}}</h2>\n\t\t</div>\n\t\t<div *ngIf=\"!api?.fsAPI?.isFullscreen\" [hidden]=\"vPlayer\" class=\"image-player-2\">\n\t\t\t<img style=\"min-height:100%;min-width:100%;\" crossorigin=\"use-credentials\">\n\t\t\t<h2 class=\"image-text\" [ngStyle]=\"{'color': titleColor, 'font-size': titleSize+'px', 'font-family': titleFont}\">{{imageTitle}}</h2>\n\t\t</div>\t\t\n\t\t<button *ngIf=\"visibleImages.length != 0\" type=\"button\" class=\"btn btn-danger btn-big btn-warning\" id=\"stop-btn\" (click)=\"stopPlayer()\">\n\t\t\t<span class=\"glyphicon glyphicon-stop\"></span> Stop\n\t\t</button>\n\t</div>\n</div>\n"
 
 /***/ }),
 
@@ -3646,7 +3677,7 @@ exports = module.exports = __webpack_require__("../../../../css-loader/lib/css-b
 
 
 // module
-exports.push([module.i, "ul {\n  padding: 0;\n  margin: 20px auto; }\n\n.image-player {\n  position: relative;\n  width: 100%;\n  /* for IE 6 */ }\n  .image-player img {\n    position: relative;\n    width: 90vw;\n    height: auto;\n    max-height: 90vh; }\n\n.image-text {\n  position: absolute; }\n\n.tl {\n  top: 50px;\n  left: 10px; }\n\n.bl {\n  bottom: 50px;\n  left: 10px; }\n\n.tr {\n  top: 50px;\n  right: 10px; }\n\n.br {\n  bottom: 50px;\n  right: 10px; }\n\nvg-player video {\n  max-height: 100vh; }\n", ""]);
+exports.push([module.i, "ul {\n  padding: 0;\n  margin: 20px auto; }\n\n.player-div {\n  background-color: black; }\n\n.image-player img {\n  min-width: 100%;\n  min-height: 100%;\n  max-width: 100%;\n  max-height: 100%; }\n\n.image-player-2 img {\n  position: absolute;\n  left: 50%;\n  top: 50%;\n  width: auto;\n  max-width: 100%;\n  max-height: 100%;\n  -webkit-transform: translate3d(-50%, -50%, 0);\n          transform: translate3d(-50%, -50%, 0); }\n\n.image-text {\n  position: absolute; }\n\n.top-left-justified {\n  top: 50px;\n  left: 10px; }\n\n.top-right-justified {\n  top: 50px;\n  right: 10px; }\n\n.top-center-justified {\n  top: 50px;\n  left: 50%;\n  -webkit-transform: translateX(-50%);\n          transform: translateX(-50%); }\n\n.bottom-left-justified {\n  bottom: 50px;\n  left: 10px; }\n\n.bottom-right-justified {\n  bottom: 50px;\n  right: 10px; }\n\n.bottom-center-justified {\n  bottom: 50px;\n  left: 50%;\n  -webkit-transform: translateX(-50%);\n          transform: translateX(-50%); }\n\nvg-player video {\n  max-height: 100vh; }\n\nbutton#stop-btn {\n  position: absolute;\n  right: 10px;\n  top: 15px;\n  height: 3rem;\n  opacity: 0.6; }\n  button#stop-btn:hover {\n    opacity: 1; }\n", ""]);
 
 // exports
 
@@ -3710,6 +3741,8 @@ var SlideshowComponent = (function () {
     }
     SlideshowComponent.prototype.ngOnInit = function () {
         this.getParamValues();
+        document.querySelector('app-header').setAttribute('style', 'display: none');
+        document.querySelector('.main-content').setAttribute('style', 'padding-top: 0');
     };
     SlideshowComponent.prototype.getParamValues = function () {
         var _this = this;
@@ -3737,7 +3770,8 @@ var SlideshowComponent = (function () {
     };
     SlideshowComponent.prototype.startSlideShow = function (sessionId) {
         var _this = this;
-        this.api.fsAPI.toggleFullscreen();
+        if (!this.api.fsAPI.isFullscreen)
+            this.api.fsAPI.toggleFullscreen();
         if (sessionId) {
             this.imageService.getImages(sessionId)
                 .subscribe(function (data) {
@@ -3765,12 +3799,14 @@ var SlideshowComponent = (function () {
         if (this.visibleImages[this.currentIndex].imagetype == 'image') {
             var curImage = this.visibleImages[this.currentIndex];
             this.vPlayer = false;
+            this.titleColor = curImage.titleColor;
+            this.titleFont = curImage.titleFont;
+            this.titleSize = curImage.titleSize;
             myImage.src = this.baseUrl + 'session/stream_files?file=' + this.visibleImages[this.currentIndex].imagename;
             this.imageTitle = this.visibleImages[this.currentIndex].imagetitle;
             var titleAlign = this.visibleImages[this.currentIndex].titleAlign;
             console.log('alignment: ', titleAlign);
             window.document.querySelector('.image-text').classList.add(titleAlign);
-            window.document.querySelector('.image-text').setAttribute('style', 'font-size: ' + this.visibleImages[this.currentIndex].titleSize + 'px');
             setTimeout(function () {
                 _this.myAddListener();
             }, curImage.imagedelay * 1000 || this.imageSlideTime);
@@ -3786,6 +3822,8 @@ var SlideshowComponent = (function () {
         // console.log('nextItem');
         var myVideo = document.getElementsByTagName('video')[0];
         var myImage = document.getElementsByTagName('img')[0];
+        console.log('current index: ', this.currentIndex);
+        console.log('current image: ', this.visibleImages[this.currentIndex]);
         if (this.visibleImages[this.currentIndex].imagetype === 'image')
             window.document.querySelector('.image-text').classList.remove(this.visibleImages[this.currentIndex].titleAlign);
         this.currentIndex = (this.currentIndex + 1) % this.visibleImages.length;
@@ -3793,6 +3831,9 @@ var SlideshowComponent = (function () {
             if (this.visibleImages[this.currentIndex].imagetype == 'image') {
                 window.document.querySelector('.image-text').classList.add(this.visibleImages[this.currentIndex].titleAlign);
                 var curImage = this.visibleImages[this.currentIndex];
+                this.titleColor = curImage.titleColor;
+                this.titleFont = curImage.titleFont;
+                this.titleSize = curImage.titleSize;
                 this.vPlayer = false;
                 myImage.src = this.baseUrl + 'session/stream_files?file=' + this.visibleImages[this.currentIndex].imagename;
                 this.imageTitle = this.visibleImages[this.currentIndex].imagetitle;
@@ -3811,11 +3852,14 @@ var SlideshowComponent = (function () {
         var myImage = document.getElementsByTagName('img')[0];
         var myVideo = document.getElementsByTagName('video')[0];
         myImage.src = myVideo.src = 'assets/img/hqdefault.jpg';
+        this.router.navigate(['/gallery']);
     };
     SlideshowComponent.prototype.ngOnDestroy = function () {
         if (this.listenSub) {
             this.listenSub.unsubscribe();
         }
+        document.querySelector('app-header').setAttribute('style', '');
+        document.querySelector('.main-content').setAttribute('style', '');
     };
     SlideshowComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
@@ -3841,7 +3885,7 @@ var SlideshowComponent = (function () {
 /***/ "../../../../../src/app/upload/upload.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container\">\n    <ngx-loading [show]=\"isLoading\"></ngx-loading>\n    <h4 class=\"my-3\">Edit Session</h4>\n    <div class=\"row\">\n        <div class=\"card\">\n            <div class=\"card-body\">\n                <form (ngSubmit)=\"updateSession(f, editing)\" #f=\"ngForm\" novalidate>\n                    <div class=\"form-group\">\n                        <label for=\"name\">Session Name</label>\n                        <input type=\"text\" class=\"form-control\" id=\"name\" [(ngModel)]=\"currSession.sessionname\" name=\"name\" #name=\"ngModel\" [ngClass]=\"checkValid(name)\" required>\n                        <div class=\"invalid-feedback\" *ngIf=\"name.errors?.required && (name.touched || name.dirty)\">\n                            Session name is required\n                        </div>\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"catone\">Category</label>\n                        <select class=\"custom-select form-control\" [disabled]=\"!catones?.length\" [ngModel]=\"currSession.catone\" (ngModelChange)=\"catSelect(1, $event)\" id=\"catone\" name=\"catone\" #catone=\"ngModel\" [ngClass]=\"checkValid(catone)\" required>\n                            <option [value]=\"cat._id\" *ngFor=\"let cat of catones\">{{cat.categoryname}}</option>\n                        </select>\n                        <div class=\"invalid-feedback\" *ngIf=\"catone.errors?.required && (catone.touched || catone.dirty)\">\n                            Category is required\n                        </div>\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"subcat1\">Select Subcategory - I</label>\n                        <select class=\"custom-select form-control\" [disabled]=\"!cattwos?.length\" [ngModel]=\"currSession.cattwo\" (ngModelChange)=\"catSelect(2, $event)\" name=\"cattwo\" #cattwo=\"ngModel\" [ngClass]=\"checkValid(cattwo)\" required>\n                            <option [value]=\"cat._id\" *ngFor=\"let cat of cattwos\">{{cat.categoryname}}</option>\n                        </select>\n                        <div class=\"invalid-feedback\" *ngIf=\"cattwo.errors?.required && (cattwo.touched || cattwo.dirty)\">\n                            Sub-category I is required\n                        </div>\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"subcat1\">Select Subcategory - II</label>\n                        <select class=\"custom-select form-control\" [disabled]=\"!catthrees?.length\" [ngModel]=\"currSession.categoryId\" (ngModelChange)=\"catSelect(3, $event)\" name=\"catthree\" #catthree=\"ngModel\" [ngClass]=\"checkValid(catthree)\" required>\n                            <option [value]=\"cat._id\" *ngFor=\"let cat of catthrees\">{{cat.categoryname}}</option>\n                        </select>\n                        <div class=\"invalid-feedback\" *ngIf=\"catthree.errors?.required && (catthree.touched || catthree.dirty)\">\n                            Sub-category II is required\n                        </div>\n                    </div>\n                    <button type=\"submit\" [disabled]=\"f.invalid\" *ngIf=\"!editing\" class=\"btn btn-primary\"> <i class=\"icon ion-edit\"></i> Create</button>\n                    <button type=\"submit\" [disabled]=\"f.invalid\" *ngIf=\"editing\" class=\"btn btn-primary\"> <i class=\"icon ion-checkmark-round\"></i> Update</button>\n                    <button type=\"button\" *ngIf=\"editing\" class=\"btn btn-danger\" (click)=\"removeSession()\"> <i class=\"icon ion-trash-b\"></i> Delete</button>\n                </form>\n                <!-- <pre>{{f.form.value | json}}</pre> -->\n            </div>\n        </div>\n    </div>\n    <h4 *ngIf=\"sessionMedia.length\" class=\"my-3\">Uploaded Media</h4>\n    <div class=\"mt-3\">\n        <div *ngIf=\"sessionMedia.length\" dnd-sortable-container [sortableData]=\"sessionMedia\">\n            <div class=\"card media-card my-2\" *ngFor=\"let media of sessionMedia; let i=index\" (onDropSuccess)=\"dragEnd(sessionMedia)\" dnd-sortable [sortableIndex]=\"i\">\n                <div class=\"card-body\">\n                    <img *ngIf=\"media.imagetype == 'image'\" [src]=\"getImage(media)\" class=\"img-fluid session-img float-left\" />\n                    <img src=\"/assets/img/video-icon.png\" class=\"session-img img-fluid float-left\" alt=\"video-file\" *ngIf=\"media.imagetype=='video' && !media.imagethumb\">\n                    <img [src]=\"getThumb(media)\" class=\"session-img img-fluid float-left\" *ngIf=\"media.imagethumb\">\n                    <img src=\"/assets/img/audio-icon.png\" class=\"session-img img-fluid float-left\" alt=\"video-file\" *ngIf=\"media.imagetype=='audio'\">\n                    <div class=\"float-center\">\n                        <h5 class=\"card-title text-center\">{{media.imagetitle}}</h5>\n                        <div class=\"card-text text-center\" *ngIf=\"media.imagetype === 'image'\">Delay: {{media.imagedelay}}</div>\n                        <div class=\"card-text text-center\" *ngIf=\"media.imagetype==='image'\">\n                            Title font size: {{media.titleSize}}\n                        </div>\n                        <div class=\"card-text text-center\" *ngIf=\"media.imagetype==='image'\">\n                            Title font alignment: {{media.titleAlign}}\n                        </div>\n                        <div class=\"row justify-content-start\">\n                            <div class=\"col text-center mb-1\" *ngIf=\"media?.imagetype==='image'\">\n                                <button class=\"btn btn-outline-primary\" (click)=\"editMediaInfoModal(media, i)\">\n                                    <i class=\"icon ion-edit\"></i>\n                                </button>\n                            </div>\n                            <div class=\"col text-center mb-1\">\n                                <button class=\"btn btn-outline-danger\" (click)=\"removeImage(media, i)\"> <i class=\"icon ion-trash-b\"></i></button>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n    <h4 class=\"my-3\" *ngIf=\"currSession._id\">Upload Files</h4>\n    <div class=\"row mx-0\">\n        <form *ngIf=\"currSession._id\">\n            <div class=\"form-group\">\n                <label for=\"single\">Select your image:</label>\n                <input type=\"file\" class=\"form-control\" name=\"single\" ng2FileSelect [uploader]=\"uploader\" />\n            </div>\n        </form>\n        <table class=\"table table-bordered table-responsive-md\" *ngIf=\"uploader.queue.length\">\n            <thead>\n                <tr>\n                    <th>Name</th>\n                    <th>Size</th>\n                    <th>Progress</th>\n                    <th>Status</th>\n                    <th>Actions</th>\n                </tr>\n            </thead>\n            <tbody>\n                <tr *ngFor=\"let item of uploader.queue\">\n                    <td>\n                        <input type=\"text\" class=\"form-control\" [(ngModel)]=\"item.file.name\" required>\n                    </td>\n                    <td nowrap>{{ item.file.size/1024/1024 | number:'.2' }} MB</td>\n                    <td>\n                        <p>\n                            <ngb-progressbar type=\"success\" [value]=\"item.progress\"></ngb-progressbar>\n                        </p>\n                    </td>\n                    <td class=\"text-center\">\n                        <span *ngIf=\"item.isSuccess\"><i class=\"icon ion-checkmark-round\"></i></span>\n                        <span *ngIf=\"item.isCancel\"><i class=\"icon ion-close\"></i></span>\n                        <span *ngIf=\"item.isError\"><i class=\"icon ion-close-circle\"></i></span>\n                    </td>\n                    <td nowrap>\n                        <button type=\"button\" class=\"btn btn-success btn-xs\" (click)=\"item.upload()\" [disabled]=\"item.isReady || item.isUploading || item.isSuccess\">\n                            <i class=\"icon ion-upload\"></i> Upload\n                        </button>\n                        <button type=\"button\" class=\"btn btn-warning btn-xs\" (click)=\"item.cancel()\" [disabled]=\"!item.isUploading\">\n                            <i class=\"icon ion-close-circled\"></i> Cancel\n                        </button>\n                        <button type=\"button\" class=\"btn btn-danger btn-xs\" (click)=\"item.remove()\">\n                            <i class=\"icon ion-trash-b\"></i> Remove\n                        </button>\n                    </td>\n                </tr>\n            </tbody>\n        </table>\n        <div *ngIf=\"uploader.queue.length\">\n            <div>\n                Upload progress:\n                <p>\n                    <ngb-progressbar type=\"success\" [value]=\"uploader.progress\"></ngb-progressbar>\n                </p>\n            </div>\n            <button type=\"button\" class=\"btn btn-success btn-s\" (click)=\"uploader.uploadAll()\" [disabled]=\"!uploader.getNotUploadedItems().length\">\n                <i class=\"icon ion-upload\"></i> Upload all\n            </button>\n            <button type=\"button\" class=\"btn btn-warning btn-s\" (click)=\"uploader.cancelAll()\" [disabled]=\"!uploader.isUploading\">\n                <i class=\"icon ion-android-cancel\"></i> Cancel all\n            </button>\n            <button type=\"button\" class=\"btn btn-danger btn-s\" (click)=\"uploader.clearQueue()\" [disabled]=\"!uploader.queue.length\">\n                <i class=\"icon ion-trash-b\"></i> Remove all\n            </button>\n        </div>\n    </div>\n</div>"
+module.exports = "<div class=\"container\">\n    <ngx-loading [show]=\"isLoading\"></ngx-loading>\n    <h4 class=\"my-3\">Edit Session</h4>\n    <div class=\"row\">\n        <div class=\"card\">\n            <div class=\"card-body\">\n                <form (ngSubmit)=\"updateSession(f, editing)\" #f=\"ngForm\" novalidate>\n                    <div class=\"form-group\">\n                        <label for=\"name\">Session Name</label>\n                        <input type=\"text\" class=\"form-control\" id=\"name\" [(ngModel)]=\"currSession.sessionname\" name=\"name\" #name=\"ngModel\" [ngClass]=\"checkValid(name)\" required>\n                        <div class=\"invalid-feedback\" *ngIf=\"name.errors?.required && (name.touched || name.dirty)\">\n                            Session name is required\n                        </div>\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"catone\">Category</label>\n                        <select class=\"custom-select form-control\" [disabled]=\"!catones?.length\" [ngModel]=\"currSession.catone\" (ngModelChange)=\"catSelect(1, $event)\" id=\"catone\" name=\"catone\" #catone=\"ngModel\" [ngClass]=\"checkValid(catone)\" required>\n                            <option [value]=\"cat._id\" *ngFor=\"let cat of catones\">{{cat.categoryname}}</option>\n                        </select>\n                        <div class=\"invalid-feedback\" *ngIf=\"catone.errors?.required && (catone.touched || catone.dirty)\">\n                            Category is required\n                        </div>\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"subcat1\">Select Subcategory - I</label>\n                        <select class=\"custom-select form-control\" [disabled]=\"!cattwos?.length\" [ngModel]=\"currSession.cattwo\" (ngModelChange)=\"catSelect(2, $event)\" name=\"cattwo\" #cattwo=\"ngModel\" [ngClass]=\"checkValid(cattwo)\" required>\n                            <option [value]=\"cat._id\" *ngFor=\"let cat of cattwos\">{{cat.categoryname}}</option>\n                        </select>\n                        <div class=\"invalid-feedback\" *ngIf=\"cattwo.errors?.required && (cattwo.touched || cattwo.dirty)\">\n                            Sub-category I is required\n                        </div>\n                    </div>\n                    <div class=\"form-group\">\n                        <label for=\"subcat1\">Select Subcategory - II</label>\n                        <select class=\"custom-select form-control\" [disabled]=\"!catthrees?.length\" [ngModel]=\"currSession.categoryId\" (ngModelChange)=\"catSelect(3, $event)\" name=\"catthree\" #catthree=\"ngModel\" [ngClass]=\"checkValid(catthree)\" required>\n                            <option [value]=\"cat._id\" *ngFor=\"let cat of catthrees\">{{cat.categoryname}}</option>\n                        </select>\n                        <div class=\"invalid-feedback\" *ngIf=\"catthree.errors?.required && (catthree.touched || catthree.dirty)\">\n                            Sub-category II is required\n                        </div>\n                    </div>\n                    <button type=\"submit\" [disabled]=\"f.invalid\" *ngIf=\"!editing\" class=\"btn btn-primary\"> <i class=\"icon ion-edit\"></i> Create</button>\n                    <button type=\"submit\" [disabled]=\"f.invalid\" *ngIf=\"editing\" class=\"btn btn-primary\"> <i class=\"icon ion-checkmark-round\"></i> Update</button>\n                    <button type=\"button\" *ngIf=\"editing\" class=\"btn btn-danger\" (click)=\"removeSession()\"> <i class=\"icon ion-trash-b\"></i> Delete</button>\n                </form>\n                <!-- <pre>{{f.form.value | json}}</pre> -->\n            </div>\n        </div>\n    </div>\n    <h4 *ngIf=\"sessionMedia.length\" class=\"my-3\">Uploaded Media</h4>\n    <div class=\"mt-3\">\n        <div *ngIf=\"sessionMedia.length\" dnd-sortable-container [sortableData]=\"sessionMedia\">\n            <div class=\"card media-card my-2\" *ngFor=\"let media of sessionMedia; let i=index\" (onDropSuccess)=\"dragEnd(sessionMedia)\" dnd-sortable [sortableIndex]=\"i\">\n                <div class=\"card-body\">\n                    <img *ngIf=\"media.imagetype == 'image'\" [src]=\"getImage(media)\" class=\"img-fluid session-img float-left\" />\n                    <img src=\"/assets/img/video-icon.png\" class=\"session-img img-fluid float-left\" alt=\"video-file\" *ngIf=\"media.imagetype=='video' && !media.imagethumb\">\n                    <img [src]=\"getThumb(media)\" class=\"session-img img-fluid float-left\" *ngIf=\"media.imagethumb\">\n                    <img src=\"/assets/img/audio-icon.png\" class=\"session-img img-fluid float-left\" alt=\"video-file\" *ngIf=\"media.imagetype=='audio'\">\n                    <div class=\"float-center\">\n                        <h5 class=\"card-title text-center\">{{media.imagetitle}}</h5>\n                        <div class=\"card-text text-center\" *ngIf=\"media.imagetype === 'image'\">Delay: {{media.imagedelay}}</div>\n                        <div class=\"card-text text-center\" *ngIf=\"media.imagetype==='image'\">\n                            Title font size: {{media.titleSize}}\n                        </div>\n                        <div class=\"card-text text-center\" *ngIf=\"media.imagetype==='image'\">\n                            Title alignment: {{media.titleAlign}}\n                        </div>\n                        <div class=\"row justify-content-start\">\n                            <div class=\"col text-center mb-1\" *ngIf=\"media?.imagetype==='image'\">\n                                <button class=\"btn btn-outline-primary\" (click)=\"editMediaInfoModal(media, i)\">\n                                    <i class=\"icon ion-edit\"></i>\n                                </button>\n                            </div>\n                            <div class=\"col text-center mb-1\">\n                                <button class=\"btn btn-outline-danger\" (click)=\"removeImage(media, i)\"> <i class=\"icon ion-trash-b\"></i></button>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n    <h4 class=\"my-3\" *ngIf=\"currSession._id\">Upload Files</h4>\n    <div class=\"row mx-0\">\n        <form *ngIf=\"currSession._id\">\n            <div class=\"form-group\">\n                <label for=\"single\">Select your image:</label>\n                <input type=\"file\" class=\"form-control\" name=\"single\" ng2FileSelect [uploader]=\"uploader\" />\n            </div>\n        </form>\n        <table class=\"table table-bordered table-responsive-md\" *ngIf=\"uploader.queue.length\">\n            <thead>\n                <tr>\n                    <th>Name</th>\n                    <th>Size</th>\n                    <th>Progress</th>\n                    <th>Status</th>\n                    <th>Actions</th>\n                </tr>\n            </thead>\n            <tbody>\n                <tr *ngFor=\"let item of uploader.queue\">\n                    <td>\n                        <input type=\"text\" class=\"form-control\" [(ngModel)]=\"item.file.name\" required>\n                    </td>\n                    <td nowrap>{{ item.file.size/1024/1024 | number:'.2' }} MB</td>\n                    <td>\n                        <p>\n                            <ngb-progressbar type=\"success\" [value]=\"item.progress\"></ngb-progressbar>\n                        </p>\n                    </td>\n                    <td class=\"text-center\">\n                        <span *ngIf=\"item.isSuccess\"><i class=\"icon ion-checkmark-round\"></i></span>\n                        <span *ngIf=\"item.isCancel\"><i class=\"icon ion-close\"></i></span>\n                        <span *ngIf=\"item.isError\"><i class=\"icon ion-close-circle\"></i></span>\n                    </td>\n                    <td nowrap>\n                        <button type=\"button\" class=\"btn btn-success btn-xs\" (click)=\"item.upload()\" [disabled]=\"item.isReady || item.isUploading || item.isSuccess\">\n                            <i class=\"icon ion-upload\"></i> Upload\n                        </button>\n                        <button type=\"button\" class=\"btn btn-warning btn-xs\" (click)=\"item.cancel()\" [disabled]=\"!item.isUploading\">\n                            <i class=\"icon ion-close-circled\"></i> Cancel\n                        </button>\n                        <button type=\"button\" class=\"btn btn-danger btn-xs\" (click)=\"item.remove()\">\n                            <i class=\"icon ion-trash-b\"></i> Remove\n                        </button>\n                    </td>\n                </tr>\n            </tbody>\n        </table>\n        <div *ngIf=\"uploader.queue.length\">\n            <div>\n                Upload progress:\n                <p>\n                    <ngb-progressbar type=\"success\" [value]=\"uploader.progress\"></ngb-progressbar>\n                </p>\n            </div>\n            <button type=\"button\" class=\"btn btn-success btn-s\" (click)=\"uploader.uploadAll()\" [disabled]=\"!uploader.getNotUploadedItems().length\">\n                <i class=\"icon ion-upload\"></i> Upload all\n            </button>\n            <button type=\"button\" class=\"btn btn-warning btn-s\" (click)=\"uploader.cancelAll()\" [disabled]=\"!uploader.isUploading\">\n                <i class=\"icon ion-android-cancel\"></i> Cancel all\n            </button>\n            <button type=\"button\" class=\"btn btn-danger btn-s\" (click)=\"uploader.clearQueue()\" [disabled]=\"!uploader.queue.length\">\n                <i class=\"icon ion-trash-b\"></i> Remove all\n            </button>\n        </div>\n    </div>\n</div>"
 
 /***/ }),
 
@@ -3942,6 +3986,13 @@ var UploadComponent = (function () {
     UploadComponent.prototype.ngOnInit = function () {
         var _this = this;
         this.getRootCategories();
+        this.imageService.getColorsFonts().subscribe(function (res) {
+            if (res.success) {
+                _this.titleColors = res.colors;
+                _this.titleFonts = res.fonts;
+                _this.alignValues = res.align;
+            }
+        });
         var routeSub = this.route.params.subscribe(function (params) {
             if (params['id']) {
                 _this.editing = true;
@@ -4044,51 +4095,54 @@ var UploadComponent = (function () {
     UploadComponent.prototype.editMediaInfoModal = function (file, index) {
         var _this = this;
         console.log('edit meidainfo modal');
-        this.showDelayPopup(file).subscribe(function (data) {
+        var sub = this.showDelayPopup(file).subscribe(function (data) {
+            console.log('subscribe');
+            console.log(data);
+            sub.unsubscribe();
             if (data) {
-                _this.imageService.updateMedia(file._id, { titleAlign: data.titleAlign, titleSize: data.titleSize })
+                _this.imageService.updateMedia(file._id, { titleAlign: data.titleAlign, titleSize: data.titleSize, titleFont: data.titleFont, titleColor: data.titleColor, imagedelay: data.delay, imagetitle: data.title })
                     .subscribe(function (res) {
                     if (res.success) {
                         _this.toastr.success('Media updated successfully!', 'Success');
-                        var mediaFile = _this.sessionMedia.find(function (media) { return media._id === file._id; });
-                        mediaFile.titleAlign = data.titleAlign;
-                        mediaFile.titleSize = data.titleSize;
+                        var ind = _this.sessionMedia.findIndex(function (media) { return media._id === file._id; });
+                        // mediaFile.titleAlign = data.titleAlign;
+                        // mediaFile.titleSize = data.titleSize;
+                        // mediaFile.imagedelay = data.delay;
+                        _this.sessionMedia[ind] = res.file;
                     }
                     else {
                         _this.toastr.error(res.msg, 'Error');
                     }
                 });
             }
-            if (data && data.delay) {
-                _this.imageService.updateDelay(file._id, data.delay).subscribe(function (res) {
-                    if (res.success) {
-                        //success
-                        _this.toastr.success('Delay Updated', 'Success');
-                        _this.sessionMedia.find(function (media) { return media._id === file._id; }).imagedelay = data.delay;
-                    }
-                    else {
-                        //error
-                        _this.toastr.error(res.msg, 'Error');
-                    }
-                });
-            }
-            if (data && data.title) {
-                _this.imageService.updateTitle(file._id, data.title).subscribe(function (res) {
-                    if (res.success) {
-                        //success
-                        if (!index) {
-                            //when index is not provided it is the last element
-                            var index_1 = _this.sessionMedia.length;
-                        }
-                        _this.sessionMedia[index].imagetitle = data.title;
-                        _this.toastr.success('Title updated', 'Success');
-                    }
-                    else {
-                        //error
-                        _this.toastr.error(res.msg, 'Error');
-                    }
-                });
-            }
+            // if(data && data.delay) {
+            //   this.imageService.updateDelay(file._id, data.delay).subscribe( res => {
+            //     if(res.success) {
+            //       //success
+            //       this.toastr.success('Delay Updated', 'Success');
+            //       this.sessionMedia.find(media => media._id === file._id).imagedelay = data.delay;
+            //     } else {
+            //        //error
+            //        this.toastr.error(res.msg, 'Error');
+            //     }
+            //   })
+            // }
+            // if( data && data.title) {
+            //   this.imageService.updateTitle(file._id, data.title).subscribe(res => {
+            //     if(res.success) {
+            //       //success
+            //       if(!index){
+            //         //when index is not provided it is the last element
+            //         let index = this.sessionMedia.length;
+            //       }
+            //       this.sessionMedia[index].imagetitle = data.title;
+            //       this.toastr.success('Title updated', 'Success');
+            //     } else {
+            //       //error
+            //       this.toastr.error(res.msg, 'Error');
+            //     }
+            //   })
+            // }      
         });
     };
     UploadComponent.prototype.setUploaderCallbacks = function (session) {
@@ -4125,46 +4179,46 @@ var UploadComponent = (function () {
             _this.sessionMedia.push(JSON.parse(response).file);
             _this.auth.updateStorage(JSON.parse(response).file.size, { add: true });
             if (item.file.type.indexOf('image/') !== -1) {
-                var delaySub = _this.showDelayPopup(JSON.parse(response).file).subscribe(function (data) {
+                var delaySub_1 = _this.showDelayPopup(JSON.parse(response).file).subscribe(function (data) {
                     console.log(data);
+                    delaySub_1.unsubscribe();
                     if (data) {
-                        _this.imageService.updateMedia(JSON.parse(response).file._id, { titleAlign: data.titleAlign, titleSize: data.titleSize })
+                        _this.imageService.updateMedia(JSON.parse(response).file._id, { titleAlign: data.titleAlign, titleSize: data.titleSize, titleColor: data.titleColor, titleFont: data.titleFont, imagedelay: data.delay, imagetitle: data.title })
                             .subscribe(function (res) {
                             if (res.success) {
                                 _this.toastr.success('Media updated successfull', 'Success');
-                                var updateFile = _this.sessionMedia.find(function (media) { return media._id === JSON.parse(response).file._id; });
-                                updateFile.titleAlign = data.titleAlign,
-                                    updateFile.titleSize = data.titleSize;
+                                var ind = _this.sessionMedia.findIndex(function (media) { return media._id === JSON.parse(response).file._id; });
+                                // updateFile.titleAlign = data.titleAlign,
+                                // updateFile.titleSize = data.titleSize
+                                _this.sessionMedia[ind] = res.file;
                             }
                             else {
                                 _this.toastr.error(res.msg, 'Error');
                             }
                         });
                     }
-                    if (data && data.delay) {
-                        _this.imageService.updateDelay(JSON.parse(response).file._id, data.delay).subscribe(function (res) {
-                            if (res.success) {
-                                //success
-                                _this.toastr.success(res.msg, 'Success');
-                            }
-                            else {
-                                //error
-                                _this.toastr.error(res.msg, 'Error');
-                            }
-                        });
-                    }
-                    if (data && data.title) {
-                        _this.imageService.updateTitle(JSON.parse(response).file._id, data.title).subscribe(function (res) {
-                            if (res.success) {
-                                //success
-                                _this.toastr.success(res.msg, 'Success');
-                            }
-                            else {
-                                //error
-                                _this.toastr.error(res.msg, 'Error');
-                            }
-                        });
-                    }
+                    // if(data && data.delay) {
+                    //   this.imageService.updateDelay(JSON.parse(response).file._id, data.delay).subscribe( res => {
+                    //     if(res.success) {
+                    //       //success
+                    //       this.toastr.success(res.msg, 'Success')
+                    //     } else {
+                    //        //error
+                    //        this.toastr.error(res.msg, 'Error')
+                    //     }
+                    //   })
+                    // }
+                    // if( data && data.title) {
+                    //   this.imageService.updateTitle(JSON.parse(response).file._id, data.title).subscribe(res => {
+                    //     if(res.success) {
+                    //       //success
+                    //       this.toastr.success(res.msg, 'Success')
+                    //     } else {
+                    //       //error
+                    //        this.toastr.error(res.msg, 'Error')
+                    //     }
+                    //   })
+                    // }
                 });
             }
         };
@@ -4227,13 +4281,19 @@ var UploadComponent = (function () {
     ;
     UploadComponent.prototype.showDelayPopup = function (file) {
         var disposable = this.dialogService.addDialog(__WEBPACK_IMPORTED_MODULE_7__popup_popup_component__["a" /* PopupComponent */], {
-            title: 'Enter title and delay for image',
-            message: 'Enter Delay for image: ' + file.imagetitle,
+            title: 'Edit Media',
+            message: 'Edit info for file:' + file.imagetitle,
             imgTitle: file.imagetitle,
             delay: file.imagedelay,
             titleSize: file.titleSize,
-            titleAlign: file.titleAlign
+            titleAlign: file.titleAlign,
+            titleFont: file.titleFont,
+            titleColor: file.titleColor,
+            colors: this.titleColors,
+            fonts: this.titleFonts,
+            alignValues: this.alignValues
         });
+        console.log(disposable);
         return disposable;
     };
     UploadComponent.prototype.showConfirm = function (title, message) {
