@@ -4461,9 +4461,9 @@ var UsernameValidator = (function () {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return environment; });
 var environment = {
     production: true,
-    baseUrl: 'https://ionic-node-auth.herokuapp.com',
-    socketUrl: 'https://ionic-node-auth.herokuapp.com',
-    captchaKey: '6LevrjQUAAAAAM5WB0Xu_ttsNRqpXeSPV6F0_zek',
+    baseUrl: 'https://teq-gallery.herokuapp.com',
+    socketUrl: 'https://teq-gallery.herokuapp.com',
+    captchaKey: '6Ld570UUAAAAACKlgFNJv4XXqRacakNHedAuu5-c',
     envName: 'prod'
 };
 
