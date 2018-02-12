@@ -126,7 +126,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 //   credentials : true
 // }
 
-var whitelist = ['http://localhost:4200', 'http://localhost:8080', 'http://localhost:8100', 'https://ionic-node-auth.herokuapp.com', 'http://ionic-node-auth.herokuapp.com', 'null', 'file://'];
+var whitelist = ['http://localhost:4200', 'http://localhost:8080', 'http://localhost:8100', process.env.DOMAIN, 'http://teq-gallery.herokuapp.com', 'null', 'file://'];
 var corsOptions = {
   origin: function (origin, callback) {
     if(!origin) return callback(null, true);
