@@ -3,9 +3,9 @@ const config = require('../config/database');
 const paypal = require('paypal-rest-sdk');
 
 paypal.configure({
-  'mode': 'sandbox',
-  'client_id': 'AaeOpYUOOFsFbe_XkJWC7NJP3zBDOVbRpamyuyLI2dB488cEyxyjFQ2U7OaSKBuww10OQquzsVzUWZvR',
-  'client_secret': 'EDL64zhpeqpwxjxhDntOm274MgCliQD_lNwMG0sTX7PxwhJWBm2LzGVU-iXSPM1WpX71S3a0sTNVNBtg'
+  'mode': process.env.PAYPAL_MODE,
+  'client_id': process.env.PAYPAL_CLIENT,
+  'client_secret': process.env.PAYPAL_SECRET
 })
 
 const PaymentDefinitionSchema = new mongoose.Schema({
